@@ -1,6 +1,6 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.ali-taggaz/dataverse",
+  "name": "io.github.codeurali/dataverse",
   "title": "MCP Dataverse",
   "description": "MCP server exposing 48 Microsoft Dataverse Web API tools for AI agents — query, CRUD, metadata, search, files, audit, and more.",
   "repository": {
