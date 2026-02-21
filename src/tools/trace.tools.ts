@@ -1,113 +1,116 @@
-import { z } from 'zod';
-import type { DataverseAdvancedClient } from '../dataverse/dataverse-client-advanced.js';
-import { esc } from '../dataverse/dataverse-client.utils.js';
+import { z } from "zod";
+import type { DataverseAdvancedClient } from "../dataverse/dataverse-client-advanced.js";
+import { esc } from "../dataverse/dataverse-client.utils.js";
 
 const OPERATION_TYPE_NAMES: Record<number, string> = {
-  0: 'Execute',
-  1: 'Create',
-  2: 'Retrieve',
-  3: 'RetrieveMultiple',
-  4: 'GetParent',
-  5: 'Update',
-  6: 'Delete',
-  7: 'Assign',
+  0: "Execute",
+  1: "Create",
+  2: "Retrieve",
+  3: "RetrieveMultiple",
+  4: "GetParent",
+  5: "Update",
+  6: "Delete",
+  7: "Assign",
 };
 
 const STATUS_CODE_NAMES: Record<number, string> = {
-  0: 'Waiting',
-  10: 'WaitingForResources',
-  20: 'InProgress',
-  21: 'Pausing',
-  22: 'Canceling',
-  30: 'Succeeded',
-  31: 'Failed',
-  32: 'Canceled',
+  0: "Waiting",
+  10: "WaitingForResources",
+  20: "InProgress",
+  21: "Pausing",
+  22: "Canceling",
+  30: "Succeeded",
+  31: "Failed",
+  32: "Canceled",
 };
 
 const STATE_CODE_NAMES: Record<number, string> = {
-  0: 'ReadyToRun',
-  1: 'Suspended',
-  2: 'Locked',
-  3: 'Completed',
+  0: "ReadyToRun",
+  1: "Suspended",
+  2: "Locked",
+  3: "Completed",
 };
 
 const PLUGIN_TRACE_SELECT = [
-  'plugintracelogid',
-  'typename',
-  'messagename',
-  'primaryentity',
-  'depth',
-  'operationtype',
-  'exceptiondetails',
-  'messageblock',
-  'createdon',
-  'performanceexecutionduration',
-  'correlationid',
-  'requestid',
+  "plugintracelogid",
+  "typename",
+  "messagename",
+  "primaryentity",
+  "depth",
+  "operationtype",
+  "exceptiondetails",
+  "messageblock",
+  "createdon",
+  "performanceexecutionduration",
+  "correlationid",
+  "requestid",
 ];
 
 const WORKFLOW_TRACE_SELECT = [
-  'asyncoperationid',
-  'name',
-  'operationtype',
-  'statuscode',
-  'statecode',
-  'message',
-  'createdon',
-  'startedon',
-  'completedon',
-  'regardingobjecttypecode',
+  "asyncoperationid",
+  "name",
+  "operationtype",
+  "statuscode",
+  "statecode",
+  "message",
+  "createdon",
+  "startedon",
+  "completedon",
+  "regardingobjecttypecode",
 ];
 
 export const traceTools = [
   {
-    name: 'dataverse_get_plugin_trace_logs',
+    name: "dataverse_get_plugin_trace_logs",
     description:
       "Retrieves recent plugin and custom workflow activity trace logs from Dataverse. Shows execution details including plugin type name, triggering message, entity, execution duration, trace messages written by the developer, and exception details if the plugin failed. Requires the Plugin Trace Log feature to be enabled in Dataverse settings (Settings > Administration > System Settings > Customization tab > 'Enable logging to plugin trace log'). Essential for debugging plugin failures in production.",
     inputSchema: {
-      type: 'object' as const,
+      type: "object" as const,
       properties: {
         top: {
-          type: 'number',
-          description: 'Max records to return (default 50, max 200)',
+          type: "number",
+          description: "Max records to return (default 50, max 200)",
         },
         pluginTypeFilter: {
-          type: 'string',
-          description: "Filter by plugin type name (substring match, e.g. 'AccountValidation')",
+          type: "string",
+          description:
+            "Filter by plugin type name (substring match, e.g. 'AccountValidation')",
         },
         messageFilter: {
-          type: 'string',
+          type: "string",
           description: "Filter by message name (e.g. 'Create', 'Update')",
         },
         entityFilter: {
-          type: 'string',
+          type: "string",
           description: "Filter by entity logical name (e.g. 'account')",
         },
         exceptionsOnly: {
-          type: 'boolean',
-          description: 'Return only traces where an exception occurred (default false)',
+          type: "boolean",
+          description:
+            "Return only traces where an exception occurred (default false)",
         },
       },
       required: [],
     },
   },
   {
-    name: 'dataverse_get_workflow_trace_logs',
+    name: "dataverse_get_workflow_trace_logs",
     description:
-      'Retrieves background workflow (Power Automate classic / legacy workflow engine) execution records from Dataverse. These are the AsyncOperation records for workflow-type operations, useful for diagnosing failures in background workflows and real-time workflows running asynchronously. Note: For modern cloud flows (Power Automate), use the Power Automate portal instead.',
+      "Retrieves background workflow (Power Automate classic / legacy workflow engine) execution records from Dataverse. These are the AsyncOperation records for workflow-type operations, useful for diagnosing failures in background workflows and real-time workflows running asynchronously. Note: For modern cloud flows (Power Automate), use the Power Automate portal instead.",
     inputSchema: {
-      type: 'object' as const,
+      type: "object" as const,
       properties: {
         top: {
-          type: 'number',
-          description: 'Max records (default 50, max 200)',
+          type: "number",
+          description: "Max records (default 50, max 200)",
         },
         failedOnly: {
-          type: 'boolean',
-          description: 'Return only failed workflows (statuscode eq 31, default false)',
+          type: "boolean",
+          description:
+            "Return only failed workflows (statuscode eq 31, default false)",
         },
         entityFilter: {
-          type: 'string',
+          type: "string",
           description: "Filter by regarding entity type (e.g. 'account')",
         },
       },
@@ -131,25 +134,27 @@ const GetWorkflowTraceInput = z.object({
 });
 
 function str(val: unknown): string {
-  return typeof val === 'string' ? val : '';
+  return typeof val === "string" ? val : "";
 }
 
 function numOrNull(val: unknown): number | null {
-  return typeof val === 'number' ? val : null;
+  return typeof val === "number" ? val : null;
 }
 
 export async function handleTraceTool(
   name: string,
   args: unknown,
-  client: DataverseAdvancedClient
-): Promise<{ content: Array<{ type: 'text'; text: string }> }> {
+  client: DataverseAdvancedClient,
+): Promise<{ content: Array<{ type: "text"; text: string }> }> {
   switch (name) {
-    case 'dataverse_get_plugin_trace_logs': {
+    case "dataverse_get_plugin_trace_logs": {
       const params = GetPluginTraceInput.parse(args);
 
       const filterParts: string[] = [];
       if (params.pluginTypeFilter) {
-        filterParts.push(`contains(typename,'${esc(params.pluginTypeFilter)}')`);
+        filterParts.push(
+          `contains(typename,'${esc(params.pluginTypeFilter)}')`,
+        );
       }
       if (params.messageFilter) {
         filterParts.push(`messagename eq '${esc(params.messageFilter)}'`);
@@ -158,14 +163,15 @@ export async function handleTraceTool(
         filterParts.push(`primaryentity eq '${esc(params.entityFilter)}'`);
       }
       if (params.exceptionsOnly) {
-        filterParts.push('exceptiondetails ne null');
+        filterParts.push("exceptiondetails ne null");
       }
 
-      const filter = filterParts.length > 0 ? filterParts.join(' and ') : undefined;
+      const filter =
+        filterParts.length > 0 ? filterParts.join(" and ") : undefined;
 
-      const response = await client.query('plugintracelog', {
+      const response = await client.query("plugintracelog", {
         select: PLUGIN_TRACE_SELECT,
-        orderby: 'createdon desc',
+        orderby: "createdon desc",
         top: params.top,
         ...(filter !== undefined ? { filter } : {}),
       });
@@ -173,37 +179,43 @@ export async function handleTraceTool(
       const rows = (response.value ?? []) as Array<Record<string, unknown>>;
 
       const logs = rows.map((row) => {
-        const opType = typeof row['operationtype'] === 'number' ? row['operationtype'] : 0;
-        const exceptionDetails = row['exceptiondetails'];
+        const opType =
+          typeof row["operationtype"] === "number" ? row["operationtype"] : 0;
+        const exceptionDetails = row["exceptiondetails"];
         return {
-          id: str(row['plugintracelogid']),
-          typeName: str(row['typename']),
-          message: str(row['messagename']),
-          entity: str(row['primaryentity']),
-          depth: typeof row['depth'] === 'number' ? row['depth'] : 0,
+          id: str(row["plugintracelogid"]),
+          typeName: str(row["typename"]),
+          message: str(row["messagename"]),
+          entity: str(row["primaryentity"]),
+          depth: typeof row["depth"] === "number" ? row["depth"] : 0,
           operationType: opType,
           operationTypeName: OPERATION_TYPE_NAMES[opType] ?? String(opType),
-          createdOn: str(row['createdon']),
-          durationMs: numOrNull(row['performanceexecutionduration']),
-          correlationId: str(row['correlationid']),
-          requestId: str(row['requestid']),
-          hasException: exceptionDetails != null && exceptionDetails !== '',
-          exceptionDetails: typeof exceptionDetails === 'string' ? exceptionDetails : null,
+          createdOn: str(row["createdon"]),
+          durationMs: numOrNull(row["performanceexecutionduration"]),
+          correlationId: str(row["correlationid"]),
+          requestId: str(row["requestid"]),
+          hasException: exceptionDetails != null && exceptionDetails !== "",
+          exceptionDetails:
+            typeof exceptionDetails === "string" ? exceptionDetails : null,
           messageBlock:
-            typeof row['messageblock'] === 'string' ? (row['messageblock'] as string) : null,
+            typeof row["messageblock"] === "string"
+              ? (row["messageblock"] as string)
+              : null,
         };
       });
 
       const result = { total: logs.length, logs };
-      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
     }
 
-    case 'dataverse_get_workflow_trace_logs': {
+    case "dataverse_get_workflow_trace_logs": {
       const params = GetWorkflowTraceInput.parse(args);
 
-      const filterParts: string[] = ['operationtype eq 10'];
+      const filterParts: string[] = ["operationtype eq 10"];
       if (params.failedOnly) {
-        filterParts.push('statuscode eq 31');
+        filterParts.push("statuscode eq 31");
       }
       if (params.entityFilter) {
         filterParts.push(
@@ -211,42 +223,51 @@ export async function handleTraceTool(
         );
       }
 
-      const filter = filterParts.join(' and ');
+      const filter = filterParts.join(" and ");
 
-      const response = await client.query('asyncoperations', {
+      const response = await client.query("asyncoperations", {
         select: WORKFLOW_TRACE_SELECT,
         filter,
-        orderby: 'createdon desc',
+        orderby: "createdon desc",
         top: params.top,
       });
 
       const rows = (response.value ?? []) as Array<Record<string, unknown>>;
 
       const workflows = rows.map((row) => {
-        const statusCode = typeof row['statuscode'] === 'number' ? row['statuscode'] : 0;
-        const stateCode = typeof row['statecode'] === 'number' ? row['statecode'] : 0;
-        const errorMsg = row['message'];
+        const statusCode =
+          typeof row["statuscode"] === "number" ? row["statuscode"] : 0;
+        const stateCode =
+          typeof row["statecode"] === "number" ? row["statecode"] : 0;
+        const errorMsg = row["message"];
         return {
-          id: str(row['asyncoperationid']),
-          name: str(row['name']),
+          id: str(row["asyncoperationid"]),
+          name: str(row["name"]),
           statusCode,
           statusName: STATUS_CODE_NAMES[statusCode] ?? String(statusCode),
           stateCode,
           stateName: STATE_CODE_NAMES[stateCode] ?? String(stateCode),
-          createdOn: str(row['createdon']),
-          startedOn: typeof row['startedon'] === 'string' ? (row['startedon'] as string) : null,
-          completedOn:
-            typeof row['completedon'] === 'string' ? (row['completedon'] as string) : null,
-          regardingEntityType:
-            typeof row['regardingobjecttypecode'] === 'string'
-              ? (row['regardingobjecttypecode'] as string)
+          createdOn: str(row["createdon"]),
+          startedOn:
+            typeof row["startedon"] === "string"
+              ? (row["startedon"] as string)
               : null,
-          errorMessage: typeof errorMsg === 'string' ? errorMsg : null,
+          completedOn:
+            typeof row["completedon"] === "string"
+              ? (row["completedon"] as string)
+              : null,
+          regardingEntityType:
+            typeof row["regardingobjecttypecode"] === "string"
+              ? (row["regardingobjecttypecode"] as string)
+              : null,
+          errorMessage: typeof errorMsg === "string" ? errorMsg : null,
         };
       });
 
       const result = { total: workflows.length, workflows };
-      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+      return {
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+      };
     }
 
     default:

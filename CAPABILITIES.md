@@ -2,7 +2,7 @@
 
 > **Version**: 0.2.0 | **API Version**: Dataverse Web API v9.2 | **Transport**: MCP SDK over stdio
 
-48 tools across 21 categories for full Dataverse lifecycle: schema, CRUD, FetchXML, solutions, plugins, audit, files, users, environment variables, and more.
+50 tools across 22 categories for full Dataverse lifecycle: schema, CRUD, FetchXML, solutions, plugins, audit, files, users, teams, environment variables, and more.
 
 ---
 
@@ -10,7 +10,7 @@
 
 - [Quick Start](#quick-start)
 - [Architecture Overview](#architecture-overview)
-- [Tool Reference (48 tools)](#tool-reference-48-tools)
+- [Tool Reference (50 tools)](#tool-reference-50-tools)
   - [1. Auth (1)](#1-auth-1-tool)
   - [2. Metadata (8)](#2-metadata-8-tools)
   - [3. Query (3)](#3-query-3-tools)
@@ -42,11 +42,11 @@
 
 ### Prerequisites
 
-| Requirement | Details |
-|---|---|
-| **Node.js** | v20+ |
-| **Dataverse Environment** | Active URL (`https://<org>.crm<N>.dynamics.com`) |
-| **Authentication** | PAC CLI (interactive) or Entra ID App Registration (headless) |
+| Requirement               | Details                                                       |
+| ------------------------- | ------------------------------------------------------------- |
+| **Node.js**               | v20+                                                          |
+| **Dataverse Environment** | Active URL (`https://<org>.crm<N>.dynamics.com`)              |
+| **Authentication**        | PAC CLI (interactive) or Entra ID App Registration (headless) |
 
 ### Installation & Configuration
 
@@ -69,14 +69,14 @@ Create `config.json` (see `config.example.json`):
 }
 ```
 
-| Field | Type | Description |
-|---|---|---|
-| `environmentUrl` | `string` | Dataverse environment URL (**required**, must be HTTPS) |
-| `authMode` | `"pac"\|"msal"` | Auth strategy (default: `"pac"`) |
-| `pacProfileName` | `string` | PAC CLI profile (default: `"default"`) |
-| `tenantId` / `clientId` / `clientSecret` | `string` | Required for `authMode: "msal"` |
-| `requestTimeoutMs` | `number` | HTTP timeout ms (default: `30000`) |
-| `maxRetries` | `number` | Max retry attempts 0–10 (default: `3`) |
+| Field                                    | Type            | Description                                             |
+| ---------------------------------------- | --------------- | ------------------------------------------------------- |
+| `environmentUrl`                         | `string`        | Dataverse environment URL (**required**, must be HTTPS) |
+| `authMode`                               | `"pac"\|"msal"` | Auth strategy (default: `"pac"`)                        |
+| `pacProfileName`                         | `string`        | PAC CLI profile (default: `"default"`)                  |
+| `tenantId` / `clientId` / `clientSecret` | `string`        | Required for `authMode: "msal"`                         |
+| `requestTimeoutMs`                       | `number`        | HTTP timeout ms (default: `30000`)                      |
+| `maxRetries`                             | `number`        | Max retry attempts 0–10 (default: `3`)                  |
 
 Env vars override config: `DATAVERSE_ENV_URL`, `AUTH_MODE`, `PAC_PROFILE_NAME`, `TENANT_ID`, `CLIENT_ID`, `REQUEST_TIMEOUT_MS`, `MAX_RETRIES`.
 
@@ -101,7 +101,7 @@ Server communicates over **stdio** (MCP SDK `StdioServerTransport`). Connect fro
 
 ```mermaid
 graph LR
-    MCP["MCP Dataverse Server<br/><i>48 tools · 21 categories</i>"]
+    MCP["MCP Dataverse Server<br/><i>50 tools · 22 categories</i>"]
 
     MCP --> AUTH["🔑 Auth (1)"]
     MCP --> META["📋 Metadata (8)"]
@@ -130,7 +130,7 @@ All tool handlers validate inputs with **Zod** before calling the `DataverseAdva
 
 ---
 
-## Tool Reference (48 tools)
+## Tool Reference (50 tools)
 
 ### 1. Auth (1 tool)
 
@@ -148,9 +148,9 @@ Returns the current authenticated user context (userId, businessUnitId, organiza
 
 Lists all Dataverse tables. Defaults to custom tables only; set `includeSystemTables=true` for all ~1700+ system tables.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `includeSystemTables` | `boolean` | — | Default `false` |
+| Parameter             | Type      | Req | Notes           |
+| --------------------- | --------- | --- | --------------- |
+| `includeSystemTables` | `boolean` | —   | Default `false` |
 
 > "List all custom tables in my environment"
 
@@ -160,10 +160,10 @@ Lists all Dataverse tables. Defaults to custom tables only; set `includeSystemTa
 
 Returns full schema for a table: column logical names, display names, data types, required levels, lookup targets. Set `includeAttributes=false` for table-level info only.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `logicalName` | `string` | ✓ | e.g. `"account"` |
-| `includeAttributes` | `boolean` | — | Default `true` |
+| Parameter           | Type      | Req | Notes            |
+| ------------------- | --------- | --- | ---------------- |
+| `logicalName`       | `string`  | ✓   | e.g. `"account"` |
+| `includeAttributes` | `boolean` | —   | Default `true`   |
 
 > "Show me the schema for the contact table"
 
@@ -173,10 +173,10 @@ Returns full schema for a table: column logical names, display names, data types
 
 Returns 1:N, N:1, and N:N relationships for a table. Use to find the correct `relationshipName` for associate/disassociate.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `logicalName` | `string` | ✓ | Table logical name |
-| `relationshipType` | `"OneToMany"\|"ManyToOne"\|"ManyToMany"\|"All"` | — | Default `"All"` |
+| Parameter          | Type                                            | Req | Notes              |
+| ------------------ | ----------------------------------------------- | --- | ------------------ |
+| `logicalName`      | `string`                                        | ✓   | Table logical name |
+| `relationshipType` | `"OneToMany"\|"ManyToOne"\|"ManyToMany"\|"All"` | —   | Default `"All"`    |
 
 > "What relationships does the account table have?"
 
@@ -194,9 +194,9 @@ Lists all global (shared) option sets in the environment. No parameters required
 
 Returns all labels and integer values for a named global option set.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `name` | `string` | ✓ | Global option set name |
+| Parameter | Type     | Req | Notes                  |
+| --------- | -------- | --- | ---------------------- |
+| `name`    | `string` | ✓   | Global option set name |
 
 > "Show me the values for the budgetstatus option set"
 
@@ -206,9 +206,9 @@ Returns all labels and integer values for a named global option set.
 
 Returns alternate key definitions for a table: key attributes, index status (Active/InProgress/Failed), and customizability.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `tableName` | `string` | ✓ | Table logical name |
+| Parameter   | Type     | Req | Notes              |
+| ----------- | -------- | --- | ------------------ |
+| `tableName` | `string` | ✓   | Table logical name |
 
 > "What alternate keys are defined on the account table?"
 
@@ -218,10 +218,10 @@ Returns alternate key definitions for a table: key attributes, index status (Act
 
 Returns all labels and integer values for a table-specific Picklist, Status, or State attribute. Use instead of `dataverse_get_option_set` for column-local choices.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entityLogicalName` | `string` | ✓ | e.g. `"account"` |
-| `attributeLogicalName` | `string` | ✓ | e.g. `"statuscode"`, `"industrycode"` |
+| Parameter              | Type     | Req | Notes                                 |
+| ---------------------- | -------- | --- | ------------------------------------- |
+| `entityLogicalName`    | `string` | ✓   | e.g. `"account"`                      |
+| `attributeLogicalName` | `string` | ✓   | e.g. `"statuscode"`, `"industrycode"` |
 
 > "What are the valid statuscode values for opportunity?"
 
@@ -233,15 +233,15 @@ Returns all labels and integer values for a table-specific Picklist, Status, or 
 
 OData query with `$filter`, `$select`, `$orderby`, `$top`, `$expand`, `$count`, and `$apply` (aggregations).
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entitySetName` | `string` | ✓ | e.g. `"accounts"` |
-| `select` | `string[]` | — | Recommended — minimizes payload |
-| `filter` | `string` | — | OData `$filter` expression |
-| `orderby` | `string` | — | OData `$orderby` expression |
-| `top` | `number` | — | Default `50`, max `5000` |
-| `expand` | `string` | — | OData `$expand` |
-| `count` | `boolean` | — | Include `@odata.count` |
+| Parameter       | Type       | Req | Notes                           |
+| --------------- | ---------- | --- | ------------------------------- |
+| `entitySetName` | `string`   | ✓   | e.g. `"accounts"`               |
+| `select`        | `string[]` | —   | Recommended — minimizes payload |
+| `filter`        | `string`   | —   | OData `$filter` expression      |
+| `orderby`       | `string`   | —   | OData `$orderby` expression     |
+| `top`           | `number`   | —   | Default `50`, max `5000`        |
+| `expand`        | `string`   | —   | OData `$expand`                 |
+| `count`         | `boolean`  | —   | Include `@odata.count`          |
 
 > "Show me the first 10 active accounts sorted by name"
 
@@ -251,10 +251,10 @@ OData query with `$filter`, `$select`, `$orderby`, `$top`, `$expand`, `$count`, 
 
 Executes a FetchXML query — use for aggregations, complex joins, many-to-many traversal, and filters not expressible in OData.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `fetchXml` | `string` | ✓ | Complete FetchXML string |
-| `entitySetName` | `string` | — | Auto-extracted from `<entity name="...">` if omitted |
+| Parameter       | Type     | Req | Notes                                                |
+| --------------- | -------- | --- | ---------------------------------------------------- |
+| `fetchXml`      | `string` | ✓   | Complete FetchXML string                             |
+| `entitySetName` | `string` | —   | Auto-extracted from `<entity name="...">` if omitted |
 
 > "Run a FetchXML query to count opportunities grouped by status"
 
@@ -264,14 +264,14 @@ Executes a FetchXML query — use for aggregations, complex joins, many-to-many 
 
 Retrieves ALL matching records by auto-following `@odata.nextLink` pages. Use when > 5000 records are needed.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entitySetName` | `string` | ✓ | OData entity set name |
-| `select` | `string[]` | — | Columns to return |
-| `filter` | `string` | — | OData `$filter` |
-| `orderby` | `string` | — | OData `$orderby` |
-| `expand` | `string` | — | OData `$expand` |
-| `maxTotal` | `number` | — | Default `5000`, max `50000` |
+| Parameter       | Type       | Req | Notes                       |
+| --------------- | ---------- | --- | --------------------------- |
+| `entitySetName` | `string`   | ✓   | OData entity set name       |
+| `select`        | `string[]` | —   | Columns to return           |
+| `filter`        | `string`   | —   | OData `$filter`             |
+| `orderby`       | `string`   | —   | OData `$orderby`            |
+| `expand`        | `string`   | —   | OData `$expand`             |
+| `maxTotal`      | `number`   | —   | Default `5000`, max `50000` |
 
 > "Get all contacts with email addresses, up to 20000 records"
 
@@ -287,11 +287,11 @@ Retrieves ALL matching records by auto-following `@odata.nextLink` pages. Use wh
 
 Retrieves a single record by GUID. Returns the record plus `@odata.etag`.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entitySetName` | `string` | ✓ | OData entity set name |
-| `id` | `string (UUID)` | ✓ | Record GUID |
-| `select` | `string[]` | — | Columns to return |
+| Parameter       | Type            | Req | Notes                 |
+| --------------- | --------------- | --- | --------------------- |
+| `entitySetName` | `string`        | ✓   | OData entity set name |
+| `id`            | `string (UUID)` | ✓   | Record GUID           |
+| `select`        | `string[]`      | —   | Columns to return     |
 
 > "Get the account record with ID a1b2c3d4-..."
 
@@ -301,10 +301,10 @@ Retrieves a single record by GUID. Returns the record plus `@odata.etag`.
 
 Creates a new record and returns its GUID. Use `@odata.bind` for lookup fields.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entitySetName` | `string` | ✓ | OData entity set name |
-| `data` | `object` | ✓ | Field key-value pairs using logical names |
+| Parameter       | Type     | Req | Notes                                     |
+| --------------- | -------- | --- | ----------------------------------------- |
+| `entitySetName` | `string` | ✓   | OData entity set name                     |
+| `data`          | `object` | ✓   | Field key-value pairs using logical names |
 
 > "Create a new account called 'Fabrikam Inc.'"
 
@@ -314,11 +314,11 @@ Creates a new record and returns its GUID. Use `@odata.bind` for lookup fields.
 
 PATCH-updates an existing record (only supplied fields change). Sends `If-Match: *`.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entitySetName` | `string` | ✓ | OData entity set name |
-| `id` | `string (UUID)` | ✓ | Record GUID |
-| `data` | `object` | ✓ | Fields to update |
+| Parameter       | Type            | Req | Notes                 |
+| --------------- | --------------- | --- | --------------------- |
+| `entitySetName` | `string`        | ✓   | OData entity set name |
+| `id`            | `string (UUID)` | ✓   | Record GUID           |
+| `data`          | `object`        | ✓   | Fields to update      |
 
 > "Update account a1b2c3d4 — set revenue to 5000000"
 
@@ -328,11 +328,11 @@ PATCH-updates an existing record (only supplied fields change). Sends `If-Match:
 
 Permanently deletes a record. **Irreversible.** `confirm` must be `true`.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entitySetName` | `string` | ✓ | OData entity set name |
-| `id` | `string (UUID)` | ✓ | Record GUID |
-| `confirm` | `boolean` | ✓ | Must be `true` to proceed |
+| Parameter       | Type            | Req | Notes                     |
+| --------------- | --------------- | --- | ------------------------- |
+| `entitySetName` | `string`        | ✓   | OData entity set name     |
+| `id`            | `string (UUID)` | ✓   | Record GUID               |
+| `confirm`       | `boolean`       | ✓   | Must be `true` to proceed |
 
 > "Delete account record a1b2c3d4-..."
 
@@ -342,18 +342,22 @@ Permanently deletes a record. **Irreversible.** `confirm` must be `true`.
 
 Create-or-update via an alternate key (no GUID needed). Returns `"created"` or `"updated"`.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entitySetName` | `string` | ✓ | OData entity set name |
-| `alternateKey` | `string` | ✓ | Alternate key attribute name |
-| `alternateKeyValue` | `string` | ✓ | Value for the alternate key |
-| `data` | `object` | ✓ | Record data |
-| `mode` | `"upsert"\|"createOnly"\|"updateOnly"` | — | Default `"upsert"` |
+| Parameter           | Type                                   | Req | Notes                        |
+| ------------------- | -------------------------------------- | --- | ---------------------------- |
+| `entitySetName`     | `string`                               | ✓   | OData entity set name        |
+| `alternateKey`      | `string`                               | ✓   | Alternate key attribute name |
+| `alternateKeyValue` | `string`                               | ✓   | Value for the alternate key  |
+| `data`              | `object`                               | ✓   | Record data                  |
+| `mode`              | `"upsert"\|"createOnly"\|"updateOnly"` | —   | Default `"upsert"`           |
 
 > "Upsert account with external ID 'EXT-001', set name to 'Contoso'"
 
 ```json
-{ "operation": "created", "id": "d4e5f6a7-...", "message": "Record created successfully" }
+{
+  "operation": "created",
+  "id": "d4e5f6a7-...",
+  "message": "Record created successfully"
+}
 ```
 
 ---
@@ -364,13 +368,13 @@ Create-or-update via an alternate key (no GUID needed). Returns `"created"` or `
 
 Creates an N:N or 1:N association between two records via a named relationship.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entitySetName` | `string` | ✓ | Source entity set |
-| `id` | `string (UUID)` | ✓ | Source record GUID |
-| `relationshipName` | `string` | ✓ | Relationship schema name |
-| `relatedEntitySetName` | `string` | ✓ | Related entity set |
-| `relatedId` | `string (UUID)` | ✓ | Related record GUID |
+| Parameter              | Type            | Req | Notes                    |
+| ---------------------- | --------------- | --- | ------------------------ |
+| `entitySetName`        | `string`        | ✓   | Source entity set        |
+| `id`                   | `string (UUID)` | ✓   | Source record GUID       |
+| `relationshipName`     | `string`        | ✓   | Relationship schema name |
+| `relatedEntitySetName` | `string`        | ✓   | Related entity set       |
+| `relatedId`            | `string (UUID)` | ✓   | Related record GUID      |
 
 > "Associate contact c1d2e3f4 with account a1b2c3d4"
 
@@ -380,13 +384,13 @@ Creates an N:N or 1:N association between two records via a named relationship.
 
 Removes an existing association. `relatedId` / `relatedEntitySetName` required for N:N.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entitySetName` | `string` | ✓ | Source entity set |
-| `id` | `string (UUID)` | ✓ | Source record GUID |
-| `relationshipName` | `string` | ✓ | Relationship schema name |
-| `relatedId` | `string (UUID)` | — | Required for N:N |
-| `relatedEntitySetName` | `string` | — | Required for N:N |
+| Parameter              | Type            | Req | Notes                    |
+| ---------------------- | --------------- | --- | ------------------------ |
+| `entitySetName`        | `string`        | ✓   | Source entity set        |
+| `id`                   | `string (UUID)` | ✓   | Source record GUID       |
+| `relationshipName`     | `string`        | ✓   | Relationship schema name |
+| `relatedId`            | `string (UUID)` | —   | Required for N:N         |
+| `relatedEntitySetName` | `string`        | —   | Required for N:N         |
 
 > "Remove the association between account a1b2c3d4 and contact c1d2e3f4"
 
@@ -398,10 +402,10 @@ Removes an existing association. `relatedId` / `relatedEntitySetName` required f
 
 Executes a global (unbound) Dataverse action — state-changing, not tied to a specific record.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `actionName` | `string` | ✓ | Action logical name (e.g. `"WinOpportunity"`) |
-| `parameters` | `object` | — | Action parameters (default `{}`) |
+| Parameter    | Type     | Req | Notes                                         |
+| ------------ | -------- | --- | --------------------------------------------- |
+| `actionName` | `string` | ✓   | Action logical name (e.g. `"WinOpportunity"`) |
+| `parameters` | `object` | —   | Action parameters (default `{}`)              |
 
 > "Execute the WinOpportunity action"
 
@@ -411,10 +415,10 @@ Executes a global (unbound) Dataverse action — state-changing, not tied to a s
 
 Executes a global (unbound) OData function — read-only, no side effects.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `functionName` | `string` | ✓ | e.g. `"RetrieveTotalRecordCount"` |
-| `parameters` | `object` | — | Key-value pairs serialized into URL |
+| Parameter      | Type     | Req | Notes                               |
+| -------------- | -------- | --- | ----------------------------------- |
+| `functionName` | `string` | ✓   | e.g. `"RetrieveTotalRecordCount"`   |
+| `parameters`   | `object` | —   | Key-value pairs serialized into URL |
 
 > "Get total record count for the account entity"
 
@@ -424,12 +428,12 @@ Executes a global (unbound) OData function — read-only, no side effects.
 
 Executes an action bound to a specific record. Do **not** include the `Microsoft.Dynamics.CRM.` namespace prefix.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entitySetName` | `string` | ✓ | OData entity set name |
-| `id` | `string (UUID)` | ✓ | Record GUID |
-| `actionName` | `string` | ✓ | Action name (no namespace prefix) |
-| `parameters` | `object` | — | Action parameters |
+| Parameter       | Type            | Req | Notes                             |
+| --------------- | --------------- | --- | --------------------------------- |
+| `entitySetName` | `string`        | ✓   | OData entity set name             |
+| `id`            | `string (UUID)` | ✓   | Record GUID                       |
+| `actionName`    | `string`        | ✓   | Action name (no namespace prefix) |
+| `parameters`    | `object`        | —   | Action parameters                 |
 
 > "Qualify the lead l1m2n3o4 in Dataverse"
 
@@ -439,12 +443,12 @@ Executes an action bound to a specific record. Do **not** include the `Microsoft
 
 Executes a read-only function bound to a specific record (e.g. `CalculateRollupField`).
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entitySetName` | `string` | ✓ | OData entity set name |
-| `id` | `string (UUID)` | ✓ | Record GUID |
-| `functionName` | `string` | ✓ | Bound function name |
-| `parameters` | `object` | — | Key-value pairs serialized into URL |
+| Parameter       | Type            | Req | Notes                               |
+| --------------- | --------------- | --- | ----------------------------------- |
+| `entitySetName` | `string`        | ✓   | OData entity set name               |
+| `id`            | `string (UUID)` | ✓   | Record GUID                         |
+| `functionName`  | `string`        | ✓   | Bound function name                 |
+| `parameters`    | `object`        | —   | Key-value pairs serialized into URL |
 
 > "Calculate the rollup field 'totalrevenue' on account a1b2c3d4"
 
@@ -454,10 +458,10 @@ Executes a read-only function bound to a specific record (e.g. `CalculateRollupF
 
 Lists workflows, flows, business rules, and custom actions that reference a table. Use before modifying or removing a table.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `tableName` | `string` | ✓ | Table logical name |
-| `componentType` | `string[]` | — | Filter: `Workflow`, `Flow`, `BusinessRule`, `Action`, `BusinessProcessFlow`, `Plugin`, `CustomAPI` |
+| Parameter       | Type       | Req | Notes                                                                                              |
+| --------------- | ---------- | --- | -------------------------------------------------------------------------------------------------- |
+| `tableName`     | `string`   | ✓   | Table logical name                                                                                 |
+| `componentType` | `string[]` | —   | Filter: `Workflow`, `Flow`, `BusinessRule`, `Action`, `BusinessProcessFlow`, `Plugin`, `CustomAPI` |
 
 > "What workflows and flows reference the account table?"
 
@@ -467,10 +471,10 @@ Lists workflows, flows, business rules, and custom actions that reference a tabl
 
 Returns solution components that would block deletion of a component. Use before deleting customizations.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `componentType` | `number` | ✓ | Type code (1=Entity, 2=Attribute, 29=Workflow, 90=PluginAssembly…) |
-| `objectId` | `string (UUID)` | ✓ | Component GUID |
+| Parameter       | Type            | Req | Notes                                                              |
+| --------------- | --------------- | --- | ------------------------------------------------------------------ |
+| `componentType` | `number`        | ✓   | Type code (1=Entity, 2=Attribute, 29=Workflow, 90=PluginAssembly…) |
+| `objectId`      | `string (UUID)` | ✓   | Component GUID                                                     |
 
 > "Check dependencies blocking deletion of workflow w1x2y3z4"
 
@@ -482,13 +486,13 @@ Returns solution components that would block deletion of a component. Use before
 
 Executes up to 1000 operations in a single `$batch` request. Set `useChangeset=true` to wrap mutations atomically (all-or-nothing rollback).
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `requests` | `array` | ✓ | 1–1000 operation objects |
-| `requests[].method` | `"GET"\|"POST"\|"PATCH"\|"DELETE"` | ✓ | HTTP method |
-| `requests[].url` | `string` | ✓ | Relative URL, e.g. `"accounts(guid)"` |
-| `requests[].body` | `object` | — | Body for POST/PATCH |
-| `useChangeset` | `boolean` | — | Atomic changeset (default `false`) |
+| Parameter           | Type                               | Req | Notes                                 |
+| ------------------- | ---------------------------------- | --- | ------------------------------------- |
+| `requests`          | `array`                            | ✓   | 1–1000 operation objects              |
+| `requests[].method` | `"GET"\|"POST"\|"PATCH"\|"DELETE"` | ✓   | HTTP method                           |
+| `requests[].url`    | `string`                           | ✓   | Relative URL, e.g. `"accounts(guid)"` |
+| `requests[].body`   | `object`                           | —   | Body for POST/PATCH                   |
+| `useChangeset`      | `boolean`                          | —   | Atomic changeset (default `false`)    |
 
 > "Create 3 contacts in a single atomic batch"
 
@@ -504,11 +508,11 @@ Executes up to 1000 operations in a single `$batch` request. Set `useChangeset=t
 
 Delta-query for incremental sync. Pass `deltaToken: null` for initial snapshot; use returned `nextDeltaToken` for subsequent calls. Requires change tracking enabled on the table.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entitySetName` | `string` | ✓ | OData entity set name |
-| `deltaToken` | `string\|null` | ✓ | `null` for initial sync |
-| `select` | `string[]` | — | Columns to return |
+| Parameter       | Type           | Req | Notes                   |
+| --------------- | -------------- | --- | ----------------------- |
+| `entitySetName` | `string`       | ✓   | OData entity set name   |
+| `deltaToken`    | `string\|null` | ✓   | `null` for initial sync |
+| `select`        | `string[]`     | —   | Columns to return       |
 
 > "Get all changes to accounts since my last sync (token: abc123)"
 
@@ -524,16 +528,21 @@ Delta-query for incremental sync. Pass `deltaToken: null` for initial snapshot; 
 
 Lists solutions in the environment. By default returns only **unmanaged** solutions.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `includeManaged` | `boolean` | — | Include managed solutions (default `false`) |
-| `nameFilter` | `string` | — | Contains-match on unique name |
-| `top` | `number` | — | Default `50`, max `200` |
+| Parameter        | Type      | Req | Notes                                       |
+| ---------------- | --------- | --- | ------------------------------------------- |
+| `includeManaged` | `boolean` | —   | Include managed solutions (default `false`) |
+| `nameFilter`     | `string`  | —   | Contains-match on unique name               |
+| `top`            | `number`  | —   | Default `50`, max `200`                     |
 
 > "List all unmanaged solutions in my environment"
 
 ```json
-{ "solutions": [{ "uniqueName": "MySolution", "version": "1.0.0.0", "isManaged": false }], "count": 1 }
+{
+  "solutions": [
+    { "uniqueName": "MySolution", "version": "1.0.0.0", "isManaged": false }
+  ],
+  "count": 1
+}
 ```
 
 ---
@@ -542,11 +551,11 @@ Lists solutions in the environment. By default returns only **unmanaged** soluti
 
 Lists all components in a named solution. Use the **unique** solution name, not the display name.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `solutionName` | `string` | ✓ | Unique solution name |
-| `componentType` | `number` | — | Type code filter (1=Entity, 29=Workflow, 90=PluginAssembly, 97=WebResource…) |
-| `top` | `number` | — | Default `200`, max `5000` |
+| Parameter       | Type     | Req | Notes                                                                        |
+| --------------- | -------- | --- | ---------------------------------------------------------------------------- |
+| `solutionName`  | `string` | ✓   | Unique solution name                                                         |
+| `componentType` | `number` | —   | Type code filter (1=Entity, 29=Workflow, 90=PluginAssembly, 97=WebResource…) |
+| `top`           | `number` | —   | Default `200`, max `5000`                                                    |
 
 > "List all entities in the 'MySolution' solution"
 
@@ -556,11 +565,11 @@ Lists all components in a named solution. Use the **unique** solution name, not 
 
 Publishes unpublished customizations. Omit `components` to publish all (equivalent to "Publish All" in maker portal). **Can take 30–120 s in large environments.**
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `components.entities` | `string[]` | — | Entity logical names |
-| `components.webResources` | `string[]` | — | Web resource names |
-| `components.optionSets` | `string[]` | — | Global option set names |
+| Parameter                 | Type       | Req | Notes                   |
+| ------------------------- | ---------- | --- | ----------------------- |
+| `components.entities`     | `string[]` | —   | Entity logical names    |
+| `components.webResources` | `string[]` | —   | Web resource names      |
+| `components.optionSets`   | `string[]` | —   | Global option set names |
 
 > "Publish all pending customizations"
 
@@ -572,16 +581,20 @@ Publishes unpublished customizations. Omit `components` to publish all (equivale
 
 Executes any other tool on behalf of a different Dataverse user by injecting `MSCRMCallerId`. Applies only to the single wrapped call; cleaned up in `finally`. Requires `prvActOnBehalfOfAnotherUser`.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `callerId` | `string (UUID)` | ✓ | Azure AD Object ID of the user to impersonate |
-| `toolName` | `string` | ✓ | MCP tool name (e.g. `"dataverse_create"`) |
-| `toolArgs` | `object` | ✓ | Arguments for the wrapped tool |
+| Parameter  | Type            | Req | Notes                                         |
+| ---------- | --------------- | --- | --------------------------------------------- |
+| `callerId` | `string (UUID)` | ✓   | Azure AD Object ID of the user to impersonate |
+| `toolName` | `string`        | ✓   | MCP tool name (e.g. `"dataverse_create"`)     |
+| `toolArgs` | `object`        | ✓   | Arguments for the wrapped tool                |
 
 > "Create a contact as user john@contoso.com (ID: u1v2w3x4-...)"
 
 ```json
-{ "impersonatedAs": "u1v2w3x4-...", "tool": "dataverse_create", "result": { "id": "..." } }
+{
+  "impersonatedAs": "u1v2w3x4-...",
+  "tool": "dataverse_create",
+  "result": { "id": "..." }
+}
 ```
 
 ---
@@ -592,15 +605,20 @@ Executes any other tool on behalf of a different Dataverse user by injecting `MS
 
 Lists all public SDK messages (custom APIs) registered in the environment.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `top` | `number` | — | Default `100`, max `500` |
-| `nameFilter` | `string` | — | Substring match on message name |
+| Parameter    | Type     | Req | Notes                           |
+| ------------ | -------- | --- | ------------------------------- |
+| `top`        | `number` | —   | Default `100`, max `500`        |
+| `nameFilter` | `string` | —   | Substring match on message name |
 
 > "List all custom actions registered in the environment"
 
 ```json
-{ "total": 5, "messages": [{ "name": "new_MyAction", "category": "", "asyncSupported": true }] }
+{
+  "total": 5,
+  "messages": [
+    { "name": "new_MyAction", "category": "", "asyncSupported": true }
+  ]
+}
 ```
 
 ---
@@ -609,11 +627,11 @@ Lists all public SDK messages (custom APIs) registered in the environment.
 
 Lists plugin step registrations (SdkMessageProcessingStep): assembly, message, entity, stage (pre/post), mode (sync/async), and enabled state.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `top` | `number` | — | Default `100`, max `500` |
-| `activeOnly` | `boolean` | — | Default `true` |
-| `entityLogicalName` | `string` | — | Filter by entity |
+| Parameter           | Type      | Req | Notes                    |
+| ------------------- | --------- | --- | ------------------------ |
+| `top`               | `number`  | —   | Default `100`, max `500` |
+| `activeOnly`        | `boolean` | —   | Default `true`           |
+| `entityLogicalName` | `string`  | —   | Filter by entity         |
 
 > "Show me all active plugin steps for the account entity"
 
@@ -623,15 +641,20 @@ Lists plugin step registrations (SdkMessageProcessingStep): assembly, message, e
 
 Activates or deactivates a classic Dataverse workflow (statecode/statuscode update).
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `workflowId` | `string (UUID)` | ✓ | Workflow GUID |
-| `activate` | `boolean` | ✓ | `true` = Activated, `false` = Draft |
+| Parameter    | Type            | Req | Notes                               |
+| ------------ | --------------- | --- | ----------------------------------- |
+| `workflowId` | `string (UUID)` | ✓   | Workflow GUID                       |
+| `activate`   | `boolean`       | ✓   | `true` = Activated, `false` = Draft |
 
 > "Activate workflow w1x2y3z4"
 
 ```json
-{ "workflowId": "...", "newState": "Activated", "statecode": 1, "statuscode": 2 }
+{
+  "workflowId": "...",
+  "newState": "Activated",
+  "statecode": 1,
+  "statuscode": 2
+}
 ```
 
 ---
@@ -642,14 +665,20 @@ Activates or deactivates a classic Dataverse workflow (statecode/statuscode upda
 
 Retrieves an environment variable's definition (type, default value) and current override value.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `schemaName` | `string` | ✓ | Schema name, e.g. `"new_MyConfig"` |
+| Parameter    | Type     | Req | Notes                              |
+| ------------ | -------- | --- | ---------------------------------- |
+| `schemaName` | `string` | ✓   | Schema name, e.g. `"new_MyConfig"` |
 
 > "What is the current value of environment variable new_ApiEndpoint?"
 
 ```json
-{ "schemaName": "new_ApiEndpoint", "typeName": "String", "defaultValue": "https://...", "currentValue": "https://override...", "effectiveValue": "https://override..." }
+{
+  "schemaName": "new_ApiEndpoint",
+  "typeName": "String",
+  "defaultValue": "https://...",
+  "currentValue": "https://override...",
+  "effectiveValue": "https://override..."
+}
 ```
 
 ---
@@ -658,10 +687,10 @@ Retrieves an environment variable's definition (type, default value) and current
 
 Sets or updates an environment variable's current value (creates or updates the value record).
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `schemaName` | `string` | ✓ | Schema name of the environment variable |
-| `value` | `string` | ✓ | New value to set |
+| Parameter    | Type     | Req | Notes                                   |
+| ------------ | -------- | --- | --------------------------------------- |
+| `schemaName` | `string` | ✓   | Schema name of the environment variable |
+| `value`      | `string` | ✓   | New value to set                        |
 
 > "Set environment variable new_FeatureFlag to 'true'"
 
@@ -673,13 +702,13 @@ Sets or updates an environment variable's current value (creates or updates the 
 
 Retrieves plugin execution trace logs: type name, triggering message, entity, duration, trace output, and exception details. Requires Plugin Trace Log enabled in Dataverse settings.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `top` | `number` | — | Default `50`, max `200` |
-| `pluginTypeFilter` | `string` | — | Substring match on type name |
-| `messageFilter` | `string` | — | e.g. `"Create"`, `"Update"` |
-| `entityFilter` | `string` | — | Entity logical name |
-| `exceptionsOnly` | `boolean` | — | Only traces with exceptions (default `false`) |
+| Parameter          | Type      | Req | Notes                                         |
+| ------------------ | --------- | --- | --------------------------------------------- |
+| `top`              | `number`  | —   | Default `50`, max `200`                       |
+| `pluginTypeFilter` | `string`  | —   | Substring match on type name                  |
+| `messageFilter`    | `string`  | —   | e.g. `"Create"`, `"Update"`                   |
+| `entityFilter`     | `string`  | —   | Entity logical name                           |
+| `exceptionsOnly`   | `boolean` | —   | Only traces with exceptions (default `false`) |
 
 > "Show me recent plugin failures on the account table"
 
@@ -689,11 +718,11 @@ Retrieves plugin execution trace logs: type name, triggering message, entity, du
 
 Retrieves AsyncOperation records for background/classic workflow executions. Not for modern cloud flows (use Power Automate portal for those).
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `top` | `number` | — | Default `50`, max `200` |
-| `failedOnly` | `boolean` | — | Only failed executions (default `false`) |
-| `entityFilter` | `string` | — | Filter by regarding entity type |
+| Parameter      | Type      | Req | Notes                                    |
+| -------------- | --------- | --- | ---------------------------------------- |
+| `top`          | `number`  | —   | Default `50`, max `200`                  |
+| `failedOnly`   | `boolean` | —   | Only failed executions (default `false`) |
+| `entityFilter` | `string`  | —   | Filter by regarding entity type          |
 
 > "Show me failed classic workflows for the last 50 executions"
 
@@ -705,22 +734,25 @@ Retrieves AsyncOperation records for background/classic workflow executions. Not
 
 Full-text Relevance Search across all configured Dataverse tables. Returns ranked results with entity name, record ID, score, highlights, and matched fields. Requires **Relevance Search** enabled in Dataverse admin.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `query` | `string` | ✓ | Search string; Lucene syntax with `searchType=full` |
-| `entities` | `string[]` | — | Restrict to specific tables |
-| `top` | `number` | — | Default `10`, max `50` |
-| `searchMode` | `"any"\|"all"` | — | Match any/all terms (default `"any"`) |
-| `searchType` | `"simple"\|"full"` | — | Default `"simple"` |
-| `filter` | `string` | — | OData `$filter` on results |
-| `facets` | `string[]` | — | Fields for faceted counts |
-| `orderby` | `string[]` | — | Sort fields, e.g. `["@search.score desc"]` |
-| `select` | `string[]` | — | Fields to return per result |
+| Parameter    | Type               | Req | Notes                                               |
+| ------------ | ------------------ | --- | --------------------------------------------------- |
+| `query`      | `string`           | ✓   | Search string; Lucene syntax with `searchType=full` |
+| `entities`   | `string[]`         | —   | Restrict to specific tables                         |
+| `top`        | `number`           | —   | Default `10`, max `50`                              |
+| `searchMode` | `"any"\|"all"`     | —   | Match any/all terms (default `"any"`)               |
+| `searchType` | `"simple"\|"full"` | —   | Default `"simple"`                                  |
+| `filter`     | `string`           | —   | OData `$filter` on results                          |
+| `facets`     | `string[]`         | —   | Fields for faceted counts                           |
+| `orderby`    | `string[]`         | —   | Sort fields, e.g. `["@search.score desc"]`          |
+| `select`     | `string[]`         | —   | Fields to return per result                         |
 
 > "Find all records mentioning 'Contoso' across accounts and contacts"
 
 ```json
-{ "totalRecordCount": 12, "results": [{ "entityName": "account", "objectId": "...", "score": 0.9 }] }
+{
+  "totalRecordCount": 12,
+  "results": [{ "entityName": "account", "objectId": "...", "score": 0.9 }]
+}
 ```
 
 ---
@@ -731,14 +763,14 @@ Full-text Relevance Search across all configured Dataverse tables. Returns ranke
 
 Retrieves audit log entries with operation type, user info, and parsed change data. At least one filter is recommended. Requires auditing enabled on the environment and table.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `recordId` | `string (UUID)` | — | Specific record GUID |
-| `entityLogicalName` | `string` | — | Filter by entity type |
-| `userId` | `string (UUID)` | — | Filter by user |
-| `fromDate` | `string` | — | ISO 8601 date (entries on/after) |
-| `top` | `number` | — | Default `50`, max `500` |
-| `operations` | `string[]` | — | `"Create"`, `"Update"`, `"Delete"`, `"Activate"`, `"Deactivate"`, `"Share"`, `"Assign"`, `"Access"` |
+| Parameter           | Type            | Req | Notes                                                                                               |
+| ------------------- | --------------- | --- | --------------------------------------------------------------------------------------------------- |
+| `recordId`          | `string (UUID)` | —   | Specific record GUID                                                                                |
+| `entityLogicalName` | `string`        | —   | Filter by entity type                                                                               |
+| `userId`            | `string (UUID)` | —   | Filter by user                                                                                      |
+| `fromDate`          | `string`        | —   | ISO 8601 date (entries on/after)                                                                    |
+| `top`               | `number`        | —   | Default `50`, max `500`                                                                             |
+| `operations`        | `string[]`      | —   | `"Create"`, `"Update"`, `"Delete"`, `"Activate"`, `"Deactivate"`, `"Share"`, `"Assign"`, `"Access"` |
 
 > "Show me all updates to account a1b2c3d4 in the last week"
 
@@ -750,16 +782,20 @@ Retrieves audit log entries with operation type, user info, and parsed change da
 
 Checks prospective record fields against existing records using Dataverse built-in duplicate detection rules.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entityLogicalName` | `string` | ✓ | Table to check, e.g. `"account"` |
-| `record` | `object` | ✓ | Field values of the prospective record |
-| `top` | `number` | — | Default `5`, max `20` |
+| Parameter           | Type     | Req | Notes                                  |
+| ------------------- | -------- | --- | -------------------------------------- |
+| `entityLogicalName` | `string` | ✓   | Table to check, e.g. `"account"`       |
+| `record`            | `object` | ✓   | Field values of the prospective record |
+| `top`               | `number` | —   | Default `5`, max `20`                  |
 
 > "Check if there's already an account named 'Contoso Ltd'"
 
 ```json
-{ "hasDuplicates": true, "duplicateCount": 1, "duplicates": [{ "accountid": "...", "name": "Contoso Ltd" }] }
+{
+  "hasDuplicates": true,
+  "duplicateCount": 1,
+  "duplicates": [{ "accountid": "...", "name": "Contoso Ltd" }]
+}
 ```
 
 ---
@@ -770,12 +806,12 @@ Checks prospective record fields against existing records using Dataverse built-
 
 Retrieves notes and file attachments linked to a record. Set `includeContent=true` to fetch base64 file bodies (can be very large).
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `recordId` | `string (UUID)` | ✓ | Parent record GUID |
-| `includeContent` | `boolean` | — | Include `documentbody` (default `false`) |
-| `top` | `number` | — | Default `20`, max `100` |
-| `mimeTypeFilter` | `string` | — | e.g. `"application/pdf"` |
+| Parameter        | Type            | Req | Notes                                    |
+| ---------------- | --------------- | --- | ---------------------------------------- |
+| `recordId`       | `string (UUID)` | ✓   | Parent record GUID                       |
+| `includeContent` | `boolean`       | —   | Include `documentbody` (default `false`) |
+| `top`            | `number`        | —   | Default `20`, max `100`                  |
+| `mimeTypeFilter` | `string`        | —   | e.g. `"application/pdf"`                 |
 
 > "Get all notes attached to account a1b2c3d4"
 
@@ -785,15 +821,15 @@ Retrieves notes and file attachments linked to a record. Set `includeContent=tru
 
 Creates a note or file attachment linked to a Dataverse record. Provide `notetext` for a text note, `documentbody` (base64) for a file, or both.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `recordId` | `string (UUID)` | ✓ | Parent record GUID |
-| `entitySetName` | `string` | ✓ | Parent entity set, e.g. `"accounts"` |
-| `notetext` | `string` | — | Text content (required if no `documentbody`) |
-| `subject` | `string` | — | Note subject/title |
-| `filename` | `string` | — | File name (for attachments) |
-| `mimetype` | `string` | — | MIME type, e.g. `"application/pdf"` |
-| `documentbody` | `string` | — | Base64-encoded file content (required if no `notetext`) |
+| Parameter       | Type            | Req | Notes                                                   |
+| --------------- | --------------- | --- | ------------------------------------------------------- |
+| `recordId`      | `string (UUID)` | ✓   | Parent record GUID                                      |
+| `entitySetName` | `string`        | ✓   | Parent entity set, e.g. `"accounts"`                    |
+| `notetext`      | `string`        | —   | Text content (required if no `documentbody`)            |
+| `subject`       | `string`        | —   | Note subject/title                                      |
+| `filename`      | `string`        | —   | File name (for attachments)                             |
+| `mimetype`      | `string`        | —   | MIME type, e.g. `"application/pdf"`                     |
+| `documentbody`  | `string`        | —   | Base64-encoded file content (required if no `notetext`) |
 
 > "Attach a PDF report to account a1b2c3d4"
 
@@ -805,13 +841,13 @@ Creates a note or file attachment linked to a Dataverse record. Provide `notetex
 
 Searches Dataverse system users by name or email. At least one of `search` or `businessUnitId` is required. Excludes application users and disabled users by default.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `search` | `string` | ✓* | Full-name or email contains-search (*one of these required*) |
-| `businessUnitId` | `string (UUID)` | ✓* | Restrict to a business unit |
-| `includeDisabled` | `boolean` | — | Default `false` |
-| `includeApplicationUsers` | `boolean` | — | Default `false` |
-| `top` | `number` | — | Default `20`, max `100` |
+| Parameter                 | Type            | Req | Notes                                                        |
+| ------------------------- | --------------- | --- | ------------------------------------------------------------ |
+| `search`                  | `string`        | ✓\* | Full-name or email contains-search (_one of these required_) |
+| `businessUnitId`          | `string (UUID)` | ✓\* | Restrict to a business unit                                  |
+| `includeDisabled`         | `boolean`       | —   | Default `false`                                              |
+| `includeApplicationUsers` | `boolean`       | —   | Default `false`                                              |
+| `top`                     | `number`        | —   | Default `20`, max `100`                                      |
 
 > "Find all users named 'John' in my environment"
 
@@ -821,14 +857,19 @@ Searches Dataverse system users by name or email. At least one of `search` or `b
 
 Returns all security roles assigned to a system user.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `userId` | `string (UUID)` | ✓ | System user GUID |
+| Parameter | Type            | Req | Notes            |
+| --------- | --------------- | --- | ---------------- |
+| `userId`  | `string (UUID)` | ✓   | System user GUID |
 
 > "What security roles does user u1v2w3x4 have?"
 
 ```json
-{ "userId": "...", "fullname": "John Doe", "roles": [{ "name": "Sales Manager", "roleId": "..." }], "roleCount": 1 }
+{
+  "userId": "...",
+  "fullname": "John Doe",
+  "roles": [{ "name": "Sales Manager", "roleId": "..." }],
+  "roleCount": 1
+}
 ```
 
 ---
@@ -839,16 +880,22 @@ Returns all security roles assigned to a system user.
 
 Lists saved (system) and optionally personal views for a Dataverse table, including view name, ID, default flag, query type, and description.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entityLogicalName` | `string` | ✓ | Table logical name, e.g. `"account"` |
-| `includePersonal` | `boolean` | — | Include personal views (default `false`) |
-| `top` | `number` | — | Max per category, default `20`, max `100` |
+| Parameter           | Type      | Req | Notes                                     |
+| ------------------- | --------- | --- | ----------------------------------------- |
+| `entityLogicalName` | `string`  | ✓   | Table logical name, e.g. `"account"`      |
+| `includePersonal`   | `boolean` | —   | Include personal views (default `false`)  |
+| `top`               | `number`  | —   | Max per category, default `20`, max `100` |
 
 > "List all system views for the account table"
 
 ```json
-{ "entityLogicalName": "account", "systemViews": [{ "id": "...", "name": "Active Accounts", "isDefault": true }], "systemViewCount": 5 }
+{
+  "entityLogicalName": "account",
+  "systemViews": [
+    { "id": "...", "name": "Active Accounts", "isDefault": true }
+  ],
+  "systemViewCount": 5
+}
 ```
 
 ---
@@ -859,18 +906,24 @@ Lists saved (system) and optionally personal views for a Dataverse table, includ
 
 Uploads a file to a Dataverse **file-type column** on a record. File content must be base64-encoded.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entitySetName` | `string` | ✓ | OData entity set name |
-| `recordId` | `string (UUID)` | ✓ | Record GUID |
-| `columnName` | `string` | ✓ | File column logical name (alphanumeric/underscore only) |
-| `fileContent` | `string` | ✓ | Base64-encoded file content |
-| `fileName` | `string` | ✓ | File name including extension, e.g. `"report.pdf"` |
+| Parameter       | Type            | Req | Notes                                                   |
+| --------------- | --------------- | --- | ------------------------------------------------------- |
+| `entitySetName` | `string`        | ✓   | OData entity set name                                   |
+| `recordId`      | `string (UUID)` | ✓   | Record GUID                                             |
+| `columnName`    | `string`        | ✓   | File column logical name (alphanumeric/underscore only) |
+| `fileContent`   | `string`        | ✓   | Base64-encoded file content                             |
+| `fileName`      | `string`        | ✓   | File name including extension, e.g. `"report.pdf"`      |
 
 > "Upload report.pdf to the attachment column on account a1b2c3d4"
 
 ```json
-{ "success": true, "recordId": "...", "columnName": "new_report", "fileName": "report.pdf", "sizeBytes": 204800 }
+{
+  "success": true,
+  "recordId": "...",
+  "columnName": "new_report",
+  "fileName": "report.pdf",
+  "sizeBytes": 204800
+}
 ```
 
 ---
@@ -879,16 +932,20 @@ Uploads a file to a Dataverse **file-type column** on a record. File content mus
 
 Downloads a file from a Dataverse file-type column. Returns the file as a base64-encoded string with its name and size.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `entitySetName` | `string` | ✓ | OData entity set name |
-| `recordId` | `string (UUID)` | ✓ | Record GUID |
-| `columnName` | `string` | ✓ | File column logical name |
+| Parameter       | Type            | Req | Notes                    |
+| --------------- | --------------- | --- | ------------------------ |
+| `entitySetName` | `string`        | ✓   | OData entity set name    |
+| `recordId`      | `string (UUID)` | ✓   | Record GUID              |
+| `columnName`    | `string`        | ✓   | File column logical name |
 
 > "Download the attachment from account a1b2c3d4 column new_report"
 
 ```json
-{ "fileName": "report.pdf", "sizeBytes": 204800, "contentBase64": "JVBERi0x..." }
+{
+  "fileName": "report.pdf",
+  "sizeBytes": 204800,
+  "contentBase64": "JVBERi0x..."
+}
 ```
 
 ---
@@ -899,10 +956,10 @@ Downloads a file from a Dataverse file-type column. Returns the file as a base64
 
 Lists business units in the environment with name, ID, parent BU ID, disabled status, and creation date.
 
-| Parameter | Type | Req | Notes |
-|---|---|---|---|
-| `top` | `number` | — | Default `50`, max `200` |
-| `includeDisabled` | `boolean` | — | Include disabled BUs (default `false`) |
+| Parameter         | Type      | Req | Notes                                  |
+| ----------------- | --------- | --- | -------------------------------------- |
+| `top`             | `number`  | —   | Default `50`, max `200`                |
+| `includeDisabled` | `boolean` | —   | Include disabled BUs (default `false`) |
 
 > "List all active business units in my Dataverse environment"
 
@@ -914,11 +971,11 @@ All tool handlers return `{ isError: true, content: [{ type: "text", text: "Erro
 
 ### Retry Strategy
 
-| Status | Behavior | Attempts |
-|---|---|---|
-| **401** | Invalidate token, retry once with fresh token | 1 |
-| **429 / 503 / 504** | Exponential backoff (`2^attempt × 1000ms`) | `maxRetries` (default 3) |
-| **Other** | Throw immediately | 0 |
+| Status              | Behavior                                      | Attempts                 |
+| ------------------- | --------------------------------------------- | ------------------------ |
+| **401**             | Invalidate token, retry once with fresh token | 1                        |
+| **429 / 503 / 504** | Exponential backoff (`2^attempt × 1000ms`)    | `maxRetries` (default 3) |
+| **Other**           | Throw immediately                             | 0                        |
 
 Dataverse error bodies are formatted as `Dataverse error <code>: <message>`. Timeouts (`ECONNABORTED`) produce `Request timed out. Check your Dataverse environment URL.`
 
@@ -926,10 +983,10 @@ Dataverse error bodies are formatted as `Dataverse error <code>: <message>`. Tim
 
 ## Security
 
-| Mode | Flow | Use Case |
-|---|---|---|
-| **pac** | MSAL Public Client → device code + silent refresh | Local dev, interactive |
-| **msal** | MSAL Confidential Client → `client_credentials` | CI/CD, headless |
+| Mode     | Flow                                              | Use Case               |
+| -------- | ------------------------------------------------- | ---------------------- |
+| **pac**  | MSAL Public Client → device code + silent refresh | Local dev, interactive |
+| **msal** | MSAL Confidential Client → `client_credentials`   | CI/CD, headless        |
 
 - `clientSecret` is never logged or returned in tool responses.
 - OData path segments use `esc()` (single-quote doubling) to prevent OData injection.
@@ -943,50 +1000,50 @@ Dataverse error bodies are formatted as `Dataverse error <code>: <message>`. Tim
 
 ### General
 
-| Limitation | Details |
-|---|---|
-| **Transport** | stdio only. Server must be spawned as a child process by the MCP host. |
-| **Single environment** | One Dataverse environment per server instance. Restart to switch. |
-| **No streaming** | Responses are complete JSON. Very large result sets may exceed AI model context limits. |
-| **No real-time subscriptions** | Use `dataverse_change_detection` for polling-based incremental sync. |
+| Limitation                     | Details                                                                                 |
+| ------------------------------ | --------------------------------------------------------------------------------------- |
+| **Transport**                  | stdio only. Server must be spawned as a child process by the MCP host.                  |
+| **Single environment**         | One Dataverse environment per server instance. Restart to switch.                       |
+| **No streaming**               | Responses are complete JSON. Very large result sets may exceed AI model context limits. |
+| **No real-time subscriptions** | Use `dataverse_change_detection` for polling-based incremental sync.                    |
 
 ### Query
 
-| Limitation | Details |
-|---|---|
-| **`$top` max** | `dataverse_query` caps at 5000 per call. Use `dataverse_retrieve_multiple_with_paging` for more. |
-| **Paging max** | `dataverse_retrieve_multiple_with_paging` caps at 50,000 records total. |
+| Limitation              | Details                                                                                                            |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **`$top` max**          | `dataverse_query` caps at 5000 per call. Use `dataverse_retrieve_multiple_with_paging` for more.                   |
+| **Paging max**          | `dataverse_retrieve_multiple_with_paging` caps at 50,000 records total.                                            |
 | **FetchXML entity set** | Auto-extraction appends `"s"` to the logical name. Non-standard entity set names require explicit `entitySetName`. |
 
 ### CRUD
 
-| Limitation | Details |
-|---|---|
+| Limitation                              | Details                                                                                                            |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | **UUID required for get/update/delete** | Alternate-key retrieval via `dataverse_get` is not supported; use `dataverse_upsert` or `dataverse_query` instead. |
-| **No ETag conditional update** | `dataverse_update` sends `If-Match: *`. ETag-based optimistic concurrency is not exposed. |
+| **No ETag conditional update**          | `dataverse_update` sends `If-Match: *`. ETag-based optimistic concurrency is not exposed.                          |
 
 ### Authentication
 
-| Limitation | Details |
-|---|---|
+| Limitation              | Details                                                          |
+| ----------------------- | ---------------------------------------------------------------- |
 | **No certificate auth** | MSAL `clientSecret` only; certificate credentials not supported. |
-| **PAC token expiry** | If the refresh token expires, re-run `npm run auth:setup`. |
-| **MSAL multi-tenant** | Requires explicit `tenantId`; no `common` authority support. |
+| **PAC token expiry**    | If the refresh token expires, re-run `npm run auth:setup`.       |
+| **MSAL multi-tenant**   | Requires explicit `tenantId`; no `common` authority support.     |
 
 ### Dependencies & Solutions
 
-| Limitation | Details |
-|---|---|
+| Limitation                                  | Details                                                                                                                              |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | **Plugin/CustomAPI in `list_dependencies`** | Only Workflow/BusinessRule/Flow types fully supported. Plugin step queries require separate SDK message lookups not yet implemented. |
-| **`solutionName` in dependency results** | Always `null` — solution join not yet implemented. |
+| **`solutionName` in dependency results**    | Always `null` — solution join not yet implemented.                                                                                   |
 
 ### Batch
 
-| Limitation | Details |
-|---|---|
-| **Max operations** | 1,000 per batch (Zod-enforced). |
+| Limitation                        | Details                                                                                   |
+| --------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Max operations**                | 1,000 per batch (Zod-enforced).                                                           |
 | **No `$<Content-ID>` references** | Cross-referencing created entities within a changeset is not supported at the tool level. |
 
 ---
 
-*This document reflects the MCP Dataverse server codebase as of v0.2.0 — 48 tools across 21 categories.*
+_This document reflects the MCP Dataverse server codebase as of v0.2.0 — 50 tools across 22 categories._

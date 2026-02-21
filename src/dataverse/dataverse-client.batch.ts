@@ -1,6 +1,6 @@
-import { DataverseMetadataClient } from './dataverse-client.metadata.js';
-import type { BatchRequest } from './types.js';
-import { parseMultipartResponse } from './dataverse-client.utils.js';
+import { DataverseMetadataClient } from "./dataverse-client.metadata.js";
+import type { BatchRequest } from "./types.js";
+import { parseMultipartResponse } from "./dataverse-client.utils.js";
 
 /**
  * Extends DataverseMetadataClient with batch execution support.
@@ -9,14 +9,17 @@ import { parseMultipartResponse } from './dataverse-client.utils.js';
 export class DataverseBatchClient extends DataverseMetadataClient {
   // ─── Batch ───────────────────────────────────────────────────────────────
 
-  async batchExecute(requests: BatchRequest[], useChangeset = false): Promise<unknown[]> {
+  async batchExecute(
+    requests: BatchRequest[],
+    useChangeset = false,
+  ): Promise<unknown[]> {
     const batchId = `batch_${Date.now()}`;
-    let body = '';
+    let body = "";
 
     if (useChangeset) {
       const changesetId = `changeset_${Date.now() + 1}`;
-      const getOps = requests.filter(r => r.method === 'GET');
-      const mutatingOps = requests.filter(r => r.method !== 'GET');
+      const getOps = requests.filter((r) => r.method === "GET");
+      const mutatingOps = requests.filter((r) => r.method !== "GET");
 
       for (const req of getOps) {
         body += `--${batchId}\n`;
@@ -38,7 +41,7 @@ export class DataverseBatchClient extends DataverseMetadataClient {
           body += `${op.method} ${this.http.baseURL}${op.url} HTTP/1.1\n`;
           body += `Content-Type: application/json\n\n`;
           if (op.body) body += JSON.stringify(op.body);
-          body += '\n\n';
+          body += "\n\n";
         }
         body += `--${changesetId}--\n`;
       }
@@ -50,32 +53,39 @@ export class DataverseBatchClient extends DataverseMetadataClient {
         body += `${req.method} ${this.http.baseURL}${req.url} HTTP/1.1\n`;
         body += `Content-Type: application/json\n\n`;
         if (req.body) body += JSON.stringify(req.body);
-        body += '\n';
+        body += "\n";
       });
     }
 
     body += `--${batchId}--`;
 
     const response = await this.requestWithRetry(() =>
-      this.http.post('$batch', body, {
-        headers: { 'Content-Type': `multipart/mixed;boundary=${batchId}` },
-        responseType: 'text',
-      })
+      this.http.post("$batch", body, {
+        headers: { "Content-Type": `multipart/mixed;boundary=${batchId}` },
+        responseType: "text",
+      }),
     );
 
     try {
-      const contentType = (response.headers['content-type'] as string | undefined) ?? '';
-      const boundaryMatch = contentType.match(/boundary=(?:"([^"]+)"|([^;"\s]+))/);
+      const contentType =
+        (response.headers["content-type"] as string | undefined) ?? "";
+      const boundaryMatch = contentType.match(
+        /boundary=(?:"([^"]+)"|([^;"\s]+))/,
+      );
       const responseBoundary = boundaryMatch?.[1] ?? boundaryMatch?.[2];
 
       if (!responseBoundary) {
-        process.stderr.write('[batchExecute] No multipart boundary in response Content-Type; returning raw data.\n');
+        process.stderr.write(
+          "[batchExecute] No multipart boundary in response Content-Type; returning raw data.\n",
+        );
         return [response.data];
       }
 
       return parseMultipartResponse(response.data as string, responseBoundary);
     } catch (err) {
-      process.stderr.write(`[batchExecute] Failed to parse multipart response; returning raw data. ${String(err)}\n`);
+      process.stderr.write(
+        `[batchExecute] Failed to parse multipart response; returning raw data. ${String(err)}\n`,
+      );
       return [response.data];
     }
   }

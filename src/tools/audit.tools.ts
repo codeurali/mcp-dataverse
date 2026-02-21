@@ -1,56 +1,63 @@
-import { z } from 'zod';
-import type { DataverseAdvancedClient } from '../dataverse/dataverse-client-advanced.js';
-import { esc } from '../dataverse/dataverse-client.utils.js';
+import { z } from "zod";
+import type { DataverseAdvancedClient } from "../dataverse/dataverse-client-advanced.js";
+import { esc } from "../dataverse/dataverse-client.utils.js";
 
 const AUDIT_ACTION_NAMES: Record<number, string> = {
-  1: 'Create',
-  2: 'Update',
-  3: 'Delete',
-  4: 'Activate',
-  5: 'Deactivate',
-  11: 'Share',
-  12: 'Unshare',
-  13: 'Assign',
-  104: 'Access',
+  1: "Create",
+  2: "Update",
+  3: "Delete",
+  4: "Activate",
+  5: "Deactivate",
+  11: "Share",
+  12: "Unshare",
+  13: "Assign",
+  104: "Access",
 };
 
 const AUDIT_ACTION_CODES: Record<string, number> = Object.fromEntries(
-  Object.entries(AUDIT_ACTION_NAMES).map(([code, name]) => [name, Number(code)])
+  Object.entries(AUDIT_ACTION_NAMES).map(([code, name]) => [
+    name,
+    Number(code),
+  ]),
 );
 
 export const auditTools = [
   {
-    name: 'dataverse_get_audit_log',
+    name: "dataverse_get_audit_log",
     description:
-      'Retrieves audit log entries from Dataverse. Returns operation details, user info, and parsed change data for each entry. ' +
-      'At least one filter (recordId, entityLogicalName, userId, fromDate, or operations) is recommended to avoid large result sets. ' +
-      'Audit must be enabled on the environment and table — returns a clear error if auditing is disabled (HTTP 403).',
+      "Retrieves audit log entries from Dataverse. Returns operation details, user info, and parsed change data for each entry. " +
+      "At least one filter (recordId, entityLogicalName, userId, fromDate, or operations) is recommended to avoid large result sets. " +
+      "Audit must be enabled on the environment and table — returns a clear error if auditing is disabled (HTTP 403).",
     inputSchema: {
-      type: 'object' as const,
+      type: "object" as const,
       properties: {
         recordId: {
-          type: 'string',
-          description: 'GUID of a specific record to retrieve audit entries for',
+          type: "string",
+          description:
+            "GUID of a specific record to retrieve audit entries for",
         },
         entityLogicalName: {
-          type: 'string',
-          description: 'Logical name of the entity to filter audit entries (e.g., "account", "contact")',
+          type: "string",
+          description:
+            'Logical name of the entity to filter audit entries (e.g., "account", "contact")',
         },
         userId: {
-          type: 'string',
-          description: 'GUID of the user who made the changes',
+          type: "string",
+          description: "GUID of the user who made the changes",
         },
         fromDate: {
-          type: 'string',
-          description: 'ISO 8601 date string — only return audit entries created on or after this date',
+          type: "string",
+          description:
+            "ISO 8601 date string — only return audit entries created on or after this date",
         },
         top: {
-          type: 'number',
-          description: 'Maximum number of audit entries to return (default: 50, max: 500)',
+          type: "number",
+          description:
+            "Maximum number of audit entries to return (default: 50, max: 500)",
         },
         operations: {
-          type: 'array',
-          items: { type: 'string' },
+          type: "array",
+          items: { type: "string" },
           description:
             'Filter by operation names: "Create", "Update", "Delete", "Activate", "Deactivate", "Share", "Unshare", "Assign", "Access"',
         },
@@ -96,7 +103,9 @@ interface AuditEntry {
   changes: Record<string, unknown> | string;
 }
 
-function parseChangeData(raw: string | undefined | null): Record<string, unknown> | string {
+function parseChangeData(
+  raw: string | undefined | null,
+): Record<string, unknown> | string {
   if (!raw) return {};
   try {
     return JSON.parse(raw) as Record<string, unknown>;
@@ -109,13 +118,15 @@ function mapAuditRecord(record: AuditRecord): AuditEntry {
   return {
     auditId: record.auditid,
     operation: record.operation,
-    operationName: AUDIT_ACTION_NAMES[record.operation] ?? `Unknown(${record.operation})`,
+    operationName:
+      AUDIT_ACTION_NAMES[record.operation] ?? `Unknown(${record.operation})`,
     action: record.action,
-    actionName: AUDIT_ACTION_NAMES[record.action] ?? `Unknown(${record.action})`,
+    actionName:
+      AUDIT_ACTION_NAMES[record.action] ?? `Unknown(${record.action})`,
     createdOn: record.createdon,
     userId: record._userid_value,
-    userFullName: record.userid?.fullname ?? '',
-    userDomainName: record.userid?.domainname ?? '',
+    userFullName: record.userid?.fullname ?? "",
+    userDomainName: record.userid?.domainname ?? "",
     objectId: record._objectid_value,
     objectTypeCode: record.objecttypecode,
     changes: parseChangeData(record.changedata),
@@ -125,10 +136,10 @@ function mapAuditRecord(record: AuditRecord): AuditEntry {
 export async function handleAuditTool(
   name: string,
   args: unknown,
-  client: DataverseAdvancedClient
-): Promise<{ content: Array<{ type: 'text'; text: string }> }> {
+  client: DataverseAdvancedClient,
+): Promise<{ content: Array<{ type: "text"; text: string }> }> {
   switch (name) {
-    case 'dataverse_get_audit_log': {
+    case "dataverse_get_audit_log": {
       const params = AuditInput.parse(args);
       const filters: string[] = [];
 
@@ -150,27 +161,27 @@ export async function handleAuditTool(
           .map((op) => AUDIT_ACTION_CODES[op])
           .filter((code): code is number => code !== undefined);
         if (codes.length > 0) {
-          const orClauses = codes.map((c) => `action eq ${c}`).join(' or ');
+          const orClauses = codes.map((c) => `action eq ${c}`).join(" or ");
           filters.push(`(${orClauses})`);
         }
       }
 
       try {
-        const result = await client.query<AuditRecord>('audits', {
+        const result = await client.query<AuditRecord>("audits", {
           select: [
-            'auditid',
-            'action',
-            'operation',
-            'createdon',
-            '_objectid_value',
-            'objecttypecode',
-            'changedata',
-            '_userid_value',
+            "auditid",
+            "action",
+            "operation",
+            "createdon",
+            "_objectid_value",
+            "objecttypecode",
+            "changedata",
+            "_userid_value",
           ],
-          ...(filters.length > 0 ? { filter: filters.join(' and ') } : {}),
-          orderby: 'createdon desc',
+          ...(filters.length > 0 ? { filter: filters.join(" and ") } : {}),
+          orderby: "createdon desc",
           top: params.top,
-          expand: 'userid($select=fullname,domainname)',
+          expand: "userid($select=fullname,domainname)",
         });
 
         const entries = result.value.map(mapAuditRecord);
@@ -178,22 +189,22 @@ export async function handleAuditTool(
         return {
           content: [
             {
-              type: 'text',
+              type: "text",
               text: JSON.stringify({ entries, count: entries.length }, null, 2),
             },
           ],
         };
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
-        if (message.includes('403') || message.includes('Forbidden')) {
+        if (message.includes("403") || message.includes("Forbidden")) {
           return {
             content: [
               {
-                type: 'text',
+                type: "text",
                 text: JSON.stringify({
                   isError: true,
                   error:
-                    'Audit log access denied (HTTP 403). Ensure auditing is enabled on the Dataverse environment and the target table, and that the authenticated user has sufficient privileges.',
+                    "Audit log access denied (HTTP 403). Ensure auditing is enabled on the Dataverse environment and the target table, and that the authenticated user has sufficient privileges.",
                 }),
               },
             ],

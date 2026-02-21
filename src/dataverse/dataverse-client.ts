@@ -1,27 +1,27 @@
-import { HttpClient, HttpError } from './http-client.js';
-import type { AuthProvider } from '../auth/auth-provider.interface.js';
+import { HttpClient, HttpError } from "./http-client.js";
+import type { AuthProvider } from "../auth/auth-provider.interface.js";
 import type {
   ODataResponse,
   EntityMetadata,
   RelationshipMetadata,
   WhoAmIResponse,
-} from './types.js';
-import { esc } from './dataverse-client.utils.js';
+} from "./types.js";
+import { esc } from "./dataverse-client.utils.js";
 
-const API_VERSION = '9.2';
+const API_VERSION = "9.2";
 
 /**
  * Maps entity set names with irregular pluralization to their primary key field names.
  * Used as a fallback when OData-EntityId and @odata.id are absent from the response.
  */
 const ENTITY_SET_TO_PK: Record<string, string> = {
-  opportunities: 'opportunityid',
-  territories: 'territoryid',
-  categories: 'categoryid',
-  activityparties: 'activitypartyid',
-  activitymimeattachments: 'activitymimeattachmentid',
-  queues: 'queueid',
-  queueitems: 'queueitemid',
+  opportunities: "opportunityid",
+  territories: "territoryid",
+  categories: "categoryid",
+  activityparties: "activitypartyid",
+  activitymimeattachments: "activitymimeattachmentid",
+  queues: "queueid",
+  queueitems: "queueitemid",
 };
 
 export class DataverseClient {
@@ -37,16 +37,19 @@ export class DataverseClient {
       baseURL: `${authProvider.environmentUrl}/api/data/v${API_VERSION}/`,
       timeout: timeoutMs,
       headers: {
-        'OData-MaxVersion': '4.0',
-        'OData-Version': '4.0',
-        'Accept': 'application/json',
-        'Content-Type': 'application/json; charset=utf-8',
+        "OData-MaxVersion": "4.0",
+        "OData-Version": "4.0",
+        Accept: "application/json",
+        "Content-Type": "application/json; charset=utf-8",
       },
       tokenProvider: () => authProvider.getToken(),
     });
   }
 
-  protected async requestWithRetry<T>(fn: () => Promise<T>, attempt = 0): Promise<T> {
+  protected async requestWithRetry<T>(
+    fn: () => Promise<T>,
+    attempt = 0,
+  ): Promise<T> {
     try {
       return await fn();
     } catch (error) {
@@ -60,9 +63,11 @@ export class DataverseClient {
         // On transient errors (429, 503): retry with Retry-After-aware backoff
         const isTransient = [429, 503, 504].includes(error.status);
         if (isTransient && attempt < this.maxRetries) {
-          const retryAfterSec = error.responseHeaders['retry-after'];
-          const delay = retryAfterSec ? parseInt(retryAfterSec, 10) * 1000 : Math.pow(2, attempt) * 1000;
-          await new Promise(resolve => setTimeout(resolve, delay));
+          const retryAfterSec = error.responseHeaders["retry-after"];
+          const delay = retryAfterSec
+            ? parseInt(retryAfterSec, 10) * 1000
+            : Math.pow(2, attempt) * 1000;
+          await new Promise((resolve) => setTimeout(resolve, delay));
           return this.requestWithRetry(fn, attempt + 1);
         }
       }
@@ -73,12 +78,20 @@ export class DataverseClient {
 
   private formatError(error: unknown): Error {
     if (error instanceof HttpError) {
-      const dvError = (error.data as { error?: { message?: string; code?: string } } | undefined)?.error;
+      const dvError = (
+        error.data as
+          | { error?: { message?: string; code?: string } }
+          | undefined
+      )?.error;
       if (dvError) {
-        return new Error(`Dataverse error ${dvError.code ?? ''}: ${dvError.message ?? 'Unknown error'}`);
+        return new Error(
+          `Dataverse error ${dvError.code ?? ""}: ${dvError.message ?? "Unknown error"}`,
+        );
       }
-      if (error.code === 'ECONNABORTED') {
-        return new Error('Request timed out. Check your Dataverse environment URL.');
+      if (error.code === "ECONNABORTED") {
+        return new Error(
+          "Request timed out. Check your Dataverse environment URL.",
+        );
       }
       return error;
     }
@@ -96,40 +109,52 @@ export class DataverseClient {
     EnvironmentUrl: string;
   }> {
     return this.requestWithRetry(async () => {
-      const whoAmIResp = await this.http.get<WhoAmIResponse>('WhoAmI');
+      const whoAmIResp = await this.http.get<WhoAmIResponse>("WhoAmI");
       const { UserId, BusinessUnitId, OrganizationId } = whoAmIResp.data;
 
-      let OrganizationName = '';
+      let OrganizationName = "";
       try {
         const orgResp = await this.http.get<{ name: string }>(
-          `organizations(${OrganizationId})?$select=name`
+          `organizations(${OrganizationId})?$select=name`,
         );
-        OrganizationName = orgResp.data.name ?? '';
+        OrganizationName = orgResp.data.name ?? "";
       } catch {
-        OrganizationName = '';
+        OrganizationName = "";
       }
 
       const EnvironmentUrl = this.authProvider.environmentUrl;
-      return { UserId, BusinessUnitId, OrganizationId, OrganizationName, EnvironmentUrl };
+      return {
+        UserId,
+        BusinessUnitId,
+        OrganizationId,
+        OrganizationName,
+        EnvironmentUrl,
+      };
     });
   }
 
   // ─── Metadata ────────────────────────────────────────────────────────────
 
   async listTables(includeCustomOnly = false): Promise<EntityMetadata[]> {
-    const filter = includeCustomOnly ? '$filter=IsCustomEntity eq true' : '';
-    const select = '$select=LogicalName,SchemaName,DisplayName,EntitySetName,PrimaryIdAttribute,PrimaryNameAttribute,IsCustomEntity';
-    const query = [select, filter].filter(Boolean).join('&');
+    const filter = includeCustomOnly ? "$filter=IsCustomEntity eq true" : "";
+    const select =
+      "$select=LogicalName,SchemaName,DisplayName,EntitySetName,PrimaryIdAttribute,PrimaryNameAttribute,IsCustomEntity";
+    const query = [select, filter].filter(Boolean).join("&");
     return this.requestWithRetry(() =>
-      this.http.get<ODataResponse<EntityMetadata>>(`EntityDefinitions?${query}`).then(r => r.data.value)
+      this.http
+        .get<ODataResponse<EntityMetadata>>(`EntityDefinitions?${query}`)
+        .then((r) => r.data.value),
     );
   }
 
-  async getTableMetadata(logicalName: string, includeAttributes = true): Promise<EntityMetadata> {
-    const expand = includeAttributes ? '$expand=Attributes' : '';
-    const url = `EntityDefinitions(LogicalName='${esc(logicalName)}')${expand ? '?' + expand : ''}`;
+  async getTableMetadata(
+    logicalName: string,
+    includeAttributes = true,
+  ): Promise<EntityMetadata> {
+    const expand = includeAttributes ? "$expand=Attributes" : "";
+    const url = `EntityDefinitions(LogicalName='${esc(logicalName)}')${expand ? "?" + expand : ""}`;
     return this.requestWithRetry(() =>
-      this.http.get<EntityMetadata>(url).then(r => r.data)
+      this.http.get<EntityMetadata>(url).then((r) => r.data),
     );
   }
 
@@ -138,24 +163,24 @@ export class DataverseClient {
     const [oneToMany, manyToOne, manyToMany] = await Promise.all([
       this.requestWithRetry(() =>
         this.http
-          .get<ODataResponse<RelationshipMetadata>>(
-            `EntityDefinitions(LogicalName='${escaped}')/OneToManyRelationships`
-          )
-          .then(r => r.data.value)
+          .get<
+            ODataResponse<RelationshipMetadata>
+          >(`EntityDefinitions(LogicalName='${escaped}')/OneToManyRelationships`)
+          .then((r) => r.data.value),
       ),
       this.requestWithRetry(() =>
         this.http
-          .get<ODataResponse<RelationshipMetadata>>(
-            `EntityDefinitions(LogicalName='${escaped}')/ManyToOneRelationships`
-          )
-          .then(r => r.data.value)
+          .get<
+            ODataResponse<RelationshipMetadata>
+          >(`EntityDefinitions(LogicalName='${escaped}')/ManyToOneRelationships`)
+          .then((r) => r.data.value),
       ),
       this.requestWithRetry(() =>
         this.http
-          .get<ODataResponse<RelationshipMetadata>>(
-            `EntityDefinitions(LogicalName='${escaped}')/ManyToManyRelationships`
-          )
-          .then(r => r.data.value)
+          .get<
+            ODataResponse<RelationshipMetadata>
+          >(`EntityDefinitions(LogicalName='${escaped}')/ManyToManyRelationships`)
+          .then((r) => r.data.value),
       ),
     ]);
     return [...oneToMany, ...manyToOne, ...manyToMany];
@@ -173,32 +198,33 @@ export class DataverseClient {
       expand?: string;
       count?: boolean;
       apply?: string;
-    } = {}
+    } = {},
   ): Promise<ODataResponse<T>> {
     const params: string[] = [];
-    if (options.select?.length) params.push(`$select=${options.select.join(',')}`);
+    if (options.select?.length)
+      params.push(`$select=${options.select.join(",")}`);
     if (options.filter) params.push(`$filter=${options.filter}`);
     if (options.orderby) params.push(`$orderby=${options.orderby}`);
     if (options.top) params.push(`$top=${options.top}`);
     if (options.expand) params.push(`$expand=${options.expand}`);
-    if (options.count) params.push('$count=true');
+    if (options.count) params.push("$count=true");
     if (options.apply) params.push(`$apply=${options.apply}`);
 
-    const url = `${entitySetName}${params.length ? '?' + params.join('&') : ''}`;
+    const url = `${entitySetName}${params.length ? "?" + params.join("&") : ""}`;
     return this.requestWithRetry(() =>
-      this.http.get<ODataResponse<T>>(url).then(r => r.data)
+      this.http.get<ODataResponse<T>>(url).then((r) => r.data),
     );
   }
 
   async executeFetchXml<T = Record<string, unknown>>(
     entitySetName: string,
-    fetchXml: string
+    fetchXml: string,
   ): Promise<ODataResponse<T>> {
     const encoded = encodeURIComponent(fetchXml);
     return this.requestWithRetry(() =>
       this.http
         .get<ODataResponse<T>>(`${entitySetName}?fetchXml=${encoded}`)
-        .then(r => r.data)
+        .then((r) => r.data),
     );
   }
 
@@ -207,42 +233,54 @@ export class DataverseClient {
   async getRecord(
     entitySetName: string,
     id: string,
-    select?: string[]
+    select?: string[],
   ): Promise<{ record: Record<string, unknown>; etag: string | null }> {
-    const params = select ? `?$select=${select.join(',')}` : '';
+    const params = select ? `?$select=${select.join(",")}` : "";
     return this.requestWithRetry(async () => {
-      const response = await this.http.get<Record<string, unknown>>(`${entitySetName}(${id})${params}`, {
-        headers: { Prefer: 'odata.include-annotations="*"' },
-      });
+      const response = await this.http.get<Record<string, unknown>>(
+        `${entitySetName}(${id})${params}`,
+        {
+          headers: { Prefer: 'odata.include-annotations="*"' },
+        },
+      );
       const etag =
-        (response.headers['odata-etag'] as string | undefined) ??
-        (response.data['@odata.etag'] as string | undefined) ??
+        (response.headers["odata-etag"] as string | undefined) ??
+        (response.data["@odata.etag"] as string | undefined) ??
         null;
       return { record: response.data as Record<string, unknown>, etag };
     });
   }
 
-  async createRecord(entitySetName: string, data: Record<string, unknown>): Promise<string> {
+  async createRecord(
+    entitySetName: string,
+    data: Record<string, unknown>,
+  ): Promise<string> {
     return this.requestWithRetry(async () => {
       const response = await this.http.post(entitySetName, data, {
-        headers: { 'Prefer': 'return=representation' },
+        headers: { Prefer: "return=representation" },
       });
       // 1. OData-EntityId header (standard, most reliable)
-      const locationHeader = response.headers['odata-entityid'] as string | undefined;
+      const locationHeader = response.headers["odata-entityid"] as
+        | string
+        | undefined;
       const fromHeader = locationHeader?.match(/\(([^)]+)\)/)?.[1];
       if (fromHeader) return fromHeader;
       // 2. @odata.id in body (collection response shape)
       const body = response.data as Record<string, unknown>;
-      const fromOdataId = (body['@odata.id'] as string | undefined)?.match(/\(([^)]+)\)/)?.[1];
+      const fromOdataId = (body["@odata.id"] as string | undefined)?.match(
+        /\(([^)]+)\)/,
+      )?.[1];
       if (fromOdataId) return fromOdataId;
       // 3. Primary key field in body (when return=representation and no OData-EntityId header)
       //    Use known irregular pluralizations; fall back to simple s-strip convention.
-      const pkGuess = ENTITY_SET_TO_PK[entitySetName] ?? (entitySetName.replace(/s$/, '') + 'id');
+      const pkGuess =
+        ENTITY_SET_TO_PK[entitySetName] ??
+        entitySetName.replace(/s$/, "") + "id";
       const fromPk = body[pkGuess] as string | undefined;
       if (fromPk) return fromPk;
       // 4. Location header fallback
-      const location = response.headers['location'] as string | undefined;
-      return location?.match(/\(([^)]+)\)/)?.[1] ?? '';
+      const location = response.headers["location"] as string | undefined;
+      return location?.match(/\(([^)]+)\)/)?.[1] ?? "";
     });
   }
 
@@ -250,18 +288,18 @@ export class DataverseClient {
     entitySetName: string,
     id: string,
     data: Record<string, unknown>,
-    etag?: string
+    etag?: string,
   ): Promise<void> {
     await this.requestWithRetry(() =>
       this.http.patch(`${entitySetName}(${id})`, data, {
-        headers: { 'If-Match': etag ?? '*' },
-      })
+        headers: { "If-Match": etag ?? "*" },
+      }),
     );
   }
 
   async deleteRecord(entitySetName: string, id: string): Promise<void> {
     await this.requestWithRetry(() =>
-      this.http.delete(`${entitySetName}(${id})`)
+      this.http.delete(`${entitySetName}(${id})`),
     );
   }
 
@@ -270,29 +308,36 @@ export class DataverseClient {
     alternateKey: string,
     alternateKeyValue: string,
     data: Record<string, unknown>,
-    mode: 'upsert' | 'createOnly' | 'updateOnly' = 'upsert',
-    keySegment?: string
-  ): Promise<{ operation: 'created' | 'updated'; id: string }> {
+    mode: "upsert" | "createOnly" | "updateOnly" = "upsert",
+    keySegment?: string,
+  ): Promise<{ operation: "created" | "updated"; id: string }> {
     return this.requestWithRetry(async () => {
       const url = keySegment
         ? `${entitySetName}(${keySegment})`
         : `${entitySetName}(${esc(alternateKey)}='${esc(alternateKeyValue)}')`;
-      const headers: Record<string, string> = { Prefer: 'return=representation' };
-      if (mode === 'createOnly') headers['If-None-Match'] = '*';
-      if (mode === 'updateOnly') headers['If-Match'] = '*';
+      const headers: Record<string, string> = {
+        Prefer: "return=representation",
+      };
+      if (mode === "createOnly") headers["If-None-Match"] = "*";
+      if (mode === "updateOnly") headers["If-Match"] = "*";
       try {
         const response = await this.http.put(url, data, { headers });
-        const operation = response.status === 201 ? 'created' : 'updated';
-        const locationHeader = response.headers['odata-entityid'] as string | undefined;
+        const operation = response.status === 201 ? "created" : "updated";
+        const locationHeader = response.headers["odata-entityid"] as
+          | string
+          | undefined;
         const fromHeader = locationHeader?.match(/\(([^)]+)\)/)?.[1];
         const body = response.data as Record<string, unknown> | undefined;
-        const pkGuess = ENTITY_SET_TO_PK[entitySetName] ?? (entitySetName.replace(/s$/, '') + 'id');
-        const id = fromHeader ?? (body?.[pkGuess] as string) ?? alternateKeyValue;
+        const pkGuess =
+          ENTITY_SET_TO_PK[entitySetName] ??
+          entitySetName.replace(/s$/, "") + "id";
+        const id =
+          fromHeader ?? (body?.[pkGuess] as string) ?? alternateKeyValue;
         return { operation, id };
       } catch (err: unknown) {
         if (err instanceof HttpError && err.status === 412) {
-          if (mode === 'createOnly') throw new Error('Record already exists');
-          if (mode === 'updateOnly') throw new Error('Record not found');
+          if (mode === "createOnly") throw new Error("Record already exists");
+          if (mode === "updateOnly") throw new Error("Record not found");
         }
         throw err;
       }
@@ -306,14 +351,13 @@ export class DataverseClient {
     id: string,
     relationshipName: string,
     relatedEntitySetName: string,
-    relatedId: string
+    relatedId: string,
   ): Promise<void> {
     const relatedUrl = `${this.authProvider.environmentUrl}/api/data/v${API_VERSION}/${relatedEntitySetName}(${relatedId})`;
     await this.requestWithRetry(() =>
-      this.http.post(
-        `${entitySetName}(${id})/${relationshipName}/$ref`,
-        { '@odata.id': relatedUrl }
-      )
+      this.http.post(`${entitySetName}(${id})/${relationshipName}/$ref`, {
+        "@odata.id": relatedUrl,
+      }),
     );
   }
 
@@ -322,44 +366,15 @@ export class DataverseClient {
     id: string,
     relationshipName: string,
     relatedId?: string,
-    relatedEntitySetName?: string
+    relatedEntitySetName?: string,
   ): Promise<void> {
     const suffix = relatedId
       ? `?$id=${this.authProvider.environmentUrl}/api/data/v${API_VERSION}/${relatedEntitySetName ?? entitySetName}(${relatedId})`
-      : '';
+      : "";
     await this.requestWithRetry(() =>
-      this.http.delete(`${entitySetName}(${id})/${relationshipName}/$ref${suffix}`)
-    );
-  }
-
-  // ─── Actions & Functions ─────────────────────────────────────────────────
-
-  async executeAction(actionName: string, parameters: Record<string, unknown> = {}): Promise<unknown> {
-    return this.requestWithRetry(() =>
-      this.http.post(actionName, parameters).then(r => r.data)
-    );
-  }
-
-  async executeFunction(functionName: string, parameters: Record<string, string> = {}): Promise<unknown> {
-    const paramStr = Object.entries(parameters)
-      .map(([k, v]) => `${esc(k)}='${esc(v)}'`)
-      .join(',');
-    const url = paramStr ? `${functionName}(${paramStr})` : `${functionName}()`;
-    return this.requestWithRetry(() =>
-      this.http.get(url).then(r => r.data)
-    );
-  }
-
-  async executeBoundAction(
-    entitySetName: string,
-    id: string,
-    actionName: string,
-    parameters: Record<string, unknown> = {}
-  ): Promise<unknown> {
-    return this.requestWithRetry(() =>
-      this.http
-        .post(`${entitySetName}(${id})/Microsoft.Dynamics.CRM.${actionName}`, parameters)
-        .then(r => r.data)
+      this.http.delete(
+        `${entitySetName}(${id})/${relationshipName}/$ref${suffix}`,
+      ),
     );
   }
 

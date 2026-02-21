@@ -1,30 +1,31 @@
-import { z } from 'zod';
-import type { DataverseAdvancedClient } from '../dataverse/dataverse-client-advanced.js';
-import { safeEntitySetName } from './validation.utils.js';
+import { z } from "zod";
+import type { DataverseAdvancedClient } from "../dataverse/dataverse-client-advanced.js";
+import { safeEntitySetName } from "./validation.utils.js";
 
 export const trackingTools = [
   {
-    name: 'dataverse_change_detection',
+    name: "dataverse_change_detection",
     description:
-      'Detects new, modified, and deleted records since a previous sync using Dataverse change tracking (delta queries). On first call, pass deltaToken=null to get an initial snapshot and receive a token. On subsequent calls, pass the returned token to retrieve only changes since last sync. Change tracking must be enabled on the table in Dataverse settings. Returns newAndModified records, deleted record IDs, and the nextDeltaToken for the next call.',
+      "Detects new, modified, and deleted records since a previous sync using Dataverse change tracking (delta queries). On first call, pass deltaToken=null to get an initial snapshot and receive a token. On subsequent calls, pass the returned token to retrieve only changes since last sync. Change tracking must be enabled on the table in Dataverse settings. Returns newAndModified records, deleted record IDs, and the nextDeltaToken for the next call.",
     inputSchema: {
-      type: 'object' as const,
+      type: "object" as const,
       properties: {
         entitySetName: {
-          type: 'string',
+          type: "string",
           description: 'OData entity set name (e.g., "accounts")',
         },
         deltaToken: {
-          anyOf: [{ type: 'string' }, { type: 'null' }],
-          description: 'Delta token from a previous call, or null for the initial sync',
+          anyOf: [{ type: "string" }, { type: "null" }],
+          description:
+            "Delta token from a previous call, or null for the initial sync",
         },
         select: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'Columns to return (recommended to minimise payload)',
+          type: "array",
+          items: { type: "string" },
+          description: "Columns to return (recommended to minimise payload)",
         },
       },
-      required: ['entitySetName', 'deltaToken'],
+      required: ["entitySetName", "deltaToken"],
     },
   },
 ];
@@ -38,12 +39,19 @@ const ChangeDetectionInput = z.object({
 export async function handleTrackingTool(
   name: string,
   args: unknown,
-  client: DataverseAdvancedClient
-): Promise<{ content: Array<{ type: 'text'; text: string }> }> {
-  if (name === 'dataverse_change_detection') {
-    const { entitySetName, deltaToken, select } = ChangeDetectionInput.parse(args);
-    const result = await client.getChangedRecords(entitySetName, deltaToken, select);
-    return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+  client: DataverseAdvancedClient,
+): Promise<{ content: Array<{ type: "text"; text: string }> }> {
+  if (name === "dataverse_change_detection") {
+    const { entitySetName, deltaToken, select } =
+      ChangeDetectionInput.parse(args);
+    const result = await client.getChangedRecords(
+      entitySetName,
+      deltaToken,
+      select,
+    );
+    return {
+      content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
+    };
   }
   throw new Error(`Unknown tracking tool: ${name}`);
 }

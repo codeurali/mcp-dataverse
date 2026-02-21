@@ -7,13 +7,13 @@ export class HttpError extends Error {
     public readonly responseHeaders: Record<string, string> = {},
   ) {
     super(message);
-    this.name = 'HttpError';
+    this.name = "HttpError";
   }
 }
 
 export interface HttpRequestOptions {
   headers?: Record<string, string>;
-  responseType?: 'text';
+  responseType?: "text";
 }
 
 export interface HttpResponse<T = unknown> {
@@ -34,34 +34,54 @@ export class HttpClient {
     headers?: Record<string, string>;
     tokenProvider?: () => Promise<string>;
   }) {
-    this.baseURL = config.baseURL.endsWith('/') ? config.baseURL : config.baseURL + '/';
+    this.baseURL = config.baseURL.endsWith("/")
+      ? config.baseURL
+      : config.baseURL + "/";
     this.timeoutMs = config.timeout ?? 30_000;
     this.defaultHeaders = { ...config.headers };
     this.tokenProvider = config.tokenProvider ?? undefined;
   }
 
-  async get<T = unknown>(url: string, options?: HttpRequestOptions): Promise<HttpResponse<T>> {
-    return this.request<T>('GET', url, undefined, options);
+  async get<T = unknown>(
+    url: string,
+    options?: HttpRequestOptions,
+  ): Promise<HttpResponse<T>> {
+    return this.request<T>("GET", url, undefined, options);
   }
 
-  async post<T = unknown>(url: string, body?: unknown, options?: HttpRequestOptions): Promise<HttpResponse<T>> {
-    return this.request<T>('POST', url, body, options);
+  async post<T = unknown>(
+    url: string,
+    body?: unknown,
+    options?: HttpRequestOptions,
+  ): Promise<HttpResponse<T>> {
+    return this.request<T>("POST", url, body, options);
   }
 
-  async patch<T = unknown>(url: string, body?: unknown, options?: HttpRequestOptions): Promise<HttpResponse<T>> {
-    return this.request<T>('PATCH', url, body, options);
+  async patch<T = unknown>(
+    url: string,
+    body?: unknown,
+    options?: HttpRequestOptions,
+  ): Promise<HttpResponse<T>> {
+    return this.request<T>("PATCH", url, body, options);
   }
 
-  async put<T = unknown>(url: string, body?: unknown, options?: HttpRequestOptions): Promise<HttpResponse<T>> {
-    return this.request<T>('PUT', url, body, options);
+  async put<T = unknown>(
+    url: string,
+    body?: unknown,
+    options?: HttpRequestOptions,
+  ): Promise<HttpResponse<T>> {
+    return this.request<T>("PUT", url, body, options);
   }
 
-  async delete<T = unknown>(url: string, options?: HttpRequestOptions): Promise<HttpResponse<T>> {
-    return this.request<T>('DELETE', url, undefined, options);
+  async delete<T = unknown>(
+    url: string,
+    options?: HttpRequestOptions,
+  ): Promise<HttpResponse<T>> {
+    return this.request<T>("DELETE", url, undefined, options);
   }
 
   private resolveUrl(url: string): string {
-    if (!url.startsWith('http')) {
+    if (!url.startsWith("http")) {
       return this.baseURL + url;
     }
     // Allow only same-origin absolute URLs (needed for OData nextLink paging tokens)
@@ -72,7 +92,7 @@ export class HttpClient {
         `SSRF protection: request to '${resolved.origin}' blocked; only '${base.origin}' is permitted`,
         0,
         undefined,
-        'SSRF_BLOCKED',
+        "SSRF_BLOCKED",
       );
     }
     return url;
@@ -85,10 +105,13 @@ export class HttpClient {
     options?: HttpRequestOptions,
   ): Promise<HttpResponse<T>> {
     const resolvedUrl = this.resolveUrl(url);
-    const headers: Record<string, string> = { ...this.defaultHeaders, ...options?.headers };
+    const headers: Record<string, string> = {
+      ...this.defaultHeaders,
+      ...options?.headers,
+    };
 
     if (this.tokenProvider) {
-      headers['Authorization'] = `Bearer ${await this.tokenProvider()}`;
+      headers["Authorization"] = `Bearer ${await this.tokenProvider()}`;
     }
 
     const controller = new AbortController();
@@ -97,18 +120,24 @@ export class HttpClient {
     try {
       const init: RequestInit = { method, headers, signal: controller.signal };
       if (body !== undefined) {
-        init.body = typeof body === 'string' ? body : JSON.stringify(body);
+        init.body = typeof body === "string" ? body : JSON.stringify(body);
       }
 
       const response = await fetch(resolvedUrl, init);
 
       const responseHeaders: Record<string, string> = {};
-      response.headers.forEach((value, key) => { responseHeaders[key] = value; });
+      response.headers.forEach((value, key) => {
+        responseHeaders[key] = value;
+      });
 
       if (!response.ok) {
         const text = await response.text();
         let errorData: unknown;
-        try { errorData = JSON.parse(text); } catch { errorData = text || undefined; }
+        try {
+          errorData = JSON.parse(text);
+        } catch {
+          errorData = text || undefined;
+        }
         throw new HttpError(
           `Request failed with status ${response.status}`,
           response.status,
@@ -119,18 +148,18 @@ export class HttpClient {
       }
 
       let data: T;
-      if (options?.responseType === 'text') {
-        data = await response.text() as T;
+      if (options?.responseType === "text") {
+        data = (await response.text()) as T;
       } else {
         const text = await response.text();
-        data = (text ? JSON.parse(text) as T : {} as T);
+        data = text ? (JSON.parse(text) as T) : ({} as T);
       }
 
       return { data, status: response.status, headers: responseHeaders };
     } catch (err) {
       if (err instanceof HttpError) throw err;
-      if (err instanceof DOMException && err.name === 'AbortError') {
-        throw new HttpError('Request timed out', 0, undefined, 'ECONNABORTED');
+      if (err instanceof DOMException && err.name === "AbortError") {
+        throw new HttpError("Request timed out", 0, undefined, "ECONNABORTED");
       }
       throw err;
     } finally {

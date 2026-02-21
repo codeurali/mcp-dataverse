@@ -4,7 +4,7 @@
 
 ![Node 20+](https://img.shields.io/badge/Node.js-20%2B-green) ![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue) ![MCP](https://img.shields.io/badge/MCP-1.0-purple) ![npm](https://img.shields.io/npm/v/mcp-dataverse) ![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
 
-MCP server that exposes the Microsoft Dataverse Web API as **39 AI-callable tools** — enabling GitHub Copilot, Claude, and other MCP clients to query, create, and manage Dataverse records without hallucinating schema.
+MCP server that exposes the Microsoft Dataverse Web API as **50 AI-callable tools** — enabling GitHub Copilot, Claude, and other MCP clients to query, create, and manage Dataverse records without hallucinating schema.
 
 ## Install
 
@@ -51,13 +51,13 @@ cp config.example.json config.json
 
 Edit `config.json`:
 
-| Field | Description |
-|-------|-------------|
-| `environmentUrl` | Your org URL, e.g. `https://yourorg.crm.dynamics.com` |
-| `authMode` | `"pac"` (recommended) or `"msal"` |
-| `pacProfileName` | PAC CLI profile name (default: `"default"`) |
-| `requestTimeoutMs` | HTTP timeout in ms (default: `30000`) |
-| `maxRetries` | Retry count on transient errors (default: `3`) |
+| Field              | Description                                           |
+| ------------------ | ----------------------------------------------------- |
+| `environmentUrl`   | Your org URL, e.g. `https://yourorg.crm.dynamics.com` |
+| `authMode`         | `"pac"` (recommended) or `"msal"`                     |
+| `pacProfileName`   | PAC CLI profile name (default: `"default"`)           |
+| `requestTimeoutMs` | HTTP timeout in ms (default: `30000`)                 |
+| `maxRetries`       | Retry count on transient errors (default: `3`)        |
 
 ### 3. Authenticate
 
@@ -82,6 +82,7 @@ npx tsx tests/live/test-whoami.ts
 ```
 
 Expected output:
+
 ```
 WhoAmI result: { UserId: 'xxxxxxxx-...', BusinessUnitId: 'xxxxxxxx-...', OrganizationId: 'xxxxxxxx-...' }
 ```
@@ -109,58 +110,60 @@ WhoAmI result: { UserId: 'xxxxxxxx-...', BusinessUnitId: 'xxxxxxxx-...', Organiz
 
 ---
 
-## Tools (48)
+## Tools (50)
 
-| Tool | Category | Description |
-|------|----------|-------------|
-| `dataverse_whoami` | Auth | Verify connection; returns UserId, BusinessUnitId, OrgId |
-| `dataverse_list_tables` | Metadata | List all tables (`customOnly` filter available) |
-| `dataverse_get_table_metadata` | Metadata | Full schema: columns, types, logical names |
-| `dataverse_get_relationships` | Metadata | All 1:N, N:1, N:N relationships for a table; filter by `relationshipType` |
-| `dataverse_list_global_option_sets` | Metadata | All global option sets in the environment |
-| `dataverse_get_option_set` | Metadata | Options and values for a specific option set |
-| `dataverse_get_entity_key` | Metadata | Alternate key definitions for a table (fields, index status, customizable flag) |
-| `dataverse_query` | Query | OData query with `$select`, `$filter`, `$orderby`, `$expand`, `$count` |
-| `dataverse_execute_fetchxml` | Query | Raw FetchXML for aggregations and complex joins |
-| `dataverse_retrieve_multiple_with_paging` | Query | Paginated query following `@odata.nextLink`, with configurable `maxTotal` cap |
-| `dataverse_get` | CRUD | Retrieve a single record by GUID |
-| `dataverse_create` | CRUD | Create a record; returns the new GUID |
-| `dataverse_update` | CRUD | Patch a record — only specified fields are changed |
-| `dataverse_delete` | CRUD | Delete a record (requires explicit confirm) |
-| `dataverse_upsert` | CRUD | Create-or-update via alternate key |
-| `dataverse_associate` | Relations | Associate two records via a named relationship |
-| `dataverse_disassociate` | Relations | Remove an association between two records |
-| `dataverse_execute_action` | Actions | Execute a global (unbound) Dataverse action |
-| `dataverse_execute_function` | Actions | Execute a global read-only function (e.g. `WhoAmI`) |
-| `dataverse_execute_bound_action` | Actions | Execute an action bound to a specific record |
-| `dataverse_execute_bound_function` | Actions | Execute an OData bound function on a specific record |
-| `dataverse_retrieve_dependencies_for_delete` | Actions | Check what components block deletion of a Dataverse component |
-| `dataverse_list_dependencies` | Actions | List component dependencies before modifying or deleting |
-| `dataverse_batch_execute` | Batch | Up to 1000 operations in a single HTTP batch request; optional atomic changeset |
-| `dataverse_change_detection` | Tracking | Delta tracking using change tokens to detect record changes since last sync |
-| `dataverse_solution_components` | Solution | List all components in a named solution; filter by component type code |
-| `dataverse_publish_customizations` | Solution | Publish pending customizations (all or targeted entities/web resources/option sets) |
-| `dataverse_impersonate` | Impersonation | Execute any tool on behalf of another Dataverse user via `MSCRMCallerId` |
-| `dataverse_list_custom_actions` | Customization | Lists custom actions (custom API / SDK messages) in the environment |
-| `dataverse_list_plugin_steps` | Customization | Lists plugin step registrations with stage, mode, entity, and state |
-| `dataverse_get_environment_variable` | Environment | Retrieve an environment variable definition and current value |
-| `dataverse_set_environment_variable` | Environment | Set or update an environment variable value |
-| `dataverse_get_plugin_trace_logs` | Trace | Retrieve plugin execution trace logs for debugging |
-| `dataverse_get_workflow_trace_logs` | Trace | Retrieve async workflow/system job execution logs |
-| `dataverse_search` | Search | Full-text Relevance Search across all configured tables |
-| `dataverse_get_audit_log` | Audit | Retrieve audit trail for a record showing change history |
-| `dataverse_detect_duplicates` | Quality | Check for potential duplicates before creating a record |
-| `dataverse_get_annotations` | Annotations | Retrieve notes and file attachments linked to a record |
-| `dataverse_list_users` | Users | Search system users by name or email with BU filtering |
-| `dataverse_get_user_roles` | Users | Security roles assigned to a system user |
-| `dataverse_create_annotation` | Annotations | Create a note or file attachment linked to a record |
-| `dataverse_get_attribute_option_set` | Metadata | Local/entity-specific option set values (statecode, statuscode, picklist) |
-| `dataverse_list_solutions` | Solution | List all solutions in the environment |
-| `dataverse_set_workflow_state` | Customization | Enable or disable a workflow or process |
-| `dataverse_list_views` | Views | List system and personal saved views for a table |
-| `dataverse_upload_file_column` | Files | Upload binary content to a file/image column on a record |
-| `dataverse_download_file_column` | Files | Download binary content from a file/image column on a record |
-| `dataverse_list_business_units` | Org | List business units in the environment (org hierarchy) |
+| Tool                                         | Category      | Description                                                                         |
+| -------------------------------------------- | ------------- | ----------------------------------------------------------------------------------- |
+| `dataverse_whoami`                           | Auth          | Verify connection; returns UserId, BusinessUnitId, OrgId                            |
+| `dataverse_list_tables`                      | Metadata      | List all tables (`customOnly` filter available)                                     |
+| `dataverse_get_table_metadata`               | Metadata      | Full schema: columns, types, logical names                                          |
+| `dataverse_get_relationships`                | Metadata      | All 1:N, N:1, N:N relationships for a table; filter by `relationshipType`           |
+| `dataverse_list_global_option_sets`          | Metadata      | All global option sets in the environment                                           |
+| `dataverse_get_option_set`                   | Metadata      | Options and values for a specific option set                                        |
+| `dataverse_get_entity_key`                   | Metadata      | Alternate key definitions for a table (fields, index status, customizable flag)     |
+| `dataverse_query`                            | Query         | OData query with `$select`, `$filter`, `$orderby`, `$expand`, `$count`              |
+| `dataverse_execute_fetchxml`                 | Query         | Raw FetchXML for aggregations and complex joins                                     |
+| `dataverse_retrieve_multiple_with_paging`    | Query         | Paginated query following `@odata.nextLink`, with configurable `maxTotal` cap       |
+| `dataverse_get`                              | CRUD          | Retrieve a single record by GUID                                                    |
+| `dataverse_create`                           | CRUD          | Create a record; returns the new GUID                                               |
+| `dataverse_update`                           | CRUD          | Patch a record — only specified fields are changed                                  |
+| `dataverse_delete`                           | CRUD          | Delete a record (requires explicit confirm)                                         |
+| `dataverse_upsert`                           | CRUD          | Create-or-update via alternate key                                                  |
+| `dataverse_assign`                           | CRUD          | Assign a record to a different user or team owner                                   |
+| `dataverse_associate`                        | Relations     | Associate two records via a named relationship                                      |
+| `dataverse_disassociate`                     | Relations     | Remove an association between two records                                           |
+| `dataverse_execute_action`                   | Actions       | Execute a global (unbound) Dataverse action                                         |
+| `dataverse_execute_function`                 | Actions       | Execute a global read-only function (e.g. `WhoAmI`)                                 |
+| `dataverse_execute_bound_action`             | Actions       | Execute an action bound to a specific record                                        |
+| `dataverse_execute_bound_function`           | Actions       | Execute an OData bound function on a specific record                                |
+| `dataverse_retrieve_dependencies_for_delete` | Actions       | Check what components block deletion of a Dataverse component                       |
+| `dataverse_list_dependencies`                | Actions       | List component dependencies before modifying or deleting                            |
+| `dataverse_batch_execute`                    | Batch         | Up to 1000 operations in a single HTTP batch request; optional atomic changeset     |
+| `dataverse_change_detection`                 | Tracking      | Delta tracking using change tokens to detect record changes since last sync         |
+| `dataverse_solution_components`              | Solution      | List all components in a named solution; filter by component type code              |
+| `dataverse_publish_customizations`           | Solution      | Publish pending customizations (all or targeted entities/web resources/option sets) |
+| `dataverse_impersonate`                      | Impersonation | Execute any tool on behalf of another Dataverse user via `MSCRMCallerId`            |
+| `dataverse_list_custom_actions`              | Customization | Lists custom actions (custom API / SDK messages) in the environment                 |
+| `dataverse_list_plugin_steps`                | Customization | Lists plugin step registrations with stage, mode, entity, and state                 |
+| `dataverse_get_environment_variable`         | Environment   | Retrieve an environment variable definition and current value                       |
+| `dataverse_set_environment_variable`         | Environment   | Set or update an environment variable value                                         |
+| `dataverse_get_plugin_trace_logs`            | Trace         | Retrieve plugin execution trace logs for debugging                                  |
+| `dataverse_get_workflow_trace_logs`          | Trace         | Retrieve async workflow/system job execution logs                                   |
+| `dataverse_search`                           | Search        | Full-text Relevance Search across all configured tables                             |
+| `dataverse_get_audit_log`                    | Audit         | Retrieve audit trail for a record showing change history                            |
+| `dataverse_detect_duplicates`                | Quality       | Check for potential duplicates before creating a record                             |
+| `dataverse_get_annotations`                  | Annotations   | Retrieve notes and file attachments linked to a record                              |
+| `dataverse_list_users`                       | Users         | Search system users by name or email with BU filtering                              |
+| `dataverse_get_user_roles`                   | Users         | Security roles assigned to a system user                                            |
+| `dataverse_create_annotation`                | Annotations   | Create a note or file attachment linked to a record                                 |
+| `dataverse_get_attribute_option_set`         | Metadata      | Local/entity-specific option set values (statecode, statuscode, picklist)           |
+| `dataverse_list_solutions`                   | Solution      | List all solutions in the environment                                               |
+| `dataverse_set_workflow_state`               | Customization | Enable or disable a workflow or process                                             |
+| `dataverse_list_views`                       | Views         | List system and personal saved views for a table                                    |
+| `dataverse_upload_file_column`               | Files         | Upload binary content to a file/image column on a record                            |
+| `dataverse_download_file_column`             | Files         | Download binary content from a file/image column on a record                        |
+| `dataverse_list_business_units`              | Org           | List business units in the environment (org hierarchy)                              |
+| `dataverse_list_teams`                       | Teams         | List Dataverse teams with optional filter by team type                              |
 
 ---
 
@@ -184,17 +187,17 @@ For service-principal auth (CI/CD, unattended), set `authMode: "msal"` in `confi
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run build` | Compile TypeScript → `dist/` |
-| `npm run dev` | Watch mode — no build step needed |
-| `npm start` | Start the compiled server |
-| `npm run auth:setup` | One-time device code authentication |
-| `npm run typecheck` | Type-check without emitting output |
-| `npm run lint` | ESLint on `src/` |
-| `npm run test:unit` | Unit tests only |
-| `npm run test:integration` | Integration tests |
-| `npm test` | All tests |
+| Command                    | Description                         |
+| -------------------------- | ----------------------------------- |
+| `npm run build`            | Compile TypeScript → `dist/`        |
+| `npm run dev`              | Watch mode — no build step needed   |
+| `npm start`                | Start the compiled server           |
+| `npm run auth:setup`       | One-time device code authentication |
+| `npm run typecheck`        | Type-check without emitting output  |
+| `npm run lint`             | ESLint on `src/`                    |
+| `npm run test:unit`        | Unit tests only                     |
+| `npm run test:integration` | Integration tests                   |
+| `npm test`                 | All tests                           |
 
 ---
 
@@ -220,10 +223,9 @@ GitHub Copilot → stdio → MCP Server → Tool Router → DataverseClient → 
 
 ## Troubleshooting
 
-| Symptom | Fix |
-|---------|-----|
-| `No MSAL accounts found` | Run `npm run auth:setup` to re-authenticate |
-| `"https://" is required` | Check `environmentUrl` in `config.json` — must start with `https://` |
-| `pac: command not found` | Install PAC CLI and run `pac auth create --environment <url>` |
-| Server not appearing in Copilot Agent mode | Restart VS Code; check **Output → MCP** panel for errors |
-
+| Symptom                                    | Fix                                                                  |
+| ------------------------------------------ | -------------------------------------------------------------------- |
+| `No MSAL accounts found`                   | Run `npm run auth:setup` to re-authenticate                          |
+| `"https://" is required`                   | Check `environmentUrl` in `config.json` — must start with `https://` |
+| `pac: command not found`                   | Install PAC CLI and run `pac auth create --environment <url>`        |
+| Server not appearing in Copilot Agent mode | Restart VS Code; check **Output → MCP** panel for errors             |

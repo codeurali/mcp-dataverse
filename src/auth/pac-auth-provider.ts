@@ -3,15 +3,20 @@ import {
   type AuthenticationResult,
   type ICachePlugin,
   type TokenCacheContext,
-} from '@azure/msal-node';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
-import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'crypto';
-import type { AuthProvider } from './auth-provider.interface.js';
+} from "@azure/msal-node";
+import { existsSync, readFileSync, writeFileSync } from "fs";
+import { join } from "path";
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHash,
+  randomBytes,
+} from "crypto";
+import type { AuthProvider } from "./auth-provider.interface.js";
 
 // Microsoft Power Platform CLI App ID — public client, no app registration needed
-const PLATFORM_CLIENT_ID = '1950a258-227b-4e31-a9cf-717495945fc2';
-const TOKEN_CACHE_FILE = join(process.cwd(), '.msal-cache.json');
+const PLATFORM_CLIENT_ID = "1950a258-227b-4e31-a9cf-717495945fc2";
+const TOKEN_CACHE_FILE = join(process.cwd(), ".msal-cache.json");
 
 /**
  * Derives a machine+user-scoped encryption key.
@@ -20,35 +25,38 @@ const TOKEN_CACHE_FILE = join(process.cwd(), '.msal-cache.json');
  */
 function getDerivedKey(): Buffer {
   const seed = [
-    process.env['COMPUTERNAME'] ?? process.env['HOSTNAME'] ?? '',
-    process.env['USERNAME'] ?? process.env['USER'] ?? '',
-    'mcp-dataverse-cache-v1',
-  ].join('.');
-  return createHash('sha256').update(seed).digest();
+    process.env["COMPUTERNAME"] ?? process.env["HOSTNAME"] ?? "",
+    process.env["USERNAME"] ?? process.env["USER"] ?? "",
+    "mcp-dataverse-cache-v1",
+  ].join(".");
+  return createHash("sha256").update(seed).digest();
 }
 
 function encryptForDisk(plaintext: string): string {
   const key = getDerivedKey();
   const iv = randomBytes(16);
-  const cipher = createCipheriv('aes-256-gcm', key, iv);
-  const encrypted = Buffer.concat([cipher.update(plaintext, 'utf-8'), cipher.final()]);
+  const cipher = createCipheriv("aes-256-gcm", key, iv);
+  const encrypted = Buffer.concat([
+    cipher.update(plaintext, "utf-8"),
+    cipher.final(),
+  ]);
   return JSON.stringify({
     v: 1,
-    iv: iv.toString('hex'),
-    tag: cipher.getAuthTag().toString('hex'),
-    d: encrypted.toString('hex'),
+    iv: iv.toString("hex"),
+    tag: cipher.getAuthTag().toString("hex"),
+    d: encrypted.toString("hex"),
   });
 }
 
 function decryptFromDisk(raw: string): string {
   const parsed = JSON.parse(raw) as Record<string, unknown>;
-  if (parsed['v'] !== 1) throw new Error('Unknown cache format version');
-  const iv = Buffer.from(parsed['iv'] as string, 'hex');
-  const tag = Buffer.from(parsed['tag'] as string, 'hex');
-  const encrypted = Buffer.from(parsed['d'] as string, 'hex');
-  const decipher = createDecipheriv('aes-256-gcm', getDerivedKey(), iv);
+  if (parsed["v"] !== 1) throw new Error("Unknown cache format version");
+  const iv = Buffer.from(parsed["iv"] as string, "hex");
+  const tag = Buffer.from(parsed["tag"] as string, "hex");
+  const encrypted = Buffer.from(parsed["d"] as string, "hex");
+  const decipher = createDecipheriv("aes-256-gcm", getDerivedKey(), iv);
   decipher.setAuthTag(tag);
-  return decipher.update(encrypted).toString('utf-8') + decipher.final('utf-8');
+  return decipher.update(encrypted).toString("utf-8") + decipher.final("utf-8");
 }
 
 function createCachePlugin(): ICachePlugin {
@@ -56,7 +64,7 @@ function createCachePlugin(): ICachePlugin {
     beforeCacheAccess: async (cacheContext: TokenCacheContext) => {
       if (existsSync(TOKEN_CACHE_FILE)) {
         try {
-          const raw = readFileSync(TOKEN_CACHE_FILE, 'utf-8');
+          const raw = readFileSync(TOKEN_CACHE_FILE, "utf-8");
           // Support both encrypted (v1) and legacy plaintext caches
           let serialized: string;
           try {
@@ -73,7 +81,11 @@ function createCachePlugin(): ICachePlugin {
     },
     afterCacheAccess: async (cacheContext: TokenCacheContext) => {
       if (cacheContext.cacheHasChanged) {
-        writeFileSync(TOKEN_CACHE_FILE, encryptForDisk(cacheContext.tokenCache.serialize()), { encoding: 'utf-8', mode: 0o600 });
+        writeFileSync(
+          TOKEN_CACHE_FILE,
+          encryptForDisk(cacheContext.tokenCache.serialize()),
+          { encoding: "utf-8", mode: 0o600 },
+        );
       }
     },
   };
@@ -86,12 +98,12 @@ export class PacAuthProvider implements AuthProvider {
   private tokenExpiresAt: number = 0;
 
   constructor(environmentUrl: string) {
-    this.environmentUrl = environmentUrl.replace(/\/$/, '');
+    this.environmentUrl = environmentUrl.replace(/\/$/, "");
 
     this.pca = new PublicClientApplication({
       auth: {
         clientId: PLATFORM_CLIENT_ID,
-        authority: 'https://login.microsoftonline.com/common',
+        authority: "https://login.microsoftonline.com/common",
       },
       cache: { cachePlugin: createCachePlugin() },
     });
@@ -140,9 +152,9 @@ export class PacAuthProvider implements AuthProvider {
 
     if (accounts.length === 0) {
       throw new Error(
-        'No authenticated account found.\n' +
-          'Run once: npm run auth:setup\n' +
-          'Then restart the server.'
+        "No authenticated account found.\n" +
+          "Run once: npm run auth:setup\n" +
+          "Then restart the server.",
       );
     }
 
@@ -153,7 +165,7 @@ export class PacAuthProvider implements AuthProvider {
       });
 
       if (!result?.accessToken) {
-        throw new Error('Silent token acquisition returned empty token');
+        throw new Error("Silent token acquisition returned empty token");
       }
 
       this.cacheResult(result);
@@ -161,16 +173,16 @@ export class PacAuthProvider implements AuthProvider {
     } catch {
       this.cachedToken = null;
       throw new Error(
-        'Token refresh failed. Re-authenticate:\n' +
-          'npm run auth:setup\n' +
-          'Then restart the server.'
+        "Token refresh failed. Re-authenticate:\n" +
+          "npm run auth:setup\n" +
+          "Then restart the server.",
       );
     }
   }
 
   private cacheResult(result: AuthenticationResult): void {
     this.cachedToken = result.accessToken;
-    this.tokenExpiresAt = result.expiresOn?.getTime() ?? (Date.now() + 55 * 60 * 1000);
+    this.tokenExpiresAt =
+      result.expiresOn?.getTime() ?? Date.now() + 55 * 60 * 1000;
   }
 }
-

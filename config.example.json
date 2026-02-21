@@ -5,7 +5,6 @@
   "tenantId": "",
   "clientId": "",
   "clientSecret": "",
-  "redirectUri": "http://localhost:3000/auth/callback",
   "requestTimeoutMs": 30000,
   "maxRetries": 3
 }

@@ -5,10 +5,10 @@
  * Returns -1 if not found.
  */
 function findDoubleNewline(text: string): number {
-  const crlfIdx = text.indexOf('\r\n\r\n');
-  const lfIdx   = text.indexOf('\n\n');
+  const crlfIdx = text.indexOf("\r\n\r\n");
+  const lfIdx = text.indexOf("\n\n");
   if (crlfIdx !== -1 && (lfIdx === -1 || crlfIdx <= lfIdx)) return crlfIdx + 4;
-  if (lfIdx   !== -1) return lfIdx + 2;
+  if (lfIdx !== -1) return lfIdx + 2;
   return -1;
 }
 
@@ -19,14 +19,17 @@ function findDoubleNewline(text: string): number {
  * Successful responses (2xx) are returned as parsed objects; error responses
  * are wrapped in `{ error, status }`.
  */
-export function parseMultipartResponse(body: string, boundary: string): unknown[] {
+export function parseMultipartResponse(
+  body: string,
+  boundary: string,
+): unknown[] {
   const results: unknown[] = [];
   const parts = body.split(`--${boundary}`);
 
   for (const part of parts) {
     const trimmed = part.trim();
     // Skip preamble (empty) and epilogue (--)
-    if (!trimmed || trimmed === '--') continue;
+    if (!trimmed || trimmed === "--") continue;
 
     // Part layout: MIME-headers  \r\n\r\n  inner-HTTP-response
     const mimeEnd = findDoubleNewline(part);
@@ -38,15 +41,17 @@ export function parseMultipartResponse(body: string, boundary: string): unknown[
     const httpHeadersEnd = findDoubleNewline(innerHttp);
     if (httpHeadersEnd === -1) continue;
 
-    const statusLine  = innerHttp.trimStart().split(/\r?\n/)[0] ?? '';
+    const statusLine = innerHttp.trimStart().split(/\r?\n/)[0] ?? "";
     const statusMatch = statusLine.match(/^HTTP\/\d+\.\d+\s+(\d{3})/);
-    const statusCode  = statusMatch ? parseInt(statusMatch[1]!, 10) : 0;
-    const isSuccess   = statusCode >= 200 && statusCode < 300;
+    const statusCode = statusMatch ? parseInt(statusMatch[1]!, 10) : 0;
+    const isSuccess = statusCode >= 200 && statusCode < 300;
 
     const jsonBody = innerHttp.slice(httpHeadersEnd).trim();
 
     if (!jsonBody) {
-      results.push(isSuccess ? null : { error: 'Empty response body', status: statusCode });
+      results.push(
+        isSuccess ? null : { error: "Empty response body", status: statusCode },
+      );
       continue;
     }
 

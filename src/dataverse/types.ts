@@ -9,9 +9,9 @@ export interface DataverseError {
 }
 
 export interface ODataResponse<T> {
-  '@odata.context'?: string;
-  '@odata.count'?: number;
-  '@odata.nextLink'?: string;
+  "@odata.context"?: string;
+  "@odata.count"?: number;
+  "@odata.nextLink"?: string;
   value: T[];
 }
 
@@ -38,7 +38,7 @@ export interface AttributeMetadata {
 
 export interface RelationshipMetadata {
   SchemaName: string;
-  RelationshipType: 'OneToManyRelationship' | 'ManyToManyRelationship';
+  RelationshipType: "OneToManyRelationship" | "ManyToManyRelationship";
   ReferencedEntity?: string;
   ReferencingEntity?: string;
   ReferencedAttribute?: string;
@@ -54,7 +54,7 @@ export interface WhoAmIResponse {
 }
 
 export interface BatchRequest {
-  method: 'GET' | 'POST' | 'PATCH' | 'DELETE';
+  method: "GET" | "POST" | "PATCH" | "DELETE";
   url: string;
   body?: unknown;
   headers?: Record<string, string>;

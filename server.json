@@ -2,27 +2,74 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.codeurali/dataverse",
   "title": "MCP Dataverse",
-  "description": "48 tools for Microsoft Dataverse: query, CRUD, metadata, search, files, audit, batch, and more.",
+  "description": "50 tools for Microsoft Dataverse: query, CRUD, metadata, search, files, audit, batch, and more.",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/codeurali/mcp-dataverse/master/assets/logo.webp",
+      "mimeType": "image/webp",
+      "sizes": "any"
+    }
+  ],
+  "websiteUrl": "https://www.npmjs.com/package/mcp-dataverse",
   "repository": {
     "url": "https://github.com/codeurali/mcp-dataverse",
     "source": "github"
   },
-  "version": "0.1.5",
+  "version": "0.1.6",
   "packages": [
     {
       "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "mcp-dataverse",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "transport": {
         "type": "stdio"
       },
       "environmentVariables": [
         {
           "name": "DATAVERSE_ENV_URL",
-          "description": "Your Dataverse environment URL (e.g. https://yourorg.crm.dynamics.com)",
+          "description": "Your Dataverse environment URL",
+          "placeholder": "https://yourorg.crm.dynamics.com",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "AUTH_MODE",
+          "description": "Authentication mode: 'pac' (Power Platform CLI, default) or 'msal' (client credentials)",
+          "placeholder": "pac",
           "isRequired": false,
           "format": "string",
           "isSecret": false
+        },
+        {
+          "name": "PAC_PROFILE_NAME",
+          "description": "Power Platform CLI profile name (only when AUTH_MODE=pac)",
+          "placeholder": "default",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "TENANT_ID",
+          "description": "Azure AD tenant ID (only when AUTH_MODE=msal)",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "CLIENT_ID",
+          "description": "Azure AD application (client) ID (only when AUTH_MODE=msal)",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "CLIENT_SECRET",
+          "description": "Azure AD client secret (only when AUTH_MODE=msal)",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true
         }
       ]
     }

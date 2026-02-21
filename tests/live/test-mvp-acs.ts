@@ -5,11 +5,11 @@
  * Validates all 8 MVP ACs against the real Dataverse environment.
  * Requires: npm run auth:setup (run once beforehand)
  */
-import { loadConfig } from '../../src/config/config.loader.js';
-import { createAuthProvider } from '../../src/auth/auth-provider.factory.js';
-import { DataverseClient } from '../../src/dataverse/dataverse-client.js';
-import { handleCrudTool } from '../../src/tools/crud.tools.js';
-import type { AuthProvider } from '../../src/auth/auth-provider.interface.js';
+import { loadConfig } from "../../src/config/config.loader.js";
+import { createAuthProvider } from "../../src/auth/auth-provider.factory.js";
+import { DataverseClient } from "../../src/dataverse/dataverse-client.js";
+import { handleCrudTool } from "../../src/tools/crud.tools.js";
+import type { AuthProvider } from "../../src/auth/auth-provider.interface.js";
 
 /**
  * Test-only subclass exposing `createRecordRobust`.
@@ -27,22 +27,26 @@ class TestClient extends DataverseClient {
     super(auth, maxRetries, timeoutMs);
   }
 
-  async createRecordRobust(entitySetName: string, data: Record<string, unknown>): Promise<string> {
+  async createRecordRobust(
+    entitySetName: string,
+    data: Record<string, unknown>,
+  ): Promise<string> {
     const response = await this.http.post(entitySetName, data, {
-      headers: { 'Prefer': 'return=representation' },
+      headers: { Prefer: "return=representation" },
     });
     const body = response.data as Record<string, unknown>;
-    const uuidRe = /([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i;
+    const uuidRe =
+      /([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i;
 
     // Strategy 1: odata-entityid response header (URL-decode, then extract UUID)
-    const rawHeader = response.headers['odata-entityid'] as string | undefined;
+    const rawHeader = response.headers["odata-entityid"] as string | undefined;
     if (rawHeader) {
       const id = decodeURIComponent(rawHeader).match(uuidRe)?.[1];
       if (id) return id;
     }
 
     // Strategy 2: @odata.id in response body
-    const odataId = body['@odata.id'] as string | undefined;
+    const odataId = body["@odata.id"] as string | undefined;
     if (odataId) {
       const id = odataId.match(uuidRe)?.[1];
       if (id) return id;
@@ -50,15 +54,20 @@ class TestClient extends DataverseClient {
 
     // Strategy 3: primary-key field in body (e.g. accountid, contactid)
     for (const [key, value] of Object.entries(body)) {
-      if (!key.startsWith('@') && key.endsWith('id') && typeof value === 'string' && uuidRe.test(value)) {
+      if (
+        !key.startsWith("@") &&
+        key.endsWith("id") &&
+        typeof value === "string" &&
+        uuidRe.test(value)
+      ) {
         return value;
       }
     }
 
     throw new Error(
       `createRecordRobust: could not extract GUID from response. ` +
-      `status=${response.status}, header=${rawHeader ?? 'absent'}, ` +
-      `bodyKeys=${JSON.stringify(Object.keys(body))}`
+        `status=${response.status}, header=${rawHeader ?? "absent"}, ` +
+        `bodyKeys=${JSON.stringify(Object.keys(body))}`,
     );
   }
 }
@@ -68,10 +77,10 @@ let failed = 0;
 
 function check(ac: string, condition: boolean, details?: string): void {
   if (condition) {
-    console.log(`✓ ${ac}${details ? ` (${details})` : ''}`);
+    console.log(`✓ ${ac}${details ? ` (${details})` : ""}`);
     passed++;
   } else {
-    console.error(`✗ ${ac}${details ? ': ' + details : ''}`);
+    console.error(`✗ ${ac}${details ? ": " + details : ""}`);
     failed++;
   }
 }
@@ -79,7 +88,11 @@ function check(ac: string, condition: boolean, details?: string): void {
 async function main(): Promise<void> {
   const config = loadConfig();
   const auth = createAuthProvider(config);
-  const client = new TestClient(auth, config.maxRetries, config.requestTimeoutMs);
+  const client = new TestClient(
+    auth,
+    config.maxRetries,
+    config.requestTimeoutMs,
+  );
 
   console.log(`Environment: ${config.environmentUrl}`);
   console.log(`Auth mode:   ${config.authMode}\n`);
@@ -90,78 +103,109 @@ async function main(): Promise<void> {
     const result = await client.whoAmI();
     const elapsed = Date.now() - start;
     check(
-      'MVP-01 whoami < 2s',
+      "MVP-01 whoami < 2s",
       elapsed < 2000 && !!result.UserId && !!result.OrganizationId,
-      `elapsed=${elapsed}ms, UserId=${result.UserId}`
+      `elapsed=${elapsed}ms, UserId=${result.UserId}`,
     );
   } catch (e) {
-    check('MVP-01 whoami < 2s', false, `threw: ${e instanceof Error ? e.message : String(e)}`);
+    check(
+      "MVP-01 whoami < 2s",
+      false,
+      `threw: ${e instanceof Error ? e.message : String(e)}`,
+    );
   }
 
   // ─── MVP-02: contact.parentcustomerid targets include account + contact ─
   try {
-    const meta = await client.getTableMetadata('contact');
-    const attr = meta.Attributes?.find(a => a.LogicalName === 'parentcustomerid');
+    const meta = await client.getTableMetadata("contact");
+    const attr = meta.Attributes?.find(
+      (a) => a.LogicalName === "parentcustomerid",
+    );
     const targets = attr?.Targets ?? [];
     check(
-      'MVP-02 parentcustomerid targets include account+contact',
-      targets.includes('account') && targets.includes('contact'),
-      attr ? `targets=${JSON.stringify(targets)}` : 'parentcustomerid attribute not found'
+      "MVP-02 parentcustomerid targets include account+contact",
+      targets.includes("account") && targets.includes("contact"),
+      attr
+        ? `targets=${JSON.stringify(targets)}`
+        : "parentcustomerid attribute not found",
     );
   } catch (e) {
-    check('MVP-02 parentcustomerid targets include account+contact', false, `threw: ${e instanceof Error ? e.message : String(e)}`);
+    check(
+      "MVP-02 parentcustomerid targets include account+contact",
+      false,
+      `threw: ${e instanceof Error ? e.message : String(e)}`,
+    );
   }
 
   // ─── MVP-03: account has a relationship to contact ──────────────────────
   try {
-    const rels = await client.getRelationships('account');
-    const hasContactRel = rels.some(r =>
-      r.ReferencingEntity === 'contact' ||
-      r.ReferencedEntity === 'contact' ||
-      r.Entity1LogicalName === 'contact' ||
-      r.Entity2LogicalName === 'contact'
+    const rels = await client.getRelationships("account");
+    const hasContactRel = rels.some(
+      (r) =>
+        r.ReferencingEntity === "contact" ||
+        r.ReferencedEntity === "contact" ||
+        r.Entity1LogicalName === "contact" ||
+        r.Entity2LogicalName === "contact",
     );
     check(
-      'MVP-03 account→contact relationship exists',
+      "MVP-03 account→contact relationship exists",
       hasContactRel,
-      `total relationships: ${rels.length}`
+      `total relationships: ${rels.length}`,
     );
   } catch (e) {
-    check('MVP-03 account→contact relationship exists', false, `threw: ${e instanceof Error ? e.message : String(e)}`);
+    check(
+      "MVP-03 account→contact relationship exists",
+      false,
+      `threw: ${e instanceof Error ? e.message : String(e)}`,
+    );
   }
 
   // ─── MVP-04: listDependencies(account) returns without error ───────────
   try {
-    const accountMeta = await client.getTableMetadata('account', false);
-    const metadataId = (accountMeta as Record<string, unknown>)['MetadataId'] as string | undefined;
+    const accountMeta = await client.getTableMetadata("account", false);
+    const metadataId = (accountMeta as Record<string, unknown>)[
+      "MetadataId"
+    ] as string | undefined;
     if (!metadataId) {
-      check('MVP-04 listDependencies(account)', false, 'MetadataId not present on account metadata response');
+      check(
+        "MVP-04 listDependencies(account)",
+        false,
+        "MetadataId not present on account metadata response",
+      );
     } else {
       const deps = await client.listDependencies(1, metadataId);
       check(
-        'MVP-04 listDependencies(account)',
+        "MVP-04 listDependencies(account)",
         Array.isArray(deps),
-        `MetadataId=${metadataId}, deps count=${deps.length}`
+        `MetadataId=${metadataId}, deps count=${deps.length}`,
       );
     }
   } catch (e) {
-    check('MVP-04 listDependencies(account)', false, `threw: ${e instanceof Error ? e.message : String(e)}`);
+    check(
+      "MVP-04 listDependencies(account)",
+      false,
+      `threw: ${e instanceof Error ? e.message : String(e)}`,
+    );
   }
 
   // ─── MVP-05: query contacts statecode=0 top=10 → ≤ 10 records ──────────
   try {
-    const result = await client.query('contacts', {
-      select: ['contactid', 'fullname', 'statecode'],
-      filter: 'statecode eq 0',
+    const result = await client.query("contacts", {
+      select: ["contactid", "fullname", "statecode"],
+      filter: "statecode eq 0",
       top: 10,
     });
     check(
-      'MVP-05 query contacts top=10 returns ≤10 records',
+      "MVP-05 query contacts top=10 returns ≤10 records",
       result.value.length <= 10,
-      `count=${result.value.length}`
+      `count=${result.value.length}`,
     );
   } catch (e) {
-    check('MVP-05 query contacts top=10 returns ≤10 records', false, `threw: ${e instanceof Error ? e.message : String(e)}`);
+    check(
+      "MVP-05 query contacts top=10 returns ≤10 records",
+      false,
+      `threw: ${e instanceof Error ? e.message : String(e)}`,
+    );
   }
 
   // ─── MVP-06: FetchXML aggregate on contacts returns grouped results ─────
@@ -172,14 +216,18 @@ async function main(): Promise<void> {
     <attribute name="contactid" alias="Count" aggregate="count"/>
   </entity>
 </fetch>`;
-    const result = await client.executeFetchXml('contacts', fetchXml);
+    const result = await client.executeFetchXml("contacts", fetchXml);
     check(
-      'MVP-06 fetchxml aggregate returns array',
+      "MVP-06 fetchxml aggregate returns array",
       Array.isArray(result.value),
-      `rows=${result.value.length}`
+      `rows=${result.value.length}`,
     );
   } catch (e) {
-    check('MVP-06 fetchxml aggregate returns array', false, `threw: ${e instanceof Error ? e.message : String(e)}`);
+    check(
+      "MVP-06 fetchxml aggregate returns array",
+      false,
+      `threw: ${e instanceof Error ? e.message : String(e)}`,
+    );
   }
 
   // ─── MVP-07: full CRUD lifecycle on account ────────────────────────────
@@ -195,42 +243,51 @@ async function main(): Promise<void> {
 
     try {
       // Step 1: create via robust helper
-      mvp07AccountId = await client.createRecordRobust('accounts', {
-        name: 'MCP Test Account - DELETE ME',
-        telephone1: '0000000000',
+      mvp07AccountId = await client.createRecordRobust("accounts", {
+        name: "MCP Test Account - DELETE ME",
+        telephone1: "0000000000",
       });
-      if (!mvp07AccountId) throw new Error('createRecordRobust returned empty ID');
+      if (!mvp07AccountId)
+        throw new Error("createRecordRobust returned empty ID");
 
       // Step 2: get → verify name
       const got = await client.getRecord<{ name: string; telephone1: string }>(
-        'accounts', mvp07AccountId, ['name', 'telephone1']
+        "accounts",
+        mvp07AccountId,
+        ["name", "telephone1"],
       );
-      if (got.name !== 'MCP Test Account - DELETE ME') {
+      if (got.name !== "MCP Test Account - DELETE ME") {
         throw new Error(`name mismatch after create: "${got.name}"`);
       }
 
       // Step 3: update telephone1
-      await client.updateRecord('accounts', mvp07AccountId, { telephone1: '1234567890' });
+      await client.updateRecord("accounts", mvp07AccountId, {
+        telephone1: "1234567890",
+      });
 
       // Step 4: get → verify telephone1 updated
       const updated = await client.getRecord<{ telephone1: string }>(
-        'accounts', mvp07AccountId, ['telephone1']
+        "accounts",
+        mvp07AccountId,
+        ["telephone1"],
       );
-      if (updated.telephone1 !== '1234567890') {
-        throw new Error(`telephone1 mismatch after update: "${updated.telephone1}"`);
+      if (updated.telephone1 !== "1234567890") {
+        throw new Error(
+          `telephone1 mismatch after update: "${updated.telephone1}"`,
+        );
       }
 
       // Step 5: delete with confirm=true (direct client)
-      await client.deleteRecord('accounts', mvp07AccountId);
+      await client.deleteRecord("accounts", mvp07AccountId);
 
       // Step 6: get → must 404
       let got404 = false;
       try {
-        await client.getRecord('accounts', mvp07AccountId, ['name']);
+        await client.getRecord("accounts", mvp07AccountId, ["name"]);
       } catch {
         got404 = true;
       }
-      if (!got404) throw new Error('record still exists after deleteRecord');
+      if (!got404) throw new Error("record still exists after deleteRecord");
 
       mvp07AccountId = null; // cleaned up successfully
     } catch (e) {
@@ -238,13 +295,19 @@ async function main(): Promise<void> {
     } finally {
       if (mvp07AccountId) {
         try {
-          await client.deleteRecord('accounts', mvp07AccountId);
+          await client.deleteRecord("accounts", mvp07AccountId);
           console.log(`  → Cleaned up MVP-07 account ${mvp07AccountId}`);
-        } catch { /* ignore */ }
+        } catch {
+          /* ignore */
+        }
       }
     }
 
-    check('MVP-07 CRUD lifecycle (create→get→update→delete→404)', mvp07Error === null, mvp07Error ?? undefined);
+    check(
+      "MVP-07 CRUD lifecycle (create→get→update→delete→404)",
+      mvp07Error === null,
+      mvp07Error ?? undefined,
+    );
   }
 
   // ─── MVP-08: delete with confirm=false does NOT delete the record ───────
@@ -253,10 +316,11 @@ async function main(): Promise<void> {
     let mvp08Error: string | null = null;
 
     try {
-      mvp08AccountId = await client.createRecordRobust('accounts', {
-        name: 'MCP Test Account MVP-08 - DELETE ME',
+      mvp08AccountId = await client.createRecordRobust("accounts", {
+        name: "MCP Test Account MVP-08 - DELETE ME",
       });
-      if (!mvp08AccountId) throw new Error('createRecordRobust returned empty ID');
+      if (!mvp08AccountId)
+        throw new Error("createRecordRobust returned empty ID");
 
       // Call tool handler with confirm=false
       // The current DeleteInput schema (zod) strips unknown keys, so 'confirm' is silently
@@ -264,15 +328,15 @@ async function main(): Promise<void> {
       let toolBlockedDeletion = false;
       try {
         await handleCrudTool(
-          'dataverse_delete',
-          { entitySetName: 'accounts', id: mvp08AccountId, confirm: false },
-          client
+          "dataverse_delete",
+          { entitySetName: "accounts", id: mvp08AccountId, confirm: false },
+          client,
         );
         // Tool did not throw — check if record still exists
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
         // A blocking error mentioning 'confirm' means the guard is implemented
-        if (msg.toLowerCase().includes('confirm')) {
+        if (msg.toLowerCase().includes("confirm")) {
           toolBlockedDeletion = true;
         }
       }
@@ -281,7 +345,7 @@ async function main(): Promise<void> {
         // Verify record still exists
         let recordStillExists = false;
         try {
-          await client.getRecord('accounts', mvp08AccountId, ['name']);
+          await client.getRecord("accounts", mvp08AccountId, ["name"]);
           recordStillExists = true;
         } catch {
           recordStillExists = false;
@@ -292,22 +356,29 @@ async function main(): Promise<void> {
         } else {
           // Record was deleted — guard NOT implemented
           mvp08AccountId = null; // already gone, skip cleanup
-          throw new Error('confirm=false did not block deletion — confirm guard not implemented in DeleteInput schema');
+          throw new Error(
+            "confirm=false did not block deletion — confirm guard not implemented in DeleteInput schema",
+          );
         }
       }
-
     } catch (e) {
       mvp08Error = e instanceof Error ? e.message : String(e);
     } finally {
       if (mvp08AccountId) {
         try {
-          await client.deleteRecord('accounts', mvp08AccountId);
+          await client.deleteRecord("accounts", mvp08AccountId);
           console.log(`  → Cleaned up MVP-08 account ${mvp08AccountId}`);
-        } catch { /* ignore */ }
+        } catch {
+          /* ignore */
+        }
       }
     }
 
-    check('MVP-08 confirm=false blocks delete', mvp08Error === null, mvp08Error ?? undefined);
+    check(
+      "MVP-08 confirm=false blocks delete",
+      mvp08Error === null,
+      mvp08Error ?? undefined,
+    );
   }
 
   // ─── Summary ───────────────────────────────────────────────────────────
@@ -316,6 +387,8 @@ async function main(): Promise<void> {
 }
 
 main().catch((error) => {
-  console.error(`\nFatal error: ${error instanceof Error ? error.message : String(error)}`);
+  console.error(
+    `\nFatal error: ${error instanceof Error ? error.message : String(error)}`,
+  );
   process.exit(1);
 });

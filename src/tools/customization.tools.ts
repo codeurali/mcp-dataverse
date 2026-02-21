@@ -1,17 +1,17 @@
-import { z } from 'zod';
-import type { DataverseAdvancedClient } from '../dataverse/dataverse-client-advanced.js';
-import { esc } from '../dataverse/dataverse-client.utils.js';
+import { z } from "zod";
+import type { DataverseAdvancedClient } from "../dataverse/dataverse-client-advanced.js";
+import { esc } from "../dataverse/dataverse-client.utils.js";
 
 const STAGE_NAMES: Record<number, string> = {
-  10: 'Pre-validation',
-  20: 'Pre-operation',
-  40: 'Post-operation',
-  45: 'Post-operation (deprecated)',
+  10: "Pre-validation",
+  20: "Pre-operation",
+  40: "Post-operation",
+  45: "Post-operation (deprecated)",
 };
 
 const MODE_NAMES: Record<number, string> = {
-  0: 'Synchronous',
-  1: 'Asynchronous',
+  0: "Synchronous",
+  1: "Asynchronous",
 };
 
 const SetWorkflowStateInput = z.object({
@@ -21,32 +21,41 @@ const SetWorkflowStateInput = z.object({
 
 export const customizationTools = [
   {
-    name: 'dataverse_list_custom_actions',
+    name: "dataverse_list_custom_actions",
     description:
-      'Lists all custom actions (custom API / SDK messages) registered in the environment. Returns the message name, category, bound entity (if any), execute privilege, and whether it is customizable. Useful for discovering available automation entry points and agent-callable actions.',
+      "Lists all custom actions (custom API / SDK messages) registered in the environment. Returns the message name, category, bound entity (if any), execute privilege, and whether it is customizable. Useful for discovering available automation entry points and agent-callable actions.",
     inputSchema: {
-      type: 'object' as const,
+      type: "object" as const,
       properties: {
-        top: { type: 'number', description: 'Max records (default 100, max 500)' },
-        nameFilter: { type: 'string', description: 'Filter by name (substring match)' },
+        top: {
+          type: "number",
+          description: "Max records (default 100, max 500)",
+        },
+        nameFilter: {
+          type: "string",
+          description: "Filter by name (substring match)",
+        },
       },
       required: [],
     },
   },
   {
-    name: 'dataverse_list_plugin_steps',
+    name: "dataverse_list_plugin_steps",
     description:
-      'Lists plugin steps (SdkMessageProcessingStep registrations) in the environment. Shows plugin assembly, step name, message (Create/Update/Delete/…), entity, stage (pre/post), mode (sync/async), and state (enabled/disabled). Essential for understanding what custom business logic fires on Dataverse operations.',
+      "Lists plugin steps (SdkMessageProcessingStep registrations) in the environment. Shows plugin assembly, step name, message (Create/Update/Delete/…), entity, stage (pre/post), mode (sync/async), and state (enabled/disabled). Essential for understanding what custom business logic fires on Dataverse operations.",
     inputSchema: {
-      type: 'object' as const,
+      type: "object" as const,
       properties: {
-        top: { type: 'number', description: 'Max records (default 100, max 500)' },
+        top: {
+          type: "number",
+          description: "Max records (default 100, max 500)",
+        },
         activeOnly: {
-          type: 'boolean',
-          description: 'Return only enabled steps (default: true)',
+          type: "boolean",
+          description: "Return only enabled steps (default: true)",
         },
         entityLogicalName: {
-          type: 'string',
+          type: "string",
           description: "Filter by entity logical name (e.g. 'account')",
         },
       },
@@ -54,22 +63,22 @@ export const customizationTools = [
     },
   },
   {
-    name: 'dataverse_set_workflow_state',
+    name: "dataverse_set_workflow_state",
     description:
-      'Activates or deactivates a Dataverse workflow (classic workflow / real-time workflow / action). Set activate=true to activate (statecode 1, statuscode 2) or activate=false to deactivate (statecode 0, statuscode 1). Returns the new state.',
+      "Activates or deactivates a Dataverse workflow (classic workflow / real-time workflow / action). Set activate=true to activate (statecode 1, statuscode 2) or activate=false to deactivate (statecode 0, statuscode 1). Returns the new state.",
     inputSchema: {
-      type: 'object' as const,
+      type: "object" as const,
       properties: {
         workflowId: {
-          type: 'string',
-          description: 'The workflow GUID',
+          type: "string",
+          description: "The workflow GUID",
         },
         activate: {
-          type: 'boolean',
-          description: 'true = activate, false = deactivate (draft)',
+          type: "boolean",
+          description: "true = activate, false = deactivate (draft)",
         },
       },
-      required: ['workflowId', 'activate'],
+      required: ["workflowId", "activate"],
     },
   },
 ];
@@ -111,34 +120,34 @@ interface PluginStepRaw {
 export async function handleCustomizationTool(
   name: string,
   args: unknown,
-  client: DataverseAdvancedClient
-): Promise<{ content: Array<{ type: 'text'; text: string }> }> {
+  client: DataverseAdvancedClient,
+): Promise<{ content: Array<{ type: "text"; text: string }> }> {
   switch (name) {
-    case 'dataverse_list_custom_actions': {
+    case "dataverse_list_custom_actions": {
       const { top, nameFilter } = ListCustomActionsInput.parse(args ?? {});
 
-      const filters: string[] = ['isprivate eq false'];
+      const filters: string[] = ["isprivate eq false"];
       if (nameFilter) {
         filters.push(`contains(name,'${esc(nameFilter)}')`);
       }
 
-      const result = await client.query<SdkMessage>('sdkmessages', {
+      const result = await client.query<SdkMessage>("sdkmessages", {
         select: [
-          'sdkmessageid',
-          'name',
-          'categoryname',
-          'isprivate',
-          'isreadonly',
-          'isvalidforexecuteasync',
+          "sdkmessageid",
+          "name",
+          "categoryname",
+          "isprivate",
+          "isreadonly",
+          "isvalidforexecuteasync",
         ],
-        filter: filters.join(' and '),
+        filter: filters.join(" and "),
         top,
       });
 
       const messages = result.value.map((m) => ({
         id: m.sdkmessageid,
         name: m.name,
-        category: m.categoryname ?? '',
+        category: m.categoryname ?? "",
         isPrivate: m.isprivate,
         isReadOnly: m.isreadonly,
         asyncSupported: m.isvalidforexecuteasync,
@@ -147,15 +156,17 @@ export async function handleCustomizationTool(
       return {
         content: [
           {
-            type: 'text',
+            type: "text",
             text: JSON.stringify({ total: messages.length, messages }, null, 2),
           },
         ],
       };
     }
 
-    case 'dataverse_list_plugin_steps': {
-      const { top, activeOnly, entityLogicalName } = ListPluginStepsInput.parse(args ?? {});
+    case "dataverse_list_plugin_steps": {
+      const { top, activeOnly, entityLogicalName } = ListPluginStepsInput.parse(
+        args ?? {},
+      );
 
       const stepQueryOptions: {
         select: string[];
@@ -164,41 +175,46 @@ export async function handleCustomizationTool(
         filter?: string;
       } = {
         select: [
-          'sdkmessageprocessingstepid',
-          'name',
-          'stage',
-          'mode',
-          'rank',
-          'statecode',
-          'filteringattributes',
-          'asyncautodelete',
+          "sdkmessageprocessingstepid",
+          "name",
+          "stage",
+          "mode",
+          "rank",
+          "statecode",
+          "filteringattributes",
+          "asyncautodelete",
         ],
         expand:
-          'sdkmessageid_sdkmessage($select=name),plugintypeid($select=name,assemblyname),sdkmessagefilterid($select=primaryobjecttypecode)',
+          "sdkmessageid_sdkmessage($select=name),plugintypeid($select=name,assemblyname),sdkmessagefilterid($select=primaryobjecttypecode)",
         top,
       };
       if (activeOnly) {
-        stepQueryOptions.filter = 'statecode eq 0';
+        stepQueryOptions.filter = "statecode eq 0";
       }
 
-      const result = await client.query<PluginStepRaw>('sdkmessageprocessingsteps', stepQueryOptions);
+      const result = await client.query<PluginStepRaw>(
+        "sdkmessageprocessingsteps",
+        stepQueryOptions,
+      );
 
       let steps = result.value;
 
       if (entityLogicalName) {
         const lname = entityLogicalName.toLowerCase();
         steps = steps.filter(
-          (s) => s.sdkmessagefilterid?.primaryobjecttypecode?.toLowerCase() === lname
+          (s) =>
+            s.sdkmessagefilterid?.primaryobjecttypecode?.toLowerCase() ===
+            lname,
         );
       }
 
       const mapped = steps.map((s) => ({
         id: s.sdkmessageprocessingstepid,
         name: s.name,
-        message: s.sdkmessageid_sdkmessage?.name ?? '',
-        entity: s.sdkmessagefilterid?.primaryobjecttypecode ?? '',
-        assembly: s.plugintypeid?.assemblyname ?? '',
-        pluginType: s.plugintypeid?.name ?? '',
+        message: s.sdkmessageid_sdkmessage?.name ?? "",
+        entity: s.sdkmessagefilterid?.primaryobjecttypecode ?? "",
+        assembly: s.plugintypeid?.assemblyname ?? "",
+        pluginType: s.plugintypeid?.name ?? "",
         stage: s.stage,
         stageName: STAGE_NAMES[s.stage] ?? `Stage ${s.stage}`,
         mode: s.mode,
@@ -212,17 +228,21 @@ export async function handleCustomizationTool(
       return {
         content: [
           {
-            type: 'text',
-            text: JSON.stringify({ total: mapped.length, steps: mapped }, null, 2),
+            type: "text",
+            text: JSON.stringify(
+              { total: mapped.length, steps: mapped },
+              null,
+              2,
+            ),
           },
         ],
       };
     }
 
-    case 'dataverse_set_workflow_state': {
+    case "dataverse_set_workflow_state": {
       const { workflowId, activate } = SetWorkflowStateInput.parse(args);
 
-      await client.updateRecord('workflows', workflowId, {
+      await client.updateRecord("workflows", workflowId, {
         statecode: activate ? 1 : 0,
         statuscode: activate ? 2 : 1,
       });
@@ -230,13 +250,17 @@ export async function handleCustomizationTool(
       return {
         content: [
           {
-            type: 'text',
-            text: JSON.stringify({
-              workflowId,
-              newState: activate ? 'Activated' : 'Draft',
-              statecode: activate ? 1 : 0,
-              statuscode: activate ? 2 : 1,
-            }, null, 2),
+            type: "text",
+            text: JSON.stringify(
+              {
+                workflowId,
+                newState: activate ? "Activated" : "Draft",
+                statecode: activate ? 1 : 0,
+                statuscode: activate ? 2 : 1,
+              },
+              null,
+              2,
+            ),
           },
         ],
       };

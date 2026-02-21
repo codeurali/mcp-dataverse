@@ -1,6 +1,6 @@
-import { ConfidentialClientApplication } from '@azure/msal-node';
-import type { AuthProvider } from './auth-provider.interface.js';
-import type { Config } from '../config/config.schema.js';
+import { ConfidentialClientApplication } from "@azure/msal-node";
+import type { AuthProvider } from "./auth-provider.interface.js";
+import type { Config } from "../config/config.schema.js";
 
 export class MsalAuthProvider implements AuthProvider {
   readonly environmentUrl: string;
@@ -13,13 +13,19 @@ export class MsalAuthProvider implements AuthProvider {
     this.environmentUrl = config.environmentUrl;
 
     if (!config.tenantId) {
-      throw new Error('MsalAuthProvider requires config.tenantId for client_credentials flow');
+      throw new Error(
+        "MsalAuthProvider requires config.tenantId for client_credentials flow",
+      );
     }
     if (!config.clientId) {
-      throw new Error('MsalAuthProvider requires config.clientId for client_credentials flow');
+      throw new Error(
+        "MsalAuthProvider requires config.clientId for client_credentials flow",
+      );
     }
     if (!config.clientSecret) {
-      throw new Error('MsalAuthProvider requires config.clientSecret for client_credentials flow');
+      throw new Error(
+        "MsalAuthProvider requires config.clientSecret for client_credentials flow",
+      );
     }
 
     this.msalApp = new ConfidentialClientApplication({
@@ -31,13 +37,17 @@ export class MsalAuthProvider implements AuthProvider {
     });
 
     // Scope for Dataverse client_credentials: <environmentUrl>/.default
-    const baseUrl = config.environmentUrl.replace(/\/$/, '');
+    const baseUrl = config.environmentUrl.replace(/\/$/, "");
     this.scope = `${baseUrl}/.default`;
   }
 
   async getToken(): Promise<string> {
     // Return cached token if still valid (60-second buffer before expiry)
-    if (this.cachedToken !== null && this.tokenExpiresAt !== null && new Date() < this.tokenExpiresAt) {
+    if (
+      this.cachedToken !== null &&
+      this.tokenExpiresAt !== null &&
+      new Date() < this.tokenExpiresAt
+    ) {
       return this.cachedToken;
     }
 
@@ -46,7 +56,9 @@ export class MsalAuthProvider implements AuthProvider {
     });
 
     if (result === null || !result.accessToken) {
-      throw new Error('MSAL: acquireTokenByClientCredential returned no access token');
+      throw new Error(
+        "MSAL: acquireTokenByClientCredential returned no access token",
+      );
     }
 
     this.cachedToken = result.accessToken;

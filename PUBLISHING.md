@@ -15,12 +15,13 @@ The MCP server is distributed via **npm** and listed in the **MCP Registry** (wh
 ### 1. Set your GitHub username
 
 Replace `your-username` in these files:
+
 - `package.json` → `mcpName` field
 - `server.json` → `name` and `repository.url`
 
 The `mcpName` in `package.json` **must match** the `name` in `server.json`.
 
-Format: `io.github.ali-taggaz/dataverse`
+Format: `io.github.codeurali/dataverse`
 
 ### 2. Set the real repository URL
 
@@ -62,7 +63,7 @@ mcp-publisher publish
 ### 7. Verify
 
 ```bash
-curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.ali-taggaz/dataverse"
+curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.codeurali/dataverse"
 ```
 
 The server should now appear in VS Code's `@mcp` gallery search.
@@ -70,6 +71,7 @@ The server should now appear in VS Code's `@mcp` gallery search.
 ## Updating
 
 For each new version:
+
 1. Bump `version` in `package.json`, `server.json`, and the `packages[0].version` in `server.json`
 2. `npm publish`
 3. `mcp-publisher publish`
@@ -87,6 +89,7 @@ Where the JSON config is: `{"name":"mcp-dataverse","command":"npx","args":["-y",
 ## Architecture Note
 
 The server runs **locally** on the user's machine via stdio transport. This is required because:
+
 - PAC CLI authentication uses local device code flow
 - Credentials never leave the user's machine
 - VS Code launches the server as a subprocess and communicates via stdin/stdout
