@@ -7,7 +7,7 @@
     {
       "src": "https://raw.githubusercontent.com/codeurali/mcp-dataverse/master/assets/logo.webp",
       "mimeType": "image/webp",
-      "sizes": "any"
+      "sizes": ["any"]
     }
   ],
   "websiteUrl": "https://www.npmjs.com/package/mcp-dataverse",
