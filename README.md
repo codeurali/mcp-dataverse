@@ -218,54 +218,6 @@ GitHub Copilot → stdio → MCP Server → Tool Router → DataverseClient → 
 
 ---
 
-## Docker
-
-The server ships as a single-process stdio MCP server — no HTTP port is exposed.  
-**MSAL client credentials** is the recommended auth mode for containers; `PAC_CLI` mode requires an interactive device-code flow and is not suitable for container environments.
-
-### Build the image
-
-```bash
-docker build -t mcp-dataverse .
-```
-
-### Run with MSAL client credentials
-
-```bash
-docker run --rm -i \
-  -e ENVIRONMENT_URL=https://yourorg.crm.dynamics.com \
-  -e CLIENT_ID=your-client-id \
-  -e CLIENT_SECRET=your-client-secret \
-  -e TENANT_ID=your-tenant-id \
-  mcp-dataverse
-```
-
-> The app registration must have the **Dynamics CRM → user_impersonation** API permission and a Dataverse security role assigned.
-
-### Claude Desktop config (Docker)
-
-Add the following to your Claude Desktop `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "dataverse": {
-      "command": "docker",
-      "args": [
-        "run", "--rm", "-i",
-        "-e", "ENVIRONMENT_URL=https://yourorg.crm.dynamics.com",
-        "-e", "CLIENT_ID=your-client-id",
-        "-e", "CLIENT_SECRET=your-client-secret",
-        "-e", "TENANT_ID=your-tenant-id",
-        "mcp-dataverse"
-      ]
-    }
-  }
-}
-```
-
----
-
 ## Troubleshooting
 
 | Symptom | Fix |

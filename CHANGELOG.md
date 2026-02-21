@@ -17,6 +17,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — [Semantic V
 
 ---
 
+## [0.1.5] — 2026-02-21
+
+### Removed
+- Removed `Dockerfile` and `.dockerignore` — Docker adds unnecessary complexity for an stdio-based MCP server distributed via `npx`; PAC CLI auth (recommended) does not work in containers
+- Removed Docker section from README
+
+---
+
 ## [0.1.3] — 2025-06-22
 
 ### Fixed
