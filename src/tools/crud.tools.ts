@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { DataverseClient } from '../dataverse/dataverse-client.js';
 import { esc } from '../dataverse/dataverse-client.utils.js';
+import { safeEntitySetName } from './validation.utils.js';
 
 export const crudTools = [
   {
@@ -109,31 +110,31 @@ export const crudTools = [
 ];
 
 const GetInput = z.object({
-  entitySetName: z.string().min(1),
+  entitySetName: safeEntitySetName,
   id: z.string().uuid(),
   select: z.array(z.string()).optional(),
 });
 
 const CreateInput = z.object({
-  entitySetName: z.string().min(1),
+  entitySetName: safeEntitySetName,
   data: z.record(z.unknown()),
 });
 
 const UpdateInput = z.object({
-  entitySetName: z.string().min(1),
+  entitySetName: safeEntitySetName,
   id: z.string().uuid(),
   data: z.record(z.unknown()),
   etag: z.string().optional(),
 });
 
 const DeleteInput = z.object({
-  entitySetName: z.string().min(1),
+  entitySetName: safeEntitySetName,
   id: z.string().uuid(),
   confirm: z.boolean(),
 });
 
 const UpsertInput = z.object({
-  entitySetName: z.string().min(1),
+  entitySetName: safeEntitySetName,
   alternateKey: z.string().min(1).optional(),
   alternateKeyValue: z.string().min(1).optional(),
   alternateKeys: z.record(z.string()).optional(),
@@ -146,7 +147,7 @@ const UpsertInput = z.object({
 );
 
 const AssignInput = z.object({
-  entitySetName: z.string().min(1),
+  entitySetName: safeEntitySetName,
   id: z.string().uuid(),
   ownerType: z.enum(['systemuser', 'team']),
   ownerId: z.string().uuid(),

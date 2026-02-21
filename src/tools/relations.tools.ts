@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { DataverseClient } from '../dataverse/dataverse-client.js';
+import { safeEntitySetName, safeRelationshipName } from './validation.utils.js';
 
 export const relationTools = [
   {
@@ -35,19 +36,19 @@ export const relationTools = [
 ];
 
 const AssociateInput = z.object({
-  entitySetName: z.string().min(1),
+  entitySetName: safeEntitySetName,
   id: z.string().uuid(),
-  relationshipName: z.string().min(1),
-  relatedEntitySetName: z.string().min(1),
+  relationshipName: safeRelationshipName,
+  relatedEntitySetName: safeEntitySetName,
   relatedId: z.string().uuid(),
 });
 
 const DisassociateInput = z.object({
-  entitySetName: z.string().min(1),
+  entitySetName: safeEntitySetName,
   id: z.string().uuid(),
-  relationshipName: z.string().min(1),
+  relationshipName: safeRelationshipName,
   relatedId: z.string().uuid().optional(),
-  relatedEntitySetName: z.string().min(1).optional(),
+  relatedEntitySetName: safeEntitySetName.optional(),
 });
 
 export async function handleRelationTool(

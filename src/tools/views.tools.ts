@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { DataverseAdvancedClient } from '../dataverse/dataverse-client-advanced.js';
+import { esc } from '../dataverse/dataverse-client.utils.js';
 
 const ListViewsInput = z.object({
   entityLogicalName: z.string().min(1),
@@ -55,7 +56,7 @@ export async function handleViewTool(
   switch (name) {
     case 'dataverse_list_views': {
       const { entityLogicalName, includePersonal, top } = ListViewsInput.parse(args);
-      const escaped = entityLogicalName.replace(/'/g, "''");
+      const escaped = esc(entityLogicalName);
 
       const systemResult = await client.query<SystemView>('savedqueries', {
         filter: `returnedtypecode eq '${escaped}' and statecode eq 0`,

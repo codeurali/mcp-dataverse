@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { DataverseAdvancedClient } from '../dataverse/dataverse-client-advanced.js';
+import { esc } from '../dataverse/dataverse-client.utils.js';
 
 const ListSolutionsInput = z.object({
   includeManaged: z.boolean().optional().default(false),
@@ -107,7 +108,7 @@ export async function handleSolutionTool(
       }
       if (params.nameFilter) {
         filterParts.push(
-          `contains(uniquename,'${params.nameFilter.replace(/'/g, "''")}')`,
+          `contains(uniquename,'${esc(params.nameFilter)}')`,
         );
       }
 

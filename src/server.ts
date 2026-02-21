@@ -87,7 +87,7 @@ const TEAM_TOOL_NAMES = new Set(teamTools.map(t => t.name));
 
 // Read version from package.json so server.ts never drifts out of sync
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const SERVER_VERSION = (JSON.parse(readFileSync(join(__dirname, '../../package.json'), 'utf-8')) as { version: string }).version;
+const SERVER_VERSION = (JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf-8')) as { version: string }).version;
 
 /**
  * Routes a tool call to its handler. Used directly by the request handler

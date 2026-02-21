@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { DataverseAdvancedClient } from '../dataverse/dataverse-client-advanced.js';
+import { esc } from '../dataverse/dataverse-client.utils.js';
 
 const STAGE_NAMES: Record<number, string> = {
   10: 'Pre-validation',
@@ -118,7 +119,7 @@ export async function handleCustomizationTool(
 
       const filters: string[] = ['isprivate eq false'];
       if (nameFilter) {
-        filters.push(`contains(name,'${nameFilter.replace(/'/g, "''")}')`);
+        filters.push(`contains(name,'${esc(nameFilter)}')`);
       }
 
       const result = await client.query<SdkMessage>('sdkmessages', {

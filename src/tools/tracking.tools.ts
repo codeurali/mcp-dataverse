@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { DataverseAdvancedClient } from '../dataverse/dataverse-client-advanced.js';
+import { safeEntitySetName } from './validation.utils.js';
 
 export const trackingTools = [
   {
@@ -29,7 +30,7 @@ export const trackingTools = [
 ];
 
 const ChangeDetectionInput = z.object({
-  entitySetName: z.string().min(1),
+  entitySetName: safeEntitySetName,
   deltaToken: z.string().nullable(),
   select: z.array(z.string()).optional(),
 });

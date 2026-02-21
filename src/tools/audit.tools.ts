@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { DataverseAdvancedClient } from '../dataverse/dataverse-client-advanced.js';
+import { esc } from '../dataverse/dataverse-client.utils.js';
 
 const AUDIT_ACTION_NAMES: Record<number, string> = {
   1: 'Create',
@@ -135,7 +136,7 @@ export async function handleAuditTool(
         filters.push(`_objectid_value eq ${params.recordId}`);
       }
       if (params.entityLogicalName) {
-        const escaped = params.entityLogicalName.replace(/'/g, "''");
+        const escaped = esc(params.entityLogicalName);
         filters.push(`objecttypecode eq '${escaped}'`);
       }
       if (params.userId) {

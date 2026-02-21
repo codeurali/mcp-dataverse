@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { DataverseAdvancedClient } from '../dataverse/dataverse-client-advanced.js';
+import { safeEntitySetName } from './validation.utils.js';
 
 export const actionTools = [
   {
@@ -120,7 +121,7 @@ const ExecuteFunctionInput = z.object({
 });
 
 const ExecuteBoundActionInput = z.object({
-  entitySetName: z.string().min(1),
+  entitySetName: safeEntitySetName,
   id: z.string().uuid(),
   actionName: z
     .string()
@@ -142,7 +143,7 @@ const ListTableDependenciesInput = z.object({
 });
 
 const ExecuteBoundFunctionInput = z.object({
-  entitySetName: z.string().min(1),
+  entitySetName: safeEntitySetName,
   id: z.string().uuid(),
   functionName: z
     .string()

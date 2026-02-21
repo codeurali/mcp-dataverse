@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { DataverseAdvancedClient } from '../dataverse/dataverse-client-advanced.js';
+import { esc } from '../dataverse/dataverse-client.utils.js';
 
 const GetUserRolesInput = z.object({
     userId: z.string().uuid(),
@@ -123,7 +124,7 @@ export async function handleUserTool(
             }
 
             if (params.search) {
-                const escaped = params.search.replace(/'/g, "''");
+                const escaped = esc(params.search);
                 filterParts.push(
                     `(contains(fullname,'${escaped}') or contains(internalemailaddress,'${escaped}'))`
                 );

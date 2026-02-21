@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { DataverseAdvancedClient } from '../dataverse/dataverse-client-advanced.js';
+import { safeEntitySetName } from './validation.utils.js';
 
 /**
  * Dataverse entities whose EntitySetName does not follow the simple <logicalName>+s pattern.
@@ -105,7 +106,7 @@ export const queryTools = [
 ];
 
 const QueryInput = z.object({
-  entitySetName: z.string().min(1),
+  entitySetName: safeEntitySetName,
   select: z.array(z.string()).optional(),
   filter: z.string().optional(),
   orderby: z.string().optional(),
@@ -121,7 +122,7 @@ const FetchXmlInput = z.object({
 });
 
 const RetrieveWithPagingInput = z.object({
-  entitySetName: z.string().min(1),
+  entitySetName: safeEntitySetName,
   select: z.array(z.string()).optional(),
   filter: z.string().optional(),
   orderby: z.string().optional(),

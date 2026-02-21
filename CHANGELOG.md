@@ -17,6 +17,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — [Semantic V
 
 ---
 
+## [0.1.3] — 2025-06-22
+
+### Fixed
+- Server startup crash when installed via `npx` — incorrect `package.json` path resolution from `dist/` (was `../../package.json`, now `../package.json`)
+
+### Security
+- **[HIGH]** `entitySetName` now validated against a safe identifier regex (`/^[a-zA-Z_][a-zA-Z0-9_]*$/`) across all tools — prevents path traversal within same origin (F-01)
+- **[MEDIUM]** `relationshipName` and `relatedEntitySetName` now validated with the same safe identifier regex in relation tools (F-10)
+- Consolidated all inline OData single-quote escaping calls to use the centralized `esc()` utility for consistency (F-06)
+
+---
+
 ## [0.1.0] — 2025-04-01
 
 ### Added

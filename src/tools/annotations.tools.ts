@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import type { DataverseAdvancedClient } from '../dataverse/dataverse-client-advanced.js';
+import { esc } from '../dataverse/dataverse-client.utils.js';
+import { safeEntitySetName } from './validation.utils.js';
 
 const GetAnnotationsInput = z.object({
     recordId: z.string().uuid(),
@@ -10,7 +12,7 @@ const GetAnnotationsInput = z.object({
 
 const CreateAnnotationInput = z.object({
     recordId: z.string().uuid(),
-    entitySetName: z.string().min(1),
+    entitySetName: safeEntitySetName,
     notetext: z.string().optional(),
     subject: z.string().optional(),
     filename: z.string().optional(),
@@ -121,7 +123,7 @@ export async function handleAnnotationTool(
             const filterParts = [`_objectid_value eq ${params.recordId}`];
             if (params.mimeTypeFilter) {
                 filterParts.push(
-                    `mimetype eq '${params.mimeTypeFilter.replace(/'/g, "''")}'`,
+                    `mimetype eq '${esc(params.mimeTypeFilter)}'`,
                 );
             }
 

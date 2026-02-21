@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { DataverseAdvancedClient } from '../dataverse/dataverse-client-advanced.js';
+import { esc } from '../dataverse/dataverse-client.utils.js';
 
 const OPERATION_TYPE_NAMES: Record<number, string> = {
   0: 'Execute',
@@ -148,13 +149,13 @@ export async function handleTraceTool(
 
       const filterParts: string[] = [];
       if (params.pluginTypeFilter) {
-        filterParts.push(`contains(typename,'${params.pluginTypeFilter.replace(/'/g, "''")}')`);
+        filterParts.push(`contains(typename,'${esc(params.pluginTypeFilter)}')`);
       }
       if (params.messageFilter) {
-        filterParts.push(`messagename eq '${params.messageFilter.replace(/'/g, "''")}'`);
+        filterParts.push(`messagename eq '${esc(params.messageFilter)}'`);
       }
       if (params.entityFilter) {
-        filterParts.push(`primaryentity eq '${params.entityFilter.replace(/'/g, "''")}'`);
+        filterParts.push(`primaryentity eq '${esc(params.entityFilter)}'`);
       }
       if (params.exceptionsOnly) {
         filterParts.push('exceptiondetails ne null');
@@ -206,7 +207,7 @@ export async function handleTraceTool(
       }
       if (params.entityFilter) {
         filterParts.push(
-          `regardingobjecttypecode eq '${params.entityFilter.replace(/'/g, "''")}'`,
+          `regardingobjecttypecode eq '${esc(params.entityFilter)}'`,
         );
       }
 
