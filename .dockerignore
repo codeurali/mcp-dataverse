@@ -1,0 +1,15 @@
+node_modules
+dist
+.env
+.env.*
+config.json
+.msal-cache.json
+*.log
+coverage
+.nyc_output
+.github
+tests
+**/*.test.ts
+**/*.spec.ts
+README.md
+CAPABILITIES.md

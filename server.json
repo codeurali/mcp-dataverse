@@ -1,0 +1,30 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.ali-taggaz/dataverse",
+  "title": "MCP Dataverse",
+  "description": "MCP server exposing 48 Microsoft Dataverse Web API tools for AI agents — query, CRUD, metadata, search, files, audit, and more.",
+  "repository": {
+    "url": "https://github.com/codeurali/mcp-dataverse",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "mcp-dataverse",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "DATAVERSE_ENV_URL",
+          "description": "Your Dataverse environment URL (e.g. https://yourorg.crm.dynamics.com)",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+node_modules/
+dist/
+.env
+config.json
+.msal-cache.json
+*.log
+.DS_Store
+coverage/
+
+# Private planning & internal artifacts (security/privacy)
+_bmad/
+_bmad-output/
+.codex/
+project.md
+
+# Editor personal settings
+.vscode/settings.json
+.vscode/launch.json
