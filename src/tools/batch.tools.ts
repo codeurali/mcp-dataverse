@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { DataverseClient } from '../dataverse/dataverse-client.js';
+import type { DataverseBatchClient } from '../dataverse/dataverse-client.batch.js';
 import type { BatchRequest } from '../dataverse/types.js';
 
 export const batchTools = [
@@ -73,7 +73,7 @@ const BatchExecuteInput = z.object({
 export async function handleBatchTool(
   name: string,
   args: unknown,
-  client: DataverseClient
+  client: DataverseBatchClient
 ): Promise<{ content: Array<{ type: 'text'; text: string }> }> {
   if (name === 'dataverse_batch_execute') {
     const { requests, useChangeset } = BatchExecuteInput.parse(args);

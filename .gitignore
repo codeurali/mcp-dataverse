@@ -16,3 +16,7 @@ project.md
 # Editor personal settings
 .vscode/settings.json
 .vscode/launch.json
+
+# MCP Registry auth tokens (written by mcp-publisher CLI)
+.mcpregistry_github_token
+.mcpregistry_registry_token

@@ -18,6 +18,7 @@ jest.mock('../../src/dataverse/http-client.js', () => {
 
 import { HttpClient, HttpError } from '../../src/dataverse/http-client.js';
 import { DataverseClient } from '../../src/dataverse/dataverse-client.js';
+import { DataverseBatchClient } from '../../src/dataverse/dataverse-client.batch.js';
 import { DataverseMetadataClient } from '../../src/dataverse/dataverse-client.metadata.js';
 import type { AuthProvider } from '../../src/auth/auth-provider.interface.js';
 
@@ -542,7 +543,7 @@ describe('DataverseClient', () => {
         headers: { 'content-type': `multipart/mixed;boundary=${boundary}` },
       });
 
-      const client = new DataverseClient(mockAuthProvider);
+      const client = new DataverseBatchClient(mockAuthProvider);
       const results = await client.batchExecute([{ method: 'GET', url: 'accounts' }]);
 
       expect(results).toHaveLength(1);
@@ -554,7 +555,7 @@ describe('DataverseClient', () => {
         headers: { 'content-type': 'text/plain' },
       });
 
-      const client = new DataverseClient(mockAuthProvider);
+      const client = new DataverseBatchClient(mockAuthProvider);
       const results = await client.batchExecute([{ method: 'GET', url: 'accounts' }]);
 
       expect(results).toEqual(['raw response']);
@@ -567,7 +568,7 @@ describe('DataverseClient', () => {
         headers: { 'content-type': 'multipart/mixed;boundary=test' },
       });
 
-      const client = new DataverseClient(mockAuthProvider);
+      const client = new DataverseBatchClient(mockAuthProvider);
       // null body will cause parseMultipartResponse to throw; should fallback gracefully
       const results = await client.batchExecute([{ method: 'GET', url: 'accounts' }]);
 

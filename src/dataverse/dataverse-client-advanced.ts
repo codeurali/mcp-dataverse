@@ -1,4 +1,4 @@
-import { DataverseMetadataClient } from './dataverse-client.metadata.js';
+import { DataverseBatchClient } from './dataverse-client.batch.js';
 import type { ODataResponse } from './types.js';
 import { esc } from './dataverse-client.utils.js';
 
@@ -22,7 +22,7 @@ function xmlEscape(v: string): string {
  * Extends DataverseMetadataClient with advanced query capabilities:
  * bound functions, server-side paging, and change tracking (delta queries).
  */
-export class DataverseAdvancedClient extends DataverseMetadataClient {
+export class DataverseAdvancedClient extends DataverseBatchClient {
 
   // ─── Advanced Actions & Functions ────────────────────────────────────────
 

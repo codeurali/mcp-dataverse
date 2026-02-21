@@ -1,5 +1,5 @@
 import { handleBatchTool } from '../../src/tools/batch.tools.js';
-import type { DataverseClient } from '../../src/dataverse/dataverse-client.js';
+import type { DataverseBatchClient } from '../../src/dataverse/dataverse-client.batch.js';
 
 describe('handleBatchTool', () => {
   let mockClient: Record<string, jest.Mock>;
@@ -10,7 +10,7 @@ describe('handleBatchTool', () => {
     };
   });
 
-  const client = () => mockClient as unknown as DataverseClient;
+  const client = () => mockClient as unknown as DataverseBatchClient;
 
   // ── dataverse_batch_execute – success ─────────────────────────────────────
 

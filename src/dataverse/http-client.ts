@@ -23,7 +23,7 @@ export interface HttpResponse<T = unknown> {
 }
 
 export class HttpClient {
-  private readonly baseURL: string;
+  readonly baseURL: string;
   private readonly timeoutMs: number;
   readonly defaultHeaders: Record<string, string>;
   private readonly tokenProvider: (() => Promise<string>) | undefined;
