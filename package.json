@@ -1,6 +1,6 @@
 {
   "name": "mcp-dataverse",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "MCP Server for Microsoft Dataverse Web API",
   "type": "module",
   "main": "dist/server.js",
