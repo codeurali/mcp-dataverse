@@ -18,11 +18,13 @@ MCP server that exposes the Microsoft Dataverse Web API as **50 AI-callable tool
 
 ```bash
 # VS Code
-code --add-mcp '{"name":"mcp-dataverse","command":"npx","args":["-y","mcp-dataverse"]}'
+code --add-mcp '{"name":"dataverse","type":"stdio","command":"npx","args":["-y","mcp-dataverse"],"env":{"DATAVERSE_ENV_URL":"https://yourorg.crm.dynamics.com","AUTH_MODE":"pac"}}'
 
 # VS Code Insiders
-code-insiders --add-mcp '{"name":"mcp-dataverse","command":"npx","args":["-y","mcp-dataverse"]}'
+code-insiders --add-mcp '{"name":"dataverse","type":"stdio","command":"npx","args":["-y","mcp-dataverse"],"env":{"DATAVERSE_ENV_URL":"https://yourorg.crm.dynamics.com","AUTH_MODE":"pac"}}'
 ```
+
+> Replace `https://yourorg.crm.dynamics.com` with your actual Dataverse environment URL.
 
 ### Manual (mcp.json)
 
@@ -34,7 +36,11 @@ Add to your `.vscode/mcp.json` (or user settings):
     "dataverse": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "mcp-dataverse"]
+      "args": ["-y", "mcp-dataverse"],
+      "env": {
+        "DATAVERSE_ENV_URL": "https://yourorg.crm.dynamics.com",
+        "AUTH_MODE": "pac"
+      }
     }
   }
 }
