@@ -26,8 +26,6 @@
   },
   "files": [
     "dist/**",
-    "config.example.json",
-    ".env.example",
     "README.md",
     "LICENSE",
     "CAPABILITIES.md",
