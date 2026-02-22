@@ -15,22 +15,30 @@
     "url": "https://github.com/codeurali/mcp-dataverse",
     "source": "github"
   },
-  "version": "0.1.6",
+  "version": "0.1.7",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "mcp-dataverse",
-      "version": "0.1.6",
+      "version": "0.1.7",
       "transport": {
         "type": "stdio"
       },
       "environmentVariables": [
         {
+          "name": "MCP_CONFIG_PATH",
+          "description": "Path to a config.json file (overrides all other env vars). Recommended for VS Code / Claude Desktop setups.",
+          "placeholder": "/path/to/config.json",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
           "name": "DATAVERSE_ENV_URL",
           "description": "Your Dataverse environment URL",
           "placeholder": "https://yourorg.crm.dynamics.com",
-          "isRequired": true,
+          "isRequired": false,
           "format": "string",
           "isSecret": false
         },

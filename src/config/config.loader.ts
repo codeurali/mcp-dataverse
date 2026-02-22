@@ -5,8 +5,9 @@ import { ConfigSchema, type Config } from "./config.schema.js";
 const CONFIG_FILE_NAME = "config.json";
 
 export function loadConfig(): Config {
-  // Priority: env vars > config.json > defaults
-  const configPath = join(process.cwd(), CONFIG_FILE_NAME);
+  // Priority: env vars > MCP_CONFIG_PATH file > cwd/config.json > defaults
+  const configPath =
+    process.env["MCP_CONFIG_PATH"] ?? join(process.cwd(), CONFIG_FILE_NAME);
 
   let rawConfig: Record<string, unknown> = {};
 
@@ -16,7 +17,7 @@ export function loadConfig(): Config {
       rawConfig = JSON.parse(fileContent) as Record<string, unknown>;
     } catch {
       throw new Error(
-        `Invalid JSON in ${CONFIG_FILE_NAME}. Check for syntax errors (trailing commas, missing quotes).`,
+        `Invalid JSON in ${configPath}. Check for syntax errors (trailing commas, missing quotes).`,
       );
     }
   }
