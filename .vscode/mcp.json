@@ -1,10 +1,21 @@
 {
   "servers": {
-    "dataverse": {
+    "dataverse-dev": {
       "type": "stdio",
       "command": "node",
       "args": ["${workspaceFolder}/dist/server.js"],
-      "env": {}
+      "env": {
+        "DATAVERSE_ENV_URL": "${input:dataverse_env_url}",
+        "AUTH_MODE": "pac"
+      }
     }
-  }
+  },
+  "inputs": [
+    {
+      "id": "dataverse_env_url",
+      "type": "promptString",
+      "description": "Dataverse environment URL (e.g. https://yourorg.crm.dynamics.com)",
+      "password": false
+    }
+  ]
 }
