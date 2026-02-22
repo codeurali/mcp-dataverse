@@ -4,7 +4,8 @@ import {
   type ICachePlugin,
   type TokenCacheContext,
 } from "@azure/msal-node";
-import { existsSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { homedir } from "os";
 import { join } from "path";
 import {
   createCipheriv,
@@ -16,7 +17,13 @@ import type { AuthProvider } from "./auth-provider.interface.js";
 
 // Microsoft Power Platform CLI App ID — public client, no app registration needed
 const PLATFORM_CLIENT_ID = "1950a258-227b-4e31-a9cf-717495945fc2";
-const TOKEN_CACHE_FILE = join(process.cwd(), ".msal-cache.json");
+
+/**
+ * Stable user-level cache directory. Independent of process cwd so the server
+ * always finds the token regardless of where VS Code or npx launches it from.
+ */
+const CACHE_DIR = join(homedir(), ".mcp-dataverse");
+const TOKEN_CACHE_FILE = join(CACHE_DIR, "msal-cache.json");
 
 /**
  * Derives a machine+user-scoped encryption key.
@@ -81,6 +88,7 @@ function createCachePlugin(): ICachePlugin {
     },
     afterCacheAccess: async (cacheContext: TokenCacheContext) => {
       if (cacheContext.cacheHasChanged) {
+        mkdirSync(CACHE_DIR, { recursive: true });
         writeFileSync(
           TOKEN_CACHE_FILE,
           encryptForDisk(cacheContext.tokenCache.serialize()),
@@ -153,8 +161,9 @@ export class PacAuthProvider implements AuthProvider {
     if (accounts.length === 0) {
       throw new Error(
         "No authenticated account found.\n" +
-          "Run once: npm run auth:setup\n" +
-          "Then restart the server.",
+          "Run once to set up authentication:\n" +
+          "  npx mcp-dataverse-auth\n" +
+          "Then restart the MCP server in VS Code.",
       );
     }
 
@@ -174,8 +183,8 @@ export class PacAuthProvider implements AuthProvider {
       this.cachedToken = null;
       throw new Error(
         "Token refresh failed. Re-authenticate:\n" +
-          "npm run auth:setup\n" +
-          "Then restart the server.",
+          "  npx mcp-dataverse-auth\n" +
+          "Then restart the MCP server in VS Code.",
       );
     }
   }

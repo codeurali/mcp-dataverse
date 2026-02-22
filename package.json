@@ -5,7 +5,8 @@
   "type": "module",
   "main": "dist/server.js",
   "bin": {
-    "mcp-dataverse": "dist/server.js"
+    "mcp-dataverse": "dist/server.js",
+    "mcp-dataverse-auth": "dist/setup-auth.js"
   },
   "mcpName": "io.github.codeurali/dataverse",
   "license": "MIT",

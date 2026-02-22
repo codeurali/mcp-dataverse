@@ -1,18 +1,35 @@
+#!/usr/bin/env node
 /**
- * Authentication setup entry point.
- * Run once: npm run auth:setup
+ * Authentication setup entry point for production installs.
+ * Run once: npx mcp-dataverse-auth [environment-url]
  *
  * Uses MSAL device code flow — a browser tab will open for you to authenticate.
- * The token is cached locally in .msal-cache.json and used silently on subsequent runs.
+ * The token is cached in ~/.mcp-dataverse/msal-cache.json and reused silently.
  */
 import { loadConfig } from "./config/config.loader.js";
 import { PacAuthProvider } from "./auth/pac-auth-provider.js";
 
 async function main(): Promise<void> {
-  process.stderr.write("MCP Dataverse — Authentication Setup\n");
-  process.stderr.write("─────────────────────────────────────\n");
+  process.stderr.write("MCP Dataverse — One-time Authentication Setup\n");
+  process.stderr.write("──────────────────────────────────────────────\n");
 
-  const config = loadConfig();
+  // Allow passing the env URL as a CLI arg: npx mcp-dataverse-auth https://org.crm.dynamics.com
+  const cliEnvUrl = process.argv[2];
+  if (cliEnvUrl) {
+    process.env["DATAVERSE_ENV_URL"] = cliEnvUrl;
+  }
+
+  let config;
+  try {
+    config = loadConfig();
+  } catch {
+    process.stderr.write(
+      "Environment URL is required.\n" +
+        "Usage: npx mcp-dataverse-auth https://yourorg.crm.dynamics.com\n" +
+        "Or set DATAVERSE_ENV_URL before running.\n",
+    );
+    process.exit(1);
+  }
 
   if (config.authMode !== "pac") {
     process.stderr.write(
@@ -21,21 +38,26 @@ async function main(): Promise<void> {
     process.exit(0);
   }
 
-  process.stderr.write(`Environment: ${config.environmentUrl}\n\n`);
-  process.stderr.write("Starting device code authentication...\n");
+  process.stderr.write(`Environment : ${config.environmentUrl}\n`);
+  process.stderr.write(
+    `Token cache : ~/.mcp-dataverse/msal-cache.json\n\n`,
+  );
+  process.stderr.write("A browser window will open. Sign in with your Microsoft account.\n\n");
 
   const provider = new PacAuthProvider(config.environmentUrl);
   await provider.setupViaDeviceCode();
 
   process.stderr.write(
-    "\n✓ Authentication successful — token cached in .msal-cache.json\n",
+    "\n✓ Authentication successful!\n" +
+      "  Token cached in ~/.mcp-dataverse/msal-cache.json\n\n" +
+      "  Restart the MCP server in VS Code to apply.\n",
   );
-  process.stderr.write("You can now start the server: npm start\n");
 }
 
 main().catch((error) => {
   process.stderr.write(
-    `Setup failed: ${error instanceof Error ? error.message : String(error)}\n`,
+    `\nSetup failed: ${error instanceof Error ? error.message : String(error)}\n`,
   );
   process.exit(1);
 });
+
