@@ -15,14 +15,12 @@
     "url": "https://github.com/codeurali/mcp-dataverse",
     "source": "github"
   },
-  "version": "0.1.7",
-  "packages": [
+  "version": "0.1.8",
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "mcp-dataverse",
-      "version": "0.1.7",
-      "transport": {
+      "version": "0.1.8", {
         "type": "stdio"
       },
       "environmentVariables": [
