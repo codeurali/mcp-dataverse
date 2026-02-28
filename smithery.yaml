@@ -1,0 +1,26 @@
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      DATAVERSE_ENV_URL:
+        type: string
+        title: Dataverse Environment URL
+        description: >-
+          Your Dataverse / Power Platform environment URL.
+          Example: https://yourorg.crm.dynamics.com
+      MCP_CONFIG_PATH:
+        type: string
+        title: Config File Path
+        description: >-
+          Optional path to a config.json file (overrides all other env vars).
+          Recommended for VS Code / Claude Desktop setups.
+    required: []
+  commandFunction: |-
+    (config) => ({
+      command: "npx",
+      args: ["-y", "mcp-dataverse"],
+      env: Object.fromEntries(
+        Object.entries(config).filter(([, v]) => v !== undefined && v !== "")
+      )
+    })
