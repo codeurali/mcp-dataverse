@@ -24,6 +24,7 @@ scripts/
 mcp-template/
 autoparc/
 assets/
+!assets/logo.webp
 
 # Private planning & internal artifacts (security/privacy)
 _bmad/
