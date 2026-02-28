@@ -1,0 +1,49 @@
+node_modules/
+.venv/
+site/
+docs/capabilities.md
+.env
+config.json
+.msal-cache.json
+*.log
+.DS_Store
+coverage/
+
+# Test artifacts
+test-output.txt
+*.local
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Source code (kept private — published via npm only)
+src/
+tests/
+scripts/
+mcp-template/
+autoparc/
+assets/
+
+# Private planning & internal artifacts (security/privacy)
+_bmad/
+_bmad-output/
+.codex/
+project.md
+refine.md
+refinev2.md
+refinev3.md
+PUBLISHING.md
+
+# Internal IDE/workflow configs
+.vscode/mcp.json
+.github/agents/
+
+# Editor personal settings
+.vscode/settings.json
+.vscode/launch.json
+
+# MCP Registry auth tokens (written by mcp-publisher CLI)
+.mcpregistry_github_token
+.mcpregistry_registry_token
+mcp-publisher.exe

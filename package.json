@@ -1,0 +1,90 @@
+{
+  "name": "mcp-dataverse",
+  "version": "0.3.6",
+  "description": "The most complete MCP server for Microsoft Dataverse — 54 tools, zero config auth, works with VS Code Copilot, Claude, Cursor and more",
+  "type": "module",
+  "main": "dist/server.js",
+  "bin": {
+    "mcp-dataverse": "dist/server.js",
+    "mcp-dataverse-auth": "dist/setup-auth.js"
+  },
+  "mcpName": "io.github.codeurali/dataverse",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "dataverse",
+    "microsoft-dataverse",
+    "power-platform",
+    "dynamics-365",
+    "dynamics-crm",
+    "common-data-service",
+    "cds",
+    "odata",
+    "fetchxml",
+    "copilot",
+    "model-context-protocol",
+    "ai-agent",
+    "power-apps",
+    "crm"
+  ],
+  "homepage": "https://codeurali.github.io/mcp-dataverse-docs",
+  "files": [
+    "dist/**",
+    "README.md",
+    "LICENSE",
+    "CAPABILITIES.md",
+    "server.json",
+    "assets/**"
+  ],
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "publish:all": "node scripts/publish.mjs",
+    "publish:npm": "node scripts/publish.mjs --npm",
+    "publish:mcp": "node scripts/publish.mjs --mcp",
+    "publish:dry": "node scripts/publish.mjs --dry",
+    "clean": "node -e \"const {rmSync}=require('fs'); try{rmSync('dist',{recursive:true})}catch{}\"",
+    "build": "npm run clean && tsc",
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "auth:setup": "node dist/setup-auth.js",
+    "doctor": "node dist/doctor.js",
+    "test": "jest",
+    "test:unit": "jest --testPathPattern=tests/unit",
+    "test:integration": "jest --testPathPattern=tests/integration",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/**/*.ts tests/**/*.ts",
+    "typecheck": "tsc --noEmit",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "eslint --fix"
+    ],
+    "tests/**/*.ts": [
+      "eslint --fix"
+    ]
+  },
+  "dependencies": {
+    "@azure/msal-node": "^2.16.0",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "husky": "^9.1.7",
+    "jest": "^29.0.0",
+    "lint-staged": "^16.2.7",
+    "ts-jest": "^29.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.4.0",
+    "typescript-eslint": "^8.56.0"
+  }
+}

@@ -1,0 +1,1 @@
+{"version":3,"file":"dataverse-client.batch.d.ts","sourceRoot":"","sources":["../../src/dataverse/dataverse-client.batch.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,uBAAuB,EAAE,MAAM,gCAAgC,CAAC;AACzE,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,YAAY,CAAC;AAG/C;;;GAGG;AACH,qBAAa,oBAAqB,SAAQ,uBAAuB;IAGzD,YAAY,CAChB,QAAQ,EAAE,YAAY,EAAE,EACxB,YAAY,UAAQ,GACnB,OAAO,CAAC,OAAO,EAAE,CAAC;CA6EtB"}

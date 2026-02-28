@@ -1,0 +1,1 @@
+{"version":3,"file":"auth-provider.factory.js","sourceRoot":"","sources":["../../src/auth/auth-provider.factory.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,sBAAsB,EAAE,MAAM,gCAAgC,CAAC;AAGxE,MAAM,UAAU,kBAAkB,CAAC,MAAc;IAC/C,OAAO,IAAI,sBAAsB,CAAC,MAAM,CAAC,cAAc,CAAC,CAAC;AAC3D,CAAC"}

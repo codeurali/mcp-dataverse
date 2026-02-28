@@ -1,0 +1,50 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codeurali/dataverse",
+  "title": "MCP Dataverse",
+  "description": "54 tools for Microsoft Dataverse: query, CRUD, metadata, search, files, audit, batch, solutions, and more.",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/codeurali/mcp-dataverse/master/assets/logo.webp",
+      "mimeType": "image/webp",
+      "sizes": ["any"]
+    }
+  ],
+  "websiteUrl": "https://www.npmjs.com/package/mcp-dataverse",
+  "repository": {
+    "url": "https://github.com/codeurali/mcp-dataverse",
+    "source": "github"
+  },
+  "version": "0.3.6",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "mcp-dataverse",
+      "version": "0.3.6",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_CONFIG_PATH",
+          "description": "Path to a config.json file (overrides all other env vars). Recommended for VS Code / Claude Desktop setups.",
+          "placeholder": "/path/to/config.json",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "DATAVERSE_ENV_URL",
+          "description": "Your Dataverse environment URL",
+          "placeholder": "https://yourorg.crm.dynamics.com",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
+
+
