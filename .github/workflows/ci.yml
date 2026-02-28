@@ -20,5 +20,5 @@ jobs:
       - name: Validate server.json
         run: node -e "const s = require('./server.json'); console.log('server.json OK:', s.name, s.version)"
       - name: Check dist entrypoint
-        run: node -e "require('./dist/index.js'); console.log('dist/index.js loads OK')"
+        run: node -e "require('./dist/server.js'); console.log('dist/server.js loads OK')"
 
