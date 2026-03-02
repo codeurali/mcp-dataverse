@@ -89,6 +89,12 @@ Re-authenticate after ~90 days of inactivity: `npx mcp-dataverse-auth`
 
 ---
 
+## Performance Tip
+
+MCP Dataverse is designed to be comprehensive, but most AI models work best with fewer tools in context. **Deselect the tools you don't need** in your client's tool picker (e.g. VS Code Chat panel) to keep the agent focused and responsive.
+
+---
+
 ## Roadmap
 
 | Version | Feature | Status |

@@ -140,6 +140,14 @@ This checks:
 - Authentication token status
 - API connectivity (WhoAmI)
 
+## Performance Tip
+
+MCP Dataverse ships **60+ tools** to cover the full Dataverse API surface. Most AI models perform best with fewer tools loaded in context.
+
+> **Recommendation:** In VS Code, open the Chat panel and deselect the tools you don't need for your current task. This reduces noise and helps the agent pick the right tool faster.
+>
+> You can also call `dataverse_suggest_tools` with a short description of what you want to do — it returns only the relevant tools.
+
 ## Next Steps
 
 - [Multi-client setup](multi-client-setup.md) — configure VS Code, Claude Desktop, Cursor, and more
