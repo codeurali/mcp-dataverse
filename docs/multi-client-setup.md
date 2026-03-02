@@ -2,6 +2,7 @@
 layout: default
 title: Multi-Client Setup
 nav_order: 3
+has_children: true
 permalink: /multi-client-setup
 ---
 

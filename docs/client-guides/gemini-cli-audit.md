@@ -1,3 +1,7 @@
+---
+nav_exclude: true
+---
+
 # Rapport de vérification — `gemini-cli.md`
 
 **Date** : vérification effectuée contre les sources officielles v0.31.x  

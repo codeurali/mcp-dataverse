@@ -1,3 +1,10 @@
+---
+layout: default
+title: Codex CLI
+parent: Multi-Client Setup
+nav_order: 3
+---
+
 # Guide : mcp-dataverse sur Codex CLI (OpenAI)
 
 Ce guide couvre l'installation de Codex CLI depuis zéro jusqu'à un premier appel MCP Dataverse fonctionnel depuis le terminal.

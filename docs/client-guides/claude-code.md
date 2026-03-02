@@ -1,3 +1,10 @@
+---
+layout: default
+title: Claude Code (CLI)
+parent: Multi-Client Setup
+nav_order: 1
+---
+
 # Guide : mcp-dataverse sur Claude Code (CLI)
 
 Ce guide couvre l'installation de Claude Code depuis zéro jusqu'à un premier appel MCP Dataverse fonctionnel depuis le terminal.

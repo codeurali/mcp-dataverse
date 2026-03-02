@@ -1,3 +1,10 @@
+---
+layout: default
+title: Gemini CLI
+parent: Multi-Client Setup
+nav_order: 5
+---
+
 # Guide : mcp-dataverse sur Gemini CLI (Google)
 
 Ce guide couvre l'installation de Gemini CLI depuis zéro jusqu'à un premier appel MCP Dataverse fonctionnel depuis le terminal.

@@ -1,3 +1,10 @@
+---
+layout: default
+title: Cursor
+parent: Multi-Client Setup
+nav_order: 4
+---
+
 # Guide : mcp-dataverse sur Cursor
 
 Ce guide couvre l'installation de Cursor depuis zéro jusqu'à un premier appel MCP Dataverse fonctionnel dans l'éditeur.

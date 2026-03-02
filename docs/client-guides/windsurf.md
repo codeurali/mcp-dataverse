@@ -1,3 +1,10 @@
+---
+layout: default
+title: Windsurf
+parent: Multi-Client Setup
+nav_order: 6
+---
+
 # Guide : mcp-dataverse sur Windsurf
 
 Ce guide couvre l'installation de Windsurf depuis zéro jusqu'à un premier appel MCP Dataverse fonctionnel dans l'éditeur.

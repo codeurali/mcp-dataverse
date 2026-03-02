@@ -1,3 +1,10 @@
+---
+layout: default
+title: Claude Desktop
+parent: Multi-Client Setup
+nav_order: 2
+---
+
 # Guide : mcp-dataverse sur Claude Desktop
 
 Ce guide couvre l'installation de Claude Desktop depuis zéro jusqu'à un premier appel MCP Dataverse fonctionnel.

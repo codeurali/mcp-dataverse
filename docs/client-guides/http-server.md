@@ -1,3 +1,10 @@
+---
+layout: default
+title: HTTP Server
+parent: Multi-Client Setup
+nav_order: 7
+---
+
 # Guide : mcp-dataverse en mode HTTP (multi-client)
 
 Ce guide explique comment démarrer mcp-dataverse en mode serveur HTTP afin que plusieurs éditeurs ou outils IA puissent partager la même instance du serveur MCP simultanément.
