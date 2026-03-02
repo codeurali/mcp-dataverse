@@ -1,12 +1,10 @@
 import { createServer } from "http";
 import { randomUUID } from "crypto";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-export async function startHttpTransport(server, port, version, toolCount) {
-    const transport = new StreamableHTTPServerTransport({
-        sessionIdGenerator: () => randomUUID(),
-        enableJsonResponse: true,
-    });
-    await server.connect(transport);
+export async function startHttpTransport(serverFactory, port, version, toolCount) {
+    // One transport (and one Server instance) per client session.
+    // Key = mcp-session-id assigned at initialize time.
+    const sessions = new Map();
     const httpServer = createServer(async (req, res) => {
         // CORS headers for browser-based clients
         res.setHeader("Access-Control-Allow-Origin", "*");
@@ -25,7 +23,48 @@ export async function startHttpTransport(server, port, version, toolCount) {
         }
         if (url.pathname === "/mcp") {
             try {
-                await transport.handleRequest(req, res);
+                const sessionId = req.headers["mcp-session-id"];
+                if (sessionId) {
+                    // Route to existing session
+                    const existing = sessions.get(sessionId);
+                    if (!existing) {
+                        res.writeHead(404, { "Content-Type": "application/json" });
+                        res.end(JSON.stringify({
+                            error: "Session not found. Please reinitialize.",
+                        }));
+                        return;
+                    }
+                    await existing.handleRequest(req, res);
+                }
+                else {
+                    // New client: create a dedicated Server + transport pair
+                    const transport = new StreamableHTTPServerTransport({
+                        sessionIdGenerator: () => randomUUID(),
+                        enableJsonResponse: true,
+                    });
+                    // Register session before connecting so any early messages are routed correctly
+                    if (transport.sessionId) {
+                        sessions.set(transport.sessionId, transport);
+                        transport.onclose = () => {
+                            if (transport.sessionId)
+                                sessions.delete(transport.sessionId);
+                        };
+                    }
+                    const sessionServer = serverFactory();
+                    await sessionServer.connect(transport);
+                    await transport.handleRequest(req, res);
+                    // Capture session ID that may have been set during handleRequest
+                    if (!transport.sessionId) {
+                        // stateless fallback: nothing to track
+                    }
+                    else if (!sessions.has(transport.sessionId)) {
+                        sessions.set(transport.sessionId, transport);
+                        transport.onclose = () => {
+                            if (transport.sessionId)
+                                sessions.delete(transport.sessionId);
+                        };
+                    }
+                }
             }
             catch {
                 if (!res.headersSent) {
@@ -47,7 +86,9 @@ export async function startHttpTransport(server, port, version, toolCount) {
     // Keep the process alive; clean shutdown on signals
     const shutdown = async () => {
         process.stderr.write("Shutting down HTTP server...\n");
-        await transport.close();
+        for (const t of sessions.values()) {
+            await t.close();
+        }
         httpServer.close();
         process.exit(0);
     };

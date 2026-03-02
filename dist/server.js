@@ -36,6 +36,7 @@ import { teamTools, handleTeamTool } from "./tools/teams.tools.js";
 import { routerTools, handleRouterTool } from "./tools/router.tools.js";
 import { listResources, listResourceTemplates, readResource, } from "./resources/resource-provider.js";
 import { workflowTools, handleWorkflowTool } from "./tools/workflow.tools.js";
+import { attributeTools, handleAttributeTool } from "./tools/attribute.tools.js";
 // ── Tool Registry — Map-based O(1) dispatch ──────────────────────────────────
 const registry = createToolRegistry([
     { tools: authTools, handler: handleAuthTool },
@@ -60,10 +61,13 @@ const registry = createToolRegistry([
     { tools: fileTools, handler: handleFileTool },
     { tools: teamTools, handler: handleTeamTool },
     { tools: workflowTools, handler: handleWorkflowTool },
+    { tools: attributeTools, handler: handleAttributeTool },
     { tools: routerTools, handler: handleRouterTool },
 ]);
 // Impersonate is registered separately — it has a special dispatch signature
 const IMPERSONATE_NAMES = new Set(impersonateTools.map((t) => t.name));
+// Pre-computed tool list — identical for every server instance
+const ALL_TOOL_DEFS = [...registry.getAllDefinitions(), ...impersonateTools];
 // Read version from package.json so server.ts never drifts out of sync
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SERVER_VERSION = JSON.parse(readFileSync(join(__dirname, "../package.json"), "utf-8")).version;
@@ -107,18 +111,18 @@ function dispatchTool(name, args, client, progress) {
         throw new Error(`Unknown tool: ${name}`);
     return handler(name, args, client, progress);
 }
-async function main() {
-    const config = loadConfig();
-    const authProvider = createAuthProvider(config);
-    const client = new DataverseAdvancedClient(authProvider, config.maxRetries, config.requestTimeoutMs);
+/**
+ * Creates and configures a new MCP Server instance with all handlers attached.
+ * Each HTTP session gets its own Server so that multi-client connections are
+ * fully independent. Stdio mode calls this once.
+ */
+function createMcpServer(client) {
     const server = new Server({ name: "mcp-dataverse", version: SERVER_VERSION }, {
         capabilities: { tools: {}, resources: {} },
         instructions: SERVER_INSTRUCTIONS,
     });
-    // Combine registry definitions with impersonate tools
-    const allToolDefs = [...registry.getAllDefinitions(), ...impersonateTools];
     server.setRequestHandler(ListToolsRequestSchema, async () => ({
-        tools: allToolDefs,
+        tools: ALL_TOOL_DEFS,
     }));
     server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const { name, arguments: args } = request.params;
@@ -149,10 +153,15 @@ async function main() {
         const contents = await readResource(request.params.uri, client, SERVER_INSTRUCTIONS);
         return { contents: [contents] };
     });
+    return server;
+}
+async function main() {
+    const config = loadConfig();
+    const authProvider = createAuthProvider(config);
+    const client = new DataverseAdvancedClient(authProvider, config.maxRetries, config.requestTimeoutMs);
     const transportArgs = parseTransportArgs();
     if (transportArgs.transport === "http") {
         const { startHttpTransport } = await import("./http-server.js");
-        const toolCount = allToolDefs.length;
         process.stderr.write(`Starting HTTP transport on port ${transportArgs.port}...\n`);
         // Trigger auth before accepting requests
         try {
@@ -163,9 +172,10 @@ async function main() {
             const msg = err instanceof Error ? err.message : String(err);
             process.stderr.write(`[mcp-dataverse] Authentication failed: ${msg}\n`);
         }
-        await startHttpTransport(server, transportArgs.port, SERVER_VERSION, toolCount);
+        await startHttpTransport(() => createMcpServer(client), transportArgs.port, SERVER_VERSION, ALL_TOOL_DEFS.length);
     }
     else {
+        const server = createMcpServer(client);
         const transport = new StdioServerTransport();
         await server.connect(transport);
         // Do not log to stdout — stdio transport uses stdout for protocol messages

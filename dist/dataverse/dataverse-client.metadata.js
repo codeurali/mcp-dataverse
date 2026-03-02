@@ -120,5 +120,19 @@ export class DataverseMetadataClient extends DataverseActionsClient {
     async updateEntityDefinition(logicalName, body) {
         await this.requestWithRetry(() => this.http.patch(`EntityDefinitions(LogicalName='${esc(logicalName)}')`, body, { headers: { "If-Match": "*" } }));
     }
+    // ─── Attribute (Column) CRUD ───────────────────────────────────────────
+    async createAttribute(entityLogicalName, body) {
+        return this.requestWithRetry(async () => {
+            const response = await this.http.post(`EntityDefinitions(LogicalName='${esc(entityLogicalName)}')/Attributes`, body, { headers: { Prefer: "return=representation" } });
+            const data = response.data;
+            return data["MetadataId"] ?? "";
+        });
+    }
+    async updateAttribute(entityLogicalName, attributeLogicalName, body) {
+        await this.requestWithRetry(() => this.http.put(`EntityDefinitions(LogicalName='${esc(entityLogicalName)}')/Attributes(LogicalName='${esc(attributeLogicalName)}')`, body));
+    }
+    async deleteAttribute(entityLogicalName, attributeLogicalName) {
+        await this.requestWithRetry(() => this.http.delete(`EntityDefinitions(LogicalName='${esc(entityLogicalName)}')/Attributes(LogicalName='${esc(attributeLogicalName)}')`));
+    }
 }
 //# sourceMappingURL=dataverse-client.metadata.js.map

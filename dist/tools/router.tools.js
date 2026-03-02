@@ -56,6 +56,9 @@ const TOOL_TAGS = {
     dataverse_get_global_option_set: ["metadata", "schema", "read"],
     dataverse_publish_component: ["customization", "write"],
     dataverse_get_entity_xml: ["customization", "metadata", "read"],
+    dataverse_create_attribute: ["metadata", "schema", "write", "attribute"],
+    dataverse_update_attribute: ["metadata", "schema", "write", "attribute"],
+    dataverse_delete_attribute: ["metadata", "schema", "write", "attribute", "destructive"],
 };
 // ── Tool descriptions (for matching without registry dependency) ────────────
 const TOOL_DESCRIPTIONS = {
@@ -114,6 +117,9 @@ const TOOL_DESCRIPTIONS = {
     dataverse_get_global_option_set: "Get a global option set definition",
     dataverse_publish_component: "Publish a single component",
     dataverse_get_entity_xml: "Get entity customization XML",
+    dataverse_create_attribute: "Create a column on a Dataverse table",
+    dataverse_update_attribute: "Update mutable properties of a column",
+    dataverse_delete_attribute: "Delete a column and all its data from a table",
 };
 // ── Matching logic ─────────────────────────────────────────────────────────────
 function tokenize(text) {

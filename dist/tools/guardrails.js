@@ -3,6 +3,7 @@ const DESTRUCTIVE_TOOLS = new Set([
     "dataverse_delete",
     "dataverse_delete_file",
     "dataverse_update_entity",
+    "dataverse_delete_attribute",
 ]);
 /**
  * Check query parameters and return warnings about potential issues.
