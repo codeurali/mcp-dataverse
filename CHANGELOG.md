@@ -5,6 +5,18 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — [Semantic V
 
 ---
 
+## [0.3.8] — 2026-03-02
+
+### Changed
+
+- **README** cleaned up — removed Battle-Tested section, removed Smithery/MCP Registry links (not yet listed), simplified troubleshooting
+- **Roadmap v0.4** now includes Azure AD app registration and Managed Identity auth methods
+- **Roadmap simplified** — removed MCP Resources milestone (tools already cover solutions, views, option sets), promoted Prompts to v0.5, moved OBO to ideas backlog
+- **Docs site** switched to light theme with automatic dark mode (follows OS preference), modern accent colors
+- **Community page** simplified — focus on testers, removed contributing/code sections
+
+---
+
 ## [0.3.7] — 2026-03-02
 
 ### Added

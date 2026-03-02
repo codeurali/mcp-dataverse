@@ -49,34 +49,10 @@ Active testers who report bugs or contribute fixes will be credited in the [Chan
 
 ---
 
-## Contributing
-
-### Report Bugs
+## Found a Bug?
 
 [Open an issue](https://github.com/codeurali/mcp-dataverse/issues) with:
 - Tool name and version (`mcp-dataverse --version`)
 - Input JSON you sent
 - Expected vs. actual output
 - Dataverse environment region
-
-### Suggest Features
-
-Use the `enhancement` label when [opening an issue](https://github.com/codeurali/mcp-dataverse/issues). Check the [Roadmap]({{ site.baseurl }}/roadmap) first — your idea might already be planned.
-
-### Code Contributions
-
-1. Fork the repository
-2. Create a feature branch
-3. Run tests: `npm test`
-4. Submit a pull request
-
-The project uses TypeScript strict mode, Zod validation, and structured outputs. See [CAPABILITIES.md](https://github.com/codeurali/mcp-dataverse/blob/master/CAPABILITIES.md) for the full API surface.
-
----
-
-## Links
-
-- [npm package](https://www.npmjs.com/package/mcp-dataverse)
-- [GitHub repository](https://github.com/codeurali/mcp-dataverse)
-- [MCP Registry](https://github.com/modelcontextprotocol/servers)
-- [Smithery](https://smithery.ai/server/@codeurali/mcp-dataverse)

@@ -83,15 +83,9 @@ Re-authenticate after ~90 days of inactivity: `npx mcp-dataverse-auth`
 | ---------------------------------- | ------------------------------------------------------------------ |
 | No sign-in prompt                  | Open **View → Output → MCP** — the device code is displayed there  |
 | `No MSAL accounts found`           | Run `npx mcp-dataverse-auth` then restart the server               |
-| `Authentication timed out`         | 5-minute window expired — restart MCP for a new code               |
+| `Authentication timed out`         | Restart the MCP server — a fresh code is generated automatically   |
 | Server not appearing in Agent mode | Run `npx mcp-dataverse install` or `npx mcp-dataverse doctor`      |
 | HTTP errors                        | Run `npx mcp-dataverse doctor` to diagnose config and connectivity |
-
----
-
-## Battle-Tested
-
-All 63 tools tested on a real Dataverse production environment across 8 live sessions — **55 ✅ · 9 ⚠️ · 1 ❌ (env-specific)**. [Details & test results →](https://codeurali.github.io/mcp-dataverse/community)
 
 ---
 
@@ -99,10 +93,8 @@ All 63 tools tested on a real Dataverse production environment across 8 live ses
 
 | Version | Feature | Status |
 | ------- | ------- | ------ |
-| **v0.4** | Streamable HTTP transport | 🟢 90% done |
-| **v0.5** | MCP Resources — browsable schema | 🟡 40% done |
-| **v0.6** | MCP Prompts — workflow templates | 🔴 Planned |
-| **v1.0** | On-Behalf-Of auth (OBO) | 🔴 Planned |
+| **v0.4** | HTTP transport + schema consistency + new auth methods | 🟢 In progress |
+| **v0.5** | MCP Prompts — workflow templates | 🔴 Planned |
 
 [→ Full Roadmap](https://codeurali.github.io/mcp-dataverse/roadmap)
 

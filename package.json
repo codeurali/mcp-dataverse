@@ -1,6 +1,6 @@
 {
   "name": "mcp-dataverse",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "The most complete MCP server for Microsoft Dataverse — 63 tools, zero config auth, works with VS Code Copilot, Claude, Cursor and more",
   "type": "module",
   "main": "dist/server.js",
