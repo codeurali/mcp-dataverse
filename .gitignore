@@ -1,7 +1,6 @@
 node_modules/
 .venv/
 site/
-docs/capabilities.md
 .env
 config.json
 .msal-cache.json
