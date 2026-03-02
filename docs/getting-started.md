@@ -1,6 +1,13 @@
+---
+layout: default
+title: Getting Started
+nav_order: 2
+permalink: /getting-started
+---
+
 # Getting Started
 
-Quick start guide for MCP Dataverse — an MCP server exposing 54 AI-callable tools for Microsoft Dataverse.
+Quick start guide for MCP Dataverse — an MCP server exposing 63 AI-callable tools for Microsoft Dataverse.
 
 ## Prerequisites
 
@@ -71,7 +78,7 @@ Authentication triggers on the **first tool call** after the server starts:
 3. Open `https://microsoft.com/devicelogin`, paste the code, sign in with your work account
 4. The Output panel confirms: `Authenticated ✓`
 
-> The code expires after **5 minutes**. If it times out, retry the tool call for a new code.
+> If the device code times out, simply retry the tool call — a fresh code is generated automatically. If authentication fails repeatedly, restart the MCP server.
 
 ### Subsequent launches
 
@@ -82,6 +89,21 @@ To force re-authentication:
 ```bash
 npx mcp-dataverse-auth https://yourorg.crm.dynamics.com
 ```
+
+### Upcoming authentication methods
+{: .d-inline-block }
+
+Planned
+{: .label .label-yellow }
+
+The authentication architecture is built on a pluggable `AuthProvider` interface with a factory pattern — adding new auth strategies requires no breaking changes. Two additional methods are planned:
+
+| Method | Use case | Status |
+|:-------|:---------|:-------|
+| **Azure AD app registration** (Client Credentials) | Service-to-service, CI/CD pipelines, unattended scenarios | 🔜 Planned |
+| **Managed Identity** | Azure-hosted deployments (App Service, Container Apps, Azure VM) — zero-secret auth | 🔜 Planned |
+
+Both will be selectable via a `authMethod` configuration option (`"device-code"` / `"client-credentials"` / `"managed-identity"`).
 
 ## Running the Server
 

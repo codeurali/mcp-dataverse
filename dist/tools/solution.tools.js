@@ -154,17 +154,13 @@ export async function handleSolutionTool(name, args, client) {
                 installedOn: s["installedon"],
                 publisher: s["publisherid"]?.["friendlyname"] ?? null,
             }));
-            return formatData(`${solutions.length} solutions found`, { solutions, count: solutions.length }, [
-                "Use dataverse_get_solution_components to inspect a specific solution",
-            ]);
+            return formatData(`${solutions.length} solutions found`, { solutions, count: solutions.length }, ["Use dataverse_solution_components to inspect a specific solution"]);
         }
         case "dataverse_solution_components": {
             const { solutionName, componentType, top = 200, } = SolutionComponentsInput.parse(args);
             const result = await client.getSolutionComponents(solutionName, componentType, top);
-            const components = Array.isArray(result)
-                ? result
-                : (result.value ?? [result]);
-            return formatData(`${components.length} components in solution '${solutionName}'`, result, ["Filter by componentType for specific component kinds"]);
+            const typedResult = result;
+            return formatData(`${typedResult.count} components in solution '${solutionName}'`, result, ["Filter by componentType for specific component kinds"]);
         }
         case "dataverse_publish_customizations": {
             const { components } = PublishCustomizationsInput.parse(args ?? {});

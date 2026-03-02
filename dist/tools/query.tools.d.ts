@@ -41,6 +41,10 @@ export declare const queryTools: ({
                 type: string;
                 description: string;
             };
+            formattedValues: {
+                type: string;
+                description: string;
+            };
             fetchXml?: never;
             maxTotal?: never;
         };
@@ -63,6 +67,10 @@ export declare const queryTools: ({
                 description: string;
             };
             fetchXml: {
+                type: string;
+                description: string;
+            };
+            formattedValues: {
                 type: string;
                 description: string;
             };
@@ -113,6 +121,10 @@ export declare const queryTools: ({
                 description?: never;
             };
             maxTotal: {
+                type: string;
+                description: string;
+            };
+            formattedValues: {
                 type: string;
                 description: string;
             };

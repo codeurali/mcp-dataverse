@@ -1,5 +1,5 @@
 import type { DataverseAdvancedClient } from "../dataverse/dataverse-client-advanced.js";
-export declare const teamTools: {
+export declare const teamTools: ({
     name: string;
     description: string;
     inputSchema: {
@@ -14,6 +14,9 @@ export declare const teamTools: {
                 enum: number[];
                 description: string;
             };
+            teamId?: never;
+            roleId?: never;
+            confirm?: never;
         };
         required: never[];
     };
@@ -23,7 +26,36 @@ export declare const teamTools: {
         idempotentHint: boolean;
         openWorldHint: boolean;
     };
-}[];
+} | {
+    name: string;
+    description: string;
+    inputSchema: {
+        type: "object";
+        properties: {
+            teamId: {
+                type: string;
+                description: string;
+            };
+            roleId: {
+                type: string;
+                description: string;
+            };
+            confirm: {
+                type: string;
+                description: string;
+            };
+            top?: never;
+            teamType?: never;
+        };
+        required: string[];
+    };
+    annotations: {
+        readOnlyHint: boolean;
+        destructiveHint: boolean;
+        idempotentHint: boolean;
+        openWorldHint: boolean;
+    };
+})[];
 export declare function handleTeamTool(name: string, args: unknown, client: DataverseAdvancedClient): Promise<{
     content: Array<{
         type: "text";

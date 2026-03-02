@@ -1,3 +1,11 @@
+---
+layout: default
+title: Managing Records
+parent: Use Cases
+nav_order: 3
+permalink: /use-cases/managing-records
+---
+
 # Managing Records
 
 Tools for creating, updating, deleting, and linking Dataverse records.

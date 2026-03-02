@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { safeEntitySetName } from "./validation.utils.js";
-import { formatData } from "./output.utils.js";
+import { formatData, mergeFormattedValues } from "./output.utils.js";
+import { checkQueryGuardrails } from "./guardrails.js";
 /**
  * Dataverse entities whose EntitySetName does not follow the simple <logicalName>+s pattern.
  * Used to resolve the correct entity set name when auto-extracting from FetchXML.
@@ -60,6 +61,10 @@ export const queryTools = [
                     type: "string",
                     description: 'OData $apply for server-side aggregation (e.g., "groupby((statuscode),aggregate($count as count))")',
                 },
+                formattedValues: {
+                    type: "boolean",
+                    description: "When true, includes human-readable labels for picklist fields alongside raw integer codes (e.g., { value: 1, label: 'Active' }). Uses OData formatted-value annotations.",
+                },
             },
             required: ["entitySetName"],
         },
@@ -83,6 +88,10 @@ export const queryTools = [
                 fetchXml: {
                     type: "string",
                     description: "The complete FetchXML query string",
+                },
+                formattedValues: {
+                    type: "boolean",
+                    description: "When true, includes human-readable labels for picklist fields alongside raw integer codes.",
                 },
             },
             required: ["fetchXml"],
@@ -112,6 +121,10 @@ export const queryTools = [
                     type: "number",
                     description: "Maximum records to retrieve (default: 5000, max: 50000)",
                 },
+                formattedValues: {
+                    type: "boolean",
+                    description: "Include formatted label annotations.",
+                },
             },
             required: ["entitySetName"],
         },
@@ -132,6 +145,7 @@ const QueryInput = z.object({
     expand: z.string().optional(),
     count: z.boolean().optional(),
     apply: z.string().optional(),
+    formattedValues: z.boolean().optional(),
 });
 const FetchXmlInput = z.object({
     fetchXml: z.string().min(1).describe("Complete FetchXML query string"),
@@ -139,6 +153,7 @@ const FetchXmlInput = z.object({
         .string()
         .optional()
         .describe('OData entity set name (e.g., "accounts"). If omitted, extracted from the <entity name="..."> element in the FetchXML.'),
+    formattedValues: z.boolean().optional(),
 });
 const RetrieveWithPagingInput = z.object({
     entitySetName: safeEntitySetName,
@@ -147,6 +162,7 @@ const RetrieveWithPagingInput = z.object({
     orderby: z.string().optional(),
     expand: z.string().optional(),
     maxTotal: z.number().positive().max(50000).optional(),
+    formattedValues: z.boolean().optional(),
 });
 export async function handleQueryTool(name, args, client, progress) {
     switch (name) {
@@ -167,12 +183,32 @@ export async function handleQueryTool(name, args, client, progress) {
                 queryOptions.count = params.count;
             if (params.apply !== undefined)
                 queryOptions.apply = params.apply;
+            if (params.formattedValues !== undefined)
+                queryOptions.formattedValues = params.formattedValues;
             const result = await client.query(params.entitySetName, queryOptions);
             const records = Array.isArray(result?.value) ? result.value : [];
-            return formatData(`${records.length} records returned from ${params.entitySetName}`, result, [
+            const totalCount = result["@odata.count"];
+            const countSuffix = totalCount !== undefined
+                ? totalCount === records.length
+                    ? " (showing all results)"
+                    : ` (total in dataset: ${totalCount})`
+                : "";
+            const finalRecords = params.formattedValues
+                ? mergeFormattedValues(records)
+                : records;
+            const displayResult = params.formattedValues && Array.isArray(result?.value)
+                ? { ...result, value: finalRecords }
+                : result;
+            const queryWarnings = checkQueryGuardrails({
+                ...(params.top !== undefined ? { top: params.top } : {}),
+                ...(params.select !== undefined ? { select: params.select } : {}),
+                ...(params.filter !== undefined ? { filter: params.filter } : {}),
+                entitySetName: params.entitySetName,
+            }).map((w) => `[${w.severity.toUpperCase()}] ${w.code}: ${w.message}`);
+            return formatData(`${records.length} records returned from ${params.entitySetName}${countSuffix}`, displayResult, [
                 "Use dataverse_execute_fetchxml for complex joins or aggregations",
                 "Add $select to minimize payload",
-            ]);
+            ], queryWarnings.length > 0 ? queryWarnings : undefined);
         }
         case "dataverse_execute_fetchxml": {
             const parsed = FetchXmlInput.parse(args);
@@ -197,13 +233,18 @@ export async function handleQueryTool(name, args, client, progress) {
                 entitySetName =
                     IRREGULAR_ENTITY_SET_NAMES[logicalName] ?? logicalName + "s";
             }
-            const result = await client.executeFetchXml(entitySetName, fetchXml);
+            const result = await client.executeFetchXml(entitySetName, fetchXml, parsed.formattedValues);
             const records = Array.isArray(result)
                 ? result
                 : Array.isArray(result?.value)
                     ? result.value
                     : [];
-            return formatData(`${records.length} records returned via FetchXML`, result, [
+            const finalRecords = parsed.formattedValues
+                ? mergeFormattedValues(records)
+                : records;
+            return formatData(`${finalRecords.length} records returned via FetchXML`, parsed.formattedValues && Array.isArray(result?.value)
+                ? { ...result, value: finalRecords }
+                : result, [
                 "Use dataverse_query for simple OData reads",
                 "Add page/count attributes for large result sets",
             ]);
@@ -227,12 +268,23 @@ export async function handleQueryTool(name, args, client, progress) {
                 (Array.isArray(result?.value)
                     ? result.value.length
                     : 0);
-            const pages = result?.pages ?? 1;
+            const pages = result?.pageCount ?? 1;
             await progress?.report(1, 1);
-            return formatData(`${totalRetrieved} records retrieved across ${pages} pages from ${params.entitySetName}`, result, [
+            const pagingRecords = Array.isArray(result?.records)
+                ? result.records
+                : [];
+            const displayPagingResult = params.formattedValues && pagingRecords.length > 0
+                ? { ...result, records: mergeFormattedValues(pagingRecords) }
+                : result;
+            const pagingWarnings = checkQueryGuardrails({
+                ...(params.select !== undefined ? { select: params.select } : {}),
+                ...(params.filter !== undefined ? { filter: params.filter } : {}),
+                entitySetName: params.entitySetName,
+            }).map((w) => `[${w.severity.toUpperCase()}] ${w.code}: ${w.message}`);
+            return formatData(`${totalRetrieved} records retrieved across ${pages} pages from ${params.entitySetName}`, displayPagingResult, [
                 "Set maxTotal to limit retrieval",
                 "Use $select to minimize payload size",
-            ]);
+            ], pagingWarnings.length > 0 ? pagingWarnings : undefined);
         }
         default:
             throw new Error(`Unknown query tool: ${name}`);

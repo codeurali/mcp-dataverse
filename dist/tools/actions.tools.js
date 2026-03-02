@@ -233,10 +233,8 @@ export async function handleActionTool(name, args, client) {
         case "dataverse_list_dependencies": {
             const { tableName, componentType } = ListTableDependenciesInput.parse(args);
             const result = await client.listTableDependencies(tableName, componentType);
-            const items = Array.isArray(result)
-                ? result
-                : (result.value ?? [result]);
-            return formatData(`${items.length} dependencies found for component`, result, ["Use this information before deleting or modifying the component"]);
+            const typedDeps = result;
+            return formatData(`${typedDeps.count} dependencies found for component`, result, ["Use this information before deleting or modifying the component"]);
         }
         case "dataverse_retrieve_dependencies_for_delete": {
             const { componentType, objectId } = RetrieveDependenciesForDeleteInput.parse(args);

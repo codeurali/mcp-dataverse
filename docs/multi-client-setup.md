@@ -1,3 +1,10 @@
+---
+layout: default
+title: Multi-Client Setup
+nav_order: 3
+permalink: /multi-client-setup
+---
+
 # Multi-Client Setup
 
 How to configure **mcp-dataverse** with every major MCP client. Pick your editor or tool below, paste the config, and you're ready in under 5 minutes.

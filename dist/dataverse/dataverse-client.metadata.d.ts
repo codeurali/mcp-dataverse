@@ -36,5 +36,6 @@ export declare class DataverseMetadataClient extends DataverseActionsClient {
         isCustomizable: boolean;
         indexStatus: string;
     }>>;
+    updateEntityDefinition(logicalName: string, body: Record<string, unknown>): Promise<void>;
 }
 //# sourceMappingURL=dataverse-client.metadata.d.ts.map

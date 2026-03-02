@@ -10,6 +10,11 @@ export declare const environmentTools: ({
                 description: string;
             };
             value?: never;
+            displayName?: never;
+            type?: never;
+            description?: never;
+            defaultValue?: never;
+            confirm?: never;
         };
         required: string[];
     };
@@ -30,6 +35,55 @@ export declare const environmentTools: ({
                 description: string;
             };
             value: {
+                type: string;
+                description: string;
+            };
+            displayName?: never;
+            type?: never;
+            description?: never;
+            defaultValue?: never;
+            confirm?: never;
+        };
+        required: string[];
+    };
+    annotations: {
+        readOnlyHint: boolean;
+        destructiveHint: boolean;
+        idempotentHint: boolean;
+        openWorldHint: boolean;
+    };
+} | {
+    name: string;
+    description: string;
+    inputSchema: {
+        type: "object";
+        properties: {
+            schemaName: {
+                type: string;
+                description: string;
+            };
+            displayName: {
+                type: string;
+                description: string;
+            };
+            type: {
+                type: string;
+                enum: string[];
+                description: string;
+            };
+            value: {
+                type: string;
+                description: string;
+            };
+            description: {
+                type: string;
+                description: string;
+            };
+            defaultValue: {
+                type: string;
+                description: string;
+            };
+            confirm: {
                 type: string;
                 description: string;
             };

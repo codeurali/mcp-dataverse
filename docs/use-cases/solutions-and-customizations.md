@@ -1,3 +1,11 @@
+---
+layout: default
+title: Solutions & Customizations
+parent: Use Cases
+nav_order: 5
+permalink: /use-cases/solutions-and-customizations
+---
+
 # Solutions & Customizations
 
 Tools for inspecting Dataverse solutions, publishing customizations, managing plugins, workflows, and environment variables.

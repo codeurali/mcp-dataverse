@@ -1,3 +1,11 @@
+---
+layout: default
+title: Delta Sync
+parent: Use Cases
+nav_order: 4
+permalink: /use-cases/delta-sync
+---
+
 # Delta Sync
 
 Incremental data synchronization using Dataverse change tracking.

@@ -125,13 +125,21 @@ export class DataverseClient {
     }
     // ─── Query ───────────────────────────────────────────────────────────────
     async query(entitySetName, options = {}) {
+        // Encode filter/orderby/apply values to handle spaces and OData special chars.
+        // $select and $expand are left unencoded (commas/parens are OData delimiters).
+        const enc = (v) => encodeURIComponent(v)
+            .replace(/%28/g, "(")
+            .replace(/%29/g, ")")
+            .replace(/%2C/g, ",")
+            .replace(/%27/g, "'")
+            .replace(/%40/g, "@");
         const params = [];
         if (options.select?.length)
             params.push(`$select=${options.select.join(",")}`);
         if (options.filter)
-            params.push(`$filter=${options.filter}`);
+            params.push(`$filter=${enc(options.filter)}`);
         if (options.orderby)
-            params.push(`$orderby=${options.orderby}`);
+            params.push(`$orderby=${enc(options.orderby)}`);
         if (options.top)
             params.push(`$top=${options.top}`);
         if (options.expand)
@@ -139,21 +147,40 @@ export class DataverseClient {
         if (options.count)
             params.push("$count=true");
         if (options.apply)
-            params.push(`$apply=${options.apply}`);
+            params.push(`$apply=${enc(options.apply)}`);
         const url = `${entitySetName}${params.length ? "?" + params.join("&") : ""}`;
-        return this.requestWithRetry(() => this.http.get(url).then((r) => r.data));
+        const fmtHeaders = options.formattedValues
+            ? {
+                headers: {
+                    Prefer: 'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
+                },
+            }
+            : undefined;
+        return this.requestWithRetry(() => this.http.get(url, fmtHeaders).then((r) => r.data));
     }
-    async executeFetchXml(entitySetName, fetchXml) {
+    async executeFetchXml(entitySetName, fetchXml, formattedValues) {
         const encoded = encodeURIComponent(fetchXml);
+        const fmtHeaders = formattedValues
+            ? {
+                headers: {
+                    Prefer: 'odata.include-annotations="OData.Community.Display.V1.FormattedValue"',
+                },
+            }
+            : undefined;
         return this.requestWithRetry(() => this.http
-            .get(`${entitySetName}?fetchXml=${encoded}`)
+            .get(`${entitySetName}?fetchXml=${encoded}`, fmtHeaders)
             .then((r) => r.data));
     }
     // ─── CRUD ────────────────────────────────────────────────────────────────
-    async getRecord(entitySetName, id, select) {
-        const params = select ? `?$select=${select.join(",")}` : "";
+    async getRecord(entitySetName, id, select, expand) {
+        const qParts = [];
+        if (select?.length)
+            qParts.push(`$select=${select.join(",")}`);
+        if (expand)
+            qParts.push(`$expand=${expand}`);
+        const qs = qParts.length ? `?${qParts.join("&")}` : "";
         return this.requestWithRetry(async () => {
-            const response = await this.http.get(`${entitySetName}(${id})${params}`, {
+            const response = await this.http.get(`${entitySetName}(${id})${qs}`, {
                 headers: { Prefer: 'odata.include-annotations="*"' },
             });
             const etag = response.headers["odata-etag"] ??

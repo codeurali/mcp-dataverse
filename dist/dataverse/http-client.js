@@ -61,8 +61,9 @@ export class HttpClient {
         if (this.tokenProvider) {
             headers["Authorization"] = `Bearer ${await this.tokenProvider()}`;
         }
+        const effectiveTimeout = options?.timeoutMs ?? this.timeoutMs;
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+        const timer = setTimeout(() => controller.abort(), effectiveTimeout);
         try {
             const init = { method, headers, signal: controller.signal };
             if (body !== undefined) {

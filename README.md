@@ -6,7 +6,7 @@
 
 **The most complete MCP server for Microsoft Dataverse.**
 
-54 tools · 4 resources · 10 guided workflows · Zero config auth
+63 tools · 4 resources · 10 guided workflows · Zero config auth
 
 [![npm](https://img.shields.io/npm/v/mcp-dataverse)](https://www.npmjs.com/package/mcp-dataverse)
 [![npm downloads](https://img.shields.io/npm/dm/mcp-dataverse)](https://www.npmjs.com/package/mcp-dataverse)
@@ -14,7 +14,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue)](https://www.typescriptlang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
-**[→ Full Documentation](https://codeurali.github.io/mcp-dataverse-docs)**
+**[→ Full Documentation](https://codeurali.github.io/mcp-dataverse)**
 
 </div>
 
@@ -41,7 +41,7 @@ npx mcp-dataverse install
 
 The interactive wizard configures your environment, registers the server in VS Code, and authenticates your Microsoft account in under 2 minutes.
 
-> Requires Node.js 20+. For other clients (Claude, Cursor, Windsurf…) see [Multi-Client Setup](https://codeurali.github.io/mcp-dataverse-docs/multi-client-setup).
+> Requires Node.js 20+. For other clients (Claude, Cursor, Windsurf…) see [Multi-Client Setup](https://codeurali.github.io/mcp-dataverse/multi-client-setup).
 
 ---
 
@@ -59,33 +59,52 @@ Re-authenticate after ~90 days of inactivity: `npx mcp-dataverse-auth`
 
 ## Capabilities
 
-| Category | Count | Description |
-|----------|-------|-------------|
-| **Metadata** | 8 | Tables, schema, relationships, option sets, entity keys |
-| **Query** | 3 | OData, FetchXML, paginated retrieval |
-| **CRUD** | 6 | Get, create, update, delete, upsert, assign |
-| **Actions & Functions** | 6 | Bound/unbound Dataverse actions and functions |
-| **Batch** | 1 | Up to 1000 operations atomically |
-| **Solutions** | 3 | List solutions, components, publish customizations |
-| **Search** | 1 | Full-text Relevance Search |
-| **Users & Teams** | 3 | Users, roles, teams |
-| **Files** | 2 | Upload/download file and image columns |
-| **+ more** | … | Audit, trace logs, delta tracking, impersonation, annotations… |
-| **Assistance** | 4 | Tool router, workflow guide |
+| Category                | Count | Description                                                    |
+| ----------------------- | ----- | -------------------------------------------------------------- |
+| **Metadata**            | 8     | Tables, schema, relationships, option sets, entity keys        |
+| **Query**               | 3     | OData, FetchXML, paginated retrieval                           |
+| **CRUD**                | 6     | Get, create, update, delete, upsert, assign                    |
+| **Actions & Functions** | 6     | Bound/unbound Dataverse actions and functions                  |
+| **Batch**               | 1     | Up to 1000 operations atomically                               |
+| **Solutions**           | 3     | List solutions, components, publish customizations             |
+| **Search**              | 1     | Full-text Relevance Search                                     |
+| **Users & Teams**       | 3     | Users, roles, teams                                            |
+| **Files**               | 2     | Upload/download file and image columns                         |
+| **+ more**              | …     | Audit, trace logs, delta tracking, impersonation, annotations… |
+| **Assistance**          | 4     | Tool router, workflow guide                                    |
 
-[→ Full Capabilities Reference](https://codeurali.github.io/mcp-dataverse-docs/capabilities)
+[→ Full Capabilities Reference](https://codeurali.github.io/mcp-dataverse/capabilities)
 
 ---
 
 ## Troubleshooting
 
-| Symptom | Fix |
-|---------|-----|
-| No sign-in prompt | Open **View → Output → MCP** — the device code is displayed there |
-| `No MSAL accounts found` | Run `npx mcp-dataverse-auth` then restart the server |
-| `Authentication timed out` | 5-minute window expired — restart MCP for a new code |
-| Server not appearing in Agent mode | Run `npx mcp-dataverse install` or `npx mcp-dataverse doctor` |
-| HTTP errors | Run `npx mcp-dataverse doctor` to diagnose config and connectivity |
+| Symptom                            | Fix                                                                |
+| ---------------------------------- | ------------------------------------------------------------------ |
+| No sign-in prompt                  | Open **View → Output → MCP** — the device code is displayed there  |
+| `No MSAL accounts found`           | Run `npx mcp-dataverse-auth` then restart the server               |
+| `Authentication timed out`         | 5-minute window expired — restart MCP for a new code               |
+| Server not appearing in Agent mode | Run `npx mcp-dataverse install` or `npx mcp-dataverse doctor`      |
+| HTTP errors                        | Run `npx mcp-dataverse doctor` to diagnose config and connectivity |
+
+---
+
+## Battle-Tested
+
+All 63 tools tested on a real Dataverse production environment across 8 live sessions — **55 ✅ · 9 ⚠️ · 1 ❌ (env-specific)**. [Details & test results →](https://codeurali.github.io/mcp-dataverse/community)
+
+---
+
+## Roadmap
+
+| Version | Feature | Status |
+| ------- | ------- | ------ |
+| **v0.4** | Streamable HTTP transport | 🟢 90% done |
+| **v0.5** | MCP Resources — browsable schema | 🟡 40% done |
+| **v0.6** | MCP Prompts — workflow templates | 🔴 Planned |
+| **v1.0** | On-Behalf-Of auth (OBO) | 🔴 Planned |
+
+[→ Full Roadmap](https://codeurali.github.io/mcp-dataverse/roadmap)
 
 ---
 

@@ -135,7 +135,7 @@ export class DataverseAdvancedClient extends DataverseBatchClient {
                     (components.webResources?.length ?? 0) > 0 ||
                     (components.optionSets?.length ?? 0) > 0);
             if (!hasComponents) {
-                await this.http.post("PublishAllXml", {});
+                await this.http.post("PublishAllXml", {}, { timeoutMs: 120_000 });
                 return {
                     published: true,
                     message: "All customizations published successfully",
@@ -167,12 +167,33 @@ export class DataverseAdvancedClient extends DataverseBatchClient {
                         "</optionsets>";
             }
             paramXml += "</importexportxml>";
-            await this.http.post("PublishXml", { ParameterXml: paramXml });
+            await this.http.post("PublishXml", { ParameterXml: paramXml }, { timeoutMs: 120_000 });
             return {
                 published: true,
                 message: "Selected customizations published successfully",
             };
         });
+    }
+    // ─── Workflows / Processes ───────────────────────────────────────────────
+    async listDataverseWorkflows(params) {
+        return this.requestWithRetry(async () => {
+            const filters = [];
+            if (params.category !== undefined)
+                filters.push(`category eq ${params.category}`);
+            if (params.nameContains)
+                filters.push(`contains(name,'${esc(params.nameContains)}')`);
+            let url = `workflows?$select=workflowid,name,description,category,statecode,` +
+                `statuscode,type,modifiedon&$orderby=name asc&$top=${params.top ?? 50}`;
+            if (filters.length > 0)
+                url += `&$filter=${filters.join(" and ")}`;
+            const result = await this.http.get(url);
+            return result.data.value ?? [];
+        });
+    }
+    async getDataverseWorkflow(workflowId) {
+        return this.requestWithRetry(() => this.http
+            .get(`workflows(${workflowId})?$select=workflowid,name,description,` + `category,statecode,statuscode,type,modifiedon`)
+            .then((r) => r.data));
     }
 }
 //# sourceMappingURL=dataverse-client-advanced.js.map

@@ -8,6 +8,8 @@ export declare class HttpError extends Error {
 export interface HttpRequestOptions {
     headers?: Record<string, string>;
     responseType?: "text";
+    /** Override the client-level timeout for this specific request (milliseconds). */
+    timeoutMs?: number;
 }
 export interface HttpResponse<T = unknown> {
     data: T;

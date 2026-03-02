@@ -1,8 +1,8 @@
 # MCP Dataverse Server — Complete Capabilities Reference
 
-> **Version**: 0.3.2 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
+> **Version**: 0.3.6 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
 
-54 tools across 23 categories for full Dataverse lifecycle: schema, CRUD, FetchXML, solutions, plugins, audit, files, users, teams, environment variables, and more.
+63 tools across 24 categories for full Dataverse lifecycle: schema, CRUD, FetchXML, solutions, plugins, audit, files, users, teams, RBAC, environment variables, workflows, and more.
 
 ---
 
@@ -10,7 +10,7 @@
 
 - [Quick Start](#quick-start)
 - [Architecture Overview](#architecture-overview)
-- [Tool Reference (54 tools)](#tool-reference-54-tools)
+- [Tool Reference (63 tools)](#tool-reference-63-tools)
   - [1. Auth (1)](#1-auth-1-tool)
   - [2. Metadata (8)](#2-metadata-8-tools)
   - [3. Query (3)](#3-query-3-tools)
@@ -91,7 +91,7 @@ Server communicates over **stdio** (MCP SDK `StdioServerTransport`). Connect fro
 
 ```mermaid
 graph LR
-    MCP["MCP Dataverse Server<br/><i>54 tools · 23 categories</i>"]
+    MCP["MCP Dataverse Server<br/><i>63 tools · 24 categories</i>"]
 
     MCP --> AUTH["🔑 Auth (1)"]
     MCP --> META["📋 Metadata (8)"]
@@ -122,7 +122,7 @@ All tool handlers validate inputs with **Zod** before calling the `DataverseAdva
 
 ---
 
-## Tool Reference (50 tools)
+## Tool Reference (63 tools)
 
 ### 1. Auth (1 tool)
 
@@ -1012,7 +1012,7 @@ Dataverse error bodies are formatted as `Dataverse error <code>: <message>`. Tim
 | Limitation                              | Details                                                                                                            |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | **UUID required for get/update/delete** | Alternate-key retrieval via `dataverse_get` is not supported; use `dataverse_upsert` or `dataverse_query` instead. |
-| **No ETag conditional update**          | `dataverse_update` sends `If-Match: *`. ETag-based optimistic concurrency is not exposed.                          |
+| **ETag conditional update**             | `dataverse_update` supports optional `etag` parameter for optimistic concurrency (`If-Match: <etag>`). When omitted, sends `If-Match: *`. |
 
 ### Authentication
 
@@ -1036,4 +1036,4 @@ Dataverse error bodies are formatted as `Dataverse error <code>: <message>`. Tim
 
 ---
 
-_This document reflects the MCP Dataverse server codebase as of v0.2.0 — 50 tools across 22 categories._
+_This document reflects the MCP Dataverse server codebase as of v0.3.6 — 63 tools across 24 categories._

@@ -42,32 +42,53 @@ export async function handleQualityTool(name, args, client) {
     switch (name) {
         case "dataverse_detect_duplicates": {
             const params = DetectDuplicatesInput.parse(args);
-            const body = {
-                BusinessEntity: {
-                    "@odata.type": `Microsoft.Dynamics.CRM.${params.entityLogicalName}`,
-                    ...params.record,
-                },
-                MatchingEntityName: params.entityLogicalName,
-                PagingInfo: {
-                    PageNumber: 1,
-                    Count: params.top,
-                },
-            };
-            const raw = (await client.executeAction("RetrieveDuplicates", body));
-            const duplicates = (raw["value"] ?? []);
-            const result = {
-                hasDuplicates: duplicates.length > 0,
-                duplicateCount: duplicates.length,
-                duplicates: duplicates.map((d) => {
-                    const clean = {};
-                    for (const [key, val] of Object.entries(d)) {
-                        if (!key.startsWith("@"))
-                            clean[key] = val;
-                    }
-                    return clean;
-                }),
-            };
-            return formatData(`Duplicate detection: ${result.hasDuplicates ? "duplicates found" : "no duplicates"}`, result, ["Review duplicate records before creating new ones"]);
+            function xmlEsc(v) {
+                return String(v)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&apos;");
+            }
+            const conditions = Object.entries(params.record)
+                .filter(([, v]) => v !== null && v !== undefined)
+                .map(([key, value]) => `<condition attribute="${xmlEsc(key)}" operator="eq" value="${xmlEsc(String(value))}" />`)
+                .join("\n      ");
+            if (!conditions) {
+                return formatData("No fields provided for duplicate detection", { hasDuplicates: false, duplicateCount: 0, duplicates: [] }, ["Provide at least one field value to check for duplicates"]);
+            }
+            const entitySetName = params.entityLogicalName + "s";
+            const fetchXml = `<fetch top="${params.top}" distinct="true">
+  <entity name="${xmlEsc(params.entityLogicalName)}">
+    <all-attributes />
+    <filter type="or">
+      ${conditions}
+    </filter>
+  </entity>
+</fetch>`;
+            const rawResult = await client.executeFetchXml(entitySetName, fetchXml);
+            const duplicates = (Array.isArray(rawResult)
+                ? rawResult
+                : Array.isArray(rawResult?.value)
+                    ? rawResult.value
+                    : []);
+            const cleaned = duplicates.map((d) => {
+                const clean = {};
+                for (const [key, val] of Object.entries(d)) {
+                    if (!key.startsWith("@"))
+                        clean[key] = val;
+                }
+                return clean;
+            });
+            return formatData(`Duplicate detection: ${cleaned.length > 0 ? `${cleaned.length} potential duplicate(s) found` : "no duplicates found"}`, {
+                hasDuplicates: cleaned.length > 0,
+                duplicateCount: cleaned.length,
+                duplicates: cleaned,
+                note: "Field exact-match candidates (OR across provided fields). Dataverse duplicate detection rules are not applied via REST API.",
+            }, [
+                "Review candidate records before creating",
+                "For rule-based duplicate detection, configure rules in Dataverse admin",
+            ]);
         }
         default:
             throw new Error(`Unknown quality tool: ${name}`);

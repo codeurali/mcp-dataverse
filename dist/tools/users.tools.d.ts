@@ -14,6 +14,9 @@ export declare const userTools: ({
             includeDisabled?: never;
             includeApplicationUsers?: never;
             top?: never;
+            nameContains?: never;
+            roleId?: never;
+            confirm?: never;
         };
         required: string[];
     };
@@ -50,8 +53,77 @@ export declare const userTools: ({
                 description: string;
             };
             userId?: never;
+            nameContains?: never;
+            roleId?: never;
+            confirm?: never;
         };
         required?: never;
+    };
+    annotations: {
+        readOnlyHint: boolean;
+        destructiveHint: boolean;
+        idempotentHint: boolean;
+        openWorldHint: boolean;
+    };
+} | {
+    name: string;
+    description: string;
+    inputSchema: {
+        type: "object";
+        properties: {
+            nameContains: {
+                type: string;
+                description: string;
+            };
+            businessUnitId: {
+                type: string;
+                description: string;
+            };
+            top: {
+                type: string;
+                description: string;
+            };
+            userId?: never;
+            search?: never;
+            includeDisabled?: never;
+            includeApplicationUsers?: never;
+            roleId?: never;
+            confirm?: never;
+        };
+        required: never[];
+    };
+    annotations: {
+        readOnlyHint: boolean;
+        destructiveHint: boolean;
+        idempotentHint: boolean;
+        openWorldHint: boolean;
+    };
+} | {
+    name: string;
+    description: string;
+    inputSchema: {
+        type: "object";
+        properties: {
+            userId: {
+                type: string;
+                description: string;
+            };
+            roleId: {
+                type: string;
+                description: string;
+            };
+            confirm: {
+                type: string;
+                description: string;
+            };
+            search?: never;
+            businessUnitId?: never;
+            includeDisabled?: never;
+            includeApplicationUsers?: never;
+            top?: never;
+            nameContains?: never;
+        };
+        required: string[];
     };
     annotations: {
         readOnlyHint: boolean;

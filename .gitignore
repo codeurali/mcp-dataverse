@@ -9,6 +9,7 @@ config.json
 .DS_Store
 coverage/
 
+
 # Test artifacts
 test-output.txt
 *.local
@@ -24,6 +25,7 @@ scripts/
 mcp-template/
 autoparc/
 assets/
+debug/
 !assets/logo.webp
 
 # Private planning & internal artifacts (security/privacy)
@@ -35,6 +37,7 @@ refine.md
 refinev2.md
 refinev3.md
 PUBLISHING.md
+ROADMAP-PERSONAL.md
 
 # Internal IDE/workflow configs
 .vscode/mcp.json

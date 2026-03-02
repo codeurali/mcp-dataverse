@@ -17,6 +17,7 @@ export declare const customizationTools: ({
             entityLogicalName?: never;
             workflowId?: never;
             activate?: never;
+            connectorId?: never;
         };
         required: never[];
     };
@@ -47,6 +48,7 @@ export declare const customizationTools: ({
             nameFilter?: never;
             workflowId?: never;
             activate?: never;
+            connectorId?: never;
         };
         required: never[];
     };
@@ -74,8 +76,40 @@ export declare const customizationTools: ({
             nameFilter?: never;
             activeOnly?: never;
             entityLogicalName?: never;
+            connectorId?: never;
         };
         required: string[];
+    };
+    annotations: {
+        readOnlyHint: boolean;
+        destructiveHint: boolean;
+        idempotentHint: boolean;
+        openWorldHint: boolean;
+    };
+} | {
+    name: string;
+    description: string;
+    inputSchema: {
+        type: "object";
+        properties: {
+            connectorId: {
+                type: string;
+                description: string;
+            };
+            activeOnly: {
+                type: string;
+                description: string;
+            };
+            top: {
+                type: string;
+                description: string;
+            };
+            nameFilter?: never;
+            entityLogicalName?: never;
+            workflowId?: never;
+            activate?: never;
+        };
+        required: never[];
     };
     annotations: {
         readOnlyHint: boolean;

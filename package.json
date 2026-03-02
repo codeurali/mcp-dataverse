@@ -1,7 +1,7 @@
 {
   "name": "mcp-dataverse",
-  "version": "0.3.6",
-  "description": "The most complete MCP server for Microsoft Dataverse — 54 tools, zero config auth, works with VS Code Copilot, Claude, Cursor and more",
+  "version": "0.3.7",
+  "description": "The most complete MCP server for Microsoft Dataverse — 63 tools, zero config auth, works with VS Code Copilot, Claude, Cursor and more",
   "type": "module",
   "main": "dist/server.js",
   "bin": {
@@ -31,7 +31,11 @@
     "power-apps",
     "crm"
   ],
-  "homepage": "https://codeurali.github.io/mcp-dataverse-docs",
+  "homepage": "https://codeurali.github.io/mcp-dataverse",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codeurali/mcp-dataverse"
+  },
   "files": [
     "dist/**",
     "README.md",

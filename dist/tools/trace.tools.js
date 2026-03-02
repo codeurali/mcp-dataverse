@@ -51,7 +51,6 @@ const WORKFLOW_TRACE_SELECT = [
     "createdon",
     "startedon",
     "completedon",
-    "regardingobjecttypecode",
 ];
 export const traceTools = [
     {
@@ -155,7 +154,7 @@ export async function handleTraceTool(name, args, client) {
                 filterParts.push("exceptiondetails ne null");
             }
             const filter = filterParts.length > 0 ? filterParts.join(" and ") : undefined;
-            const response = await client.query("plugintracelog", {
+            const response = await client.query("plugintracelogs", {
                 select: PLUGIN_TRACE_SELECT,
                 orderby: "createdon desc",
                 top: params.top,
@@ -195,9 +194,6 @@ export async function handleTraceTool(name, args, client) {
             if (params.failedOnly) {
                 filterParts.push("statuscode eq 31");
             }
-            if (params.entityFilter) {
-                filterParts.push(`regardingobjecttypecode eq '${esc(params.entityFilter)}'`);
-            }
             const filter = filterParts.join(" and ");
             const response = await client.query("asyncoperations", {
                 select: WORKFLOW_TRACE_SELECT,
@@ -223,9 +219,6 @@ export async function handleTraceTool(name, args, client) {
                         : null,
                     completedOn: typeof row["completedon"] === "string"
                         ? row["completedon"]
-                        : null,
-                    regardingEntityType: typeof row["regardingobjecttypecode"] === "string"
-                        ? row["regardingobjecttypecode"]
                         : null,
                     errorMessage: typeof errorMsg === "string" ? errorMsg : null,
                 };

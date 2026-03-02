@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { esc } from "../dataverse/dataverse-client.utils.js";
-import { formatData } from "./output.utils.js";
+import { formatData, mergeFormattedValues } from "./output.utils.js";
 import { safeEntitySetName } from "./validation.utils.js";
 export const crudTools = [
     {
@@ -15,6 +15,14 @@ export const crudTools = [
                     type: "array",
                     items: { type: "string" },
                     description: "Columns to return",
+                },
+                expand: {
+                    type: "string",
+                    description: 'OData $expand for related entities (e.g., "parentaccountid($select=name)")',
+                },
+                formattedValues: {
+                    type: "boolean",
+                    description: "When true, annotates picklist fields with human-readable labels. Note: dataverse_get always requests all OData annotations.",
                 },
             },
             required: ["entitySetName", "id"],
@@ -162,6 +170,8 @@ const GetInput = z.object({
     entitySetName: safeEntitySetName,
     id: z.string().uuid(),
     select: z.array(z.string()).optional(),
+    expand: z.string().optional(),
+    formattedValues: z.boolean().optional(),
 });
 const CreateInput = z.object({
     entitySetName: safeEntitySetName,
@@ -204,9 +214,12 @@ const AssignInput = z.object({
 export async function handleCrudTool(name, args, client) {
     switch (name) {
         case "dataverse_get": {
-            const { entitySetName, id, select } = GetInput.parse(args);
-            const { record, etag } = await client.getRecord(entitySetName, id, select);
-            return formatData(`Retrieved record ${id} from ${entitySetName}`, { id, record, etag }, [
+            const { entitySetName, id, select, expand, formattedValues } = GetInput.parse(args);
+            const { record, etag } = await client.getRecord(entitySetName, id, select, expand);
+            const finalRecord = formattedValues
+                ? (mergeFormattedValues([record])[0] ?? record)
+                : record;
+            return formatData(`Retrieved record ${id} from ${entitySetName}`, { id, record: finalRecord, etag }, [
                 "Use dataverse_update to modify this record",
                 "Use dataverse_get_relationships to explore related records",
             ]);

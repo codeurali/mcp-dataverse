@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { safeEntitySetName } from "./validation.utils.js";
-import { formatData } from "./output.utils.js";
+import { formatData, formatPrerequisiteError } from "./output.utils.js";
 export const trackingTools = [
     {
         name: "dataverse_change_detection",
@@ -40,7 +40,30 @@ const ChangeDetectionInput = z.object({
 export async function handleTrackingTool(name, args, client) {
     if (name === "dataverse_change_detection") {
         const { entitySetName, deltaToken, select } = ChangeDetectionInput.parse(args);
-        const result = await client.getChangedRecords(entitySetName, deltaToken, select);
+        let result;
+        try {
+            result = await client.getChangedRecords(entitySetName, deltaToken, select);
+        }
+        catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            if (/change.?track|0x80072491/i.test(msg)) {
+                return formatPrerequisiteError({
+                    type: "feature_disabled",
+                    feature: "Change Tracking",
+                    cannotProceedBecause: `Change tracking is not enabled on '${entitySetName}', so delta queries cannot be executed.`,
+                    adminPortal: "Power Apps Maker Portal",
+                    steps: [
+                        `Open Power Apps maker portal (make.powerapps.com)`,
+                        `Navigate to Tables → search for '${entitySetName}'`,
+                        `Open the table → click the Settings (gear) icon`,
+                        `Enable "Track changes"`,
+                        `Save the table, then publish customizations`,
+                    ],
+                    fixableViaToolName: "dataverse_update_entity",
+                });
+            }
+            throw err;
+        }
         const changed = Array.isArray(result?.newAndModified)
             ? result.newAndModified
             : [];

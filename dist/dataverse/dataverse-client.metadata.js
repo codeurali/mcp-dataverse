@@ -117,5 +117,8 @@ export class DataverseMetadataClient extends DataverseActionsClient {
             }));
         });
     }
+    async updateEntityDefinition(logicalName, body) {
+        await this.requestWithRetry(() => this.http.patch(`EntityDefinitions(LogicalName='${esc(logicalName)}')`, body, { headers: { "If-Match": "*" } }));
+    }
 }
 //# sourceMappingURL=dataverse-client.metadata.js.map

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { esc } from "../dataverse/dataverse-client.utils.js";
-import { formatData } from "./output.utils.js";
+import { formatData, formatPrerequisiteError } from "./output.utils.js";
 import { safeEntitySetName } from "./validation.utils.js";
 const GetAnnotationsInput = z.object({
     recordId: z.string().uuid(),
@@ -21,6 +21,16 @@ const CreateAnnotationInput = z
     .refine((data) => Boolean(data.notetext) || Boolean(data.documentbody), {
     message: "At least one of notetext or documentbody is required",
 });
+function logicalNameFromEntitySet(entitySetName) {
+    const irregulars = {
+        opportunities: "opportunity",
+        territories: "territory",
+        categories: "category",
+        queues: "queue",
+        activities: "activitypointer",
+    };
+    return irregulars[entitySetName] ?? entitySetName.replace(/s$/, "");
+}
 export const annotationTools = [
     {
         name: "dataverse_get_annotations",
@@ -115,6 +125,7 @@ export async function handleAnnotationTool(name, args, client) {
                 "isdocument",
                 "createdon",
                 "modifiedon",
+                "_ownerid_value",
             ];
             if (params.includeContent) {
                 selectFields.push("documentbody");
@@ -126,7 +137,6 @@ export async function handleAnnotationTool(name, args, client) {
             const response = await client.query("annotations", {
                 select: selectFields,
                 filter: filterParts.join(" and "),
-                expand: "ownerid($select=name)",
                 orderby: "createdon desc",
                 top: params.top,
             });
@@ -139,8 +149,7 @@ export async function handleAnnotationTool(name, args, client) {
                     isDocument: row["isdocument"] === true,
                     createdOn: row["createdon"] ?? "",
                     modifiedOn: row["modifiedon"] ?? "",
-                    owner: row["ownerid"]?.["name"] ??
-                        null,
+                    owner: row["_ownerid_value"] ?? null,
                 };
                 if (row["isdocument"] === true) {
                     result.fileName = row["filename"] ?? null;
@@ -160,8 +169,10 @@ export async function handleAnnotationTool(name, args, client) {
         }
         case "dataverse_create_annotation": {
             const params = CreateAnnotationInput.parse(args);
+            const entityLogicalName = logicalNameFromEntitySet(params.entitySetName);
             const data = {
-                "objectid@odata.bind": `/${params.entitySetName}(${params.recordId})`,
+                [`objectid_${entityLogicalName}@odata.bind`]: `/${params.entitySetName}(${params.recordId})`,
+                objecttypecode: entityLogicalName,
             };
             if (params.notetext !== undefined)
                 data["notetext"] = params.notetext;
@@ -175,7 +186,31 @@ export async function handleAnnotationTool(name, args, client) {
                 data["documentbody"] = params.documentbody;
                 data["isdocument"] = true;
             }
-            const annotationId = await client.createRecord("annotations", data);
+            let annotationId;
+            try {
+                annotationId = await client.createRecord("annotations", data);
+            }
+            catch (err) {
+                const msg = String(err);
+                if (msg.includes("0x80048d19") ||
+                    (msg.includes("objectid_") && msg.includes("undeclared"))) {
+                    return formatPrerequisiteError({
+                        type: "feature_disabled",
+                        feature: "Notes (HasNotes)",
+                        cannotProceedBecause: `The table '${entityLogicalName}' does not have Notes enabled (HasNotes=false), so annotations cannot be created.`,
+                        adminPortal: "Power Apps Maker Portal",
+                        steps: [
+                            `Open Power Apps maker portal (make.powerapps.com)`,
+                            `Navigate to Tables → search for '${entityLogicalName}'`,
+                            `Open the table → click Properties or Settings`,
+                            `Enable "Notes (includes file attachments)"`,
+                            `Save the table, then publish customizations`,
+                        ],
+                        fixableViaToolName: "dataverse_update_entity",
+                    });
+                }
+                throw err;
+            }
             return formatData(`Created annotation ${annotationId}`, {
                 created: true,
                 annotationId,

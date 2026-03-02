@@ -20,6 +20,14 @@ export declare const crudTools: ({
                 };
                 description: string;
             };
+            expand: {
+                type: string;
+                description: string;
+            };
+            formattedValues: {
+                type: string;
+                description: string;
+            };
             data?: never;
             etag?: never;
             confirm?: never;
@@ -54,6 +62,8 @@ export declare const crudTools: ({
             };
             id?: never;
             select?: never;
+            expand?: never;
+            formattedValues?: never;
             etag?: never;
             confirm?: never;
             alternateKey?: never;
@@ -94,6 +104,8 @@ export declare const crudTools: ({
                 description: string;
             };
             select?: never;
+            expand?: never;
+            formattedValues?: never;
             confirm?: never;
             alternateKey?: never;
             alternateKeyValue?: never;
@@ -129,6 +141,8 @@ export declare const crudTools: ({
                 description: string;
             };
             select?: never;
+            expand?: never;
+            formattedValues?: never;
             data?: never;
             etag?: never;
             alternateKey?: never;
@@ -179,6 +193,8 @@ export declare const crudTools: ({
             };
             id?: never;
             select?: never;
+            expand?: never;
+            formattedValues?: never;
             etag?: never;
             confirm?: never;
             ownerType?: never;
@@ -216,6 +232,8 @@ export declare const crudTools: ({
                 description: string;
             };
             select?: never;
+            expand?: never;
+            formattedValues?: never;
             data?: never;
             etag?: never;
             confirm?: never;

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { formatData } from "./output.utils.js";
+import { formatData, formatPrerequisiteError } from "./output.utils.js";
 export const searchTools = [
     {
         name: "dataverse_search",
@@ -101,19 +101,19 @@ export async function handleSearchTool(name, args, client) {
             catch (err) {
                 const message = err instanceof Error ? err.message : String(err);
                 if (message.includes("404") || message.includes("Not Found")) {
-                    return {
-                        content: [
-                            {
-                                type: "text",
-                                text: JSON.stringify({
-                                    isError: true,
-                                    error: "Relevance Search is not enabled for this Dataverse environment. " +
-                                        "An administrator must enable it in the Power Platform admin center " +
-                                        "under Environment → Settings → Product → Features → Dataverse Search.",
-                                }),
-                            },
+                    return formatPrerequisiteError({
+                        type: "feature_disabled",
+                        feature: "Dataverse Search (Relevance Search)",
+                        cannotProceedBecause: "Relevance Search is not enabled for this Dataverse environment, so full-text cross-table search is unavailable.",
+                        adminPortal: "Power Platform Admin Center",
+                        steps: [
+                            "Open Power Platform Admin Center (admin.powerplatform.microsoft.com)",
+                            "Select your environment → Settings",
+                            "Navigate to Product → Features",
+                            'Under "Search", toggle "Dataverse Search" to On',
+                            "Save — indexing may take a few minutes before search is available",
                         ],
-                    };
+                    });
                 }
                 throw err;
             }

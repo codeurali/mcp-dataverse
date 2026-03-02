@@ -1,3 +1,11 @@
+---
+layout: default
+title: Querying Data
+parent: Use Cases
+nav_order: 1
+permalink: /use-cases/querying-data
+---
+
 # Querying Data
 
 Tools for reading data from Dataverse: OData queries, FetchXML, paging, and full-text search.

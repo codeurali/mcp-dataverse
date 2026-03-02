@@ -43,5 +43,11 @@ export declare class DataverseAdvancedClient extends DataverseBatchClient {
         published: boolean;
         message: string;
     }>;
+    listDataverseWorkflows(params: {
+        category?: number;
+        top?: number;
+        nameContains?: string;
+    }): Promise<Record<string, unknown>[]>;
+    getDataverseWorkflow(workflowId: string): Promise<Record<string, unknown>>;
 }
 //# sourceMappingURL=dataverse-client-advanced.d.ts.map

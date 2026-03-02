@@ -79,7 +79,7 @@ export async function handleBatchTool(name, args, client, progress) {
         await progress?.report(0, requests.length);
         const results = await client.batchExecute(batchRequests, useChangeset);
         await progress?.report(requests.length, requests.length);
-        const successCount = results.filter((r) => r["status"] >= 200 && r["status"] < 300).length;
+        const successCount = results.filter((r) => r === null || !r["error"]).length;
         return formatData(`Batch executed: ${successCount}/${results.length} operations succeeded`, { results, count: results.length }, [
             "Use batch for bulk create/update operations to reduce HTTP round-trips",
         ]);

@@ -26,9 +26,10 @@ export declare class DataverseClient {
         expand?: string;
         count?: boolean;
         apply?: string;
+        formattedValues?: boolean;
     }): Promise<ODataResponse<T>>;
-    executeFetchXml<T = Record<string, unknown>>(entitySetName: string, fetchXml: string): Promise<ODataResponse<T>>;
-    getRecord(entitySetName: string, id: string, select?: string[]): Promise<{
+    executeFetchXml<T = Record<string, unknown>>(entitySetName: string, fetchXml: string, formattedValues?: boolean): Promise<ODataResponse<T>>;
+    getRecord(entitySetName: string, id: string, select?: string[], expand?: string): Promise<{
         record: Record<string, unknown>;
         etag: string | null;
     }>;

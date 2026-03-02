@@ -8,10 +8,33 @@ const WORKFLOWS = new Map([
             description: "Query data from Dataverse tables. Authenticate, discover tables, inspect schema, then query with OData or FetchXML.",
             tags: ["query", "data", "fetchxml", "odata", "read"],
             steps: [
-                { order: 1, tool: "dataverse_whoami", description: "Verify authentication and get user context", required: true },
-                { order: 2, tool: "dataverse_list_tables", description: "Discover available tables", required: true, tips: "Use customOnly=true to focus on custom tables" },
-                { order: 3, tool: "dataverse_get_table_metadata", description: "Inspect column names, types, and required fields", required: true, tips: "Note logical names for use in $select and $filter" },
-                { order: 4, tool: "dataverse_query", description: "Execute OData query or use dataverse_execute_fetchxml for complex joins", required: true, tips: "Always use $select to limit columns; use $top to limit rows" },
+                {
+                    order: 1,
+                    tool: "dataverse_whoami",
+                    description: "Verify authentication and get user context",
+                    required: true,
+                },
+                {
+                    order: 2,
+                    tool: "dataverse_list_tables",
+                    description: "Discover available tables",
+                    required: true,
+                    tips: "Use customOnly=true to focus on custom tables",
+                },
+                {
+                    order: 3,
+                    tool: "dataverse_get_table_metadata",
+                    description: "Inspect column names, types, and required fields",
+                    required: true,
+                    tips: "Note logical names for use in $select and $filter",
+                },
+                {
+                    order: 4,
+                    tool: "dataverse_query",
+                    description: "Execute OData query or use dataverse_execute_fetchxml for complex joins",
+                    required: true,
+                    tips: "Always use $select to limit columns; use $top to limit rows",
+                },
             ],
         },
     ],
@@ -22,11 +45,37 @@ const WORKFLOWS = new Map([
             description: "Explore the Dataverse schema: tables, columns, relationships, and saved views.",
             tags: ["schema", "metadata", "tables", "relationships", "views"],
             steps: [
-                { order: 1, tool: "dataverse_whoami", description: "Verify authentication", required: true },
-                { order: 2, tool: "dataverse_list_tables", description: "List all available tables", required: true },
-                { order: 3, tool: "dataverse_get_table_metadata", description: "Get detailed column metadata for a table", required: true },
-                { order: 4, tool: "dataverse_get_relationships", description: "Discover one-to-many and many-to-many relationships", required: false, tips: "Useful before building FetchXML joins" },
-                { order: 5, tool: "dataverse_list_views", description: "List saved views for the table", required: false },
+                {
+                    order: 1,
+                    tool: "dataverse_whoami",
+                    description: "Verify authentication",
+                    required: true,
+                },
+                {
+                    order: 2,
+                    tool: "dataverse_list_tables",
+                    description: "List all available tables",
+                    required: true,
+                },
+                {
+                    order: 3,
+                    tool: "dataverse_get_table_metadata",
+                    description: "Get detailed column metadata for a table",
+                    required: true,
+                },
+                {
+                    order: 4,
+                    tool: "dataverse_get_relationships",
+                    description: "Discover one-to-many and many-to-many relationships",
+                    required: false,
+                    tips: "Useful before building FetchXML joins",
+                },
+                {
+                    order: 5,
+                    tool: "dataverse_list_views",
+                    description: "List saved views for the table",
+                    required: false,
+                },
             ],
         },
     ],
@@ -37,9 +86,26 @@ const WORKFLOWS = new Map([
             description: "Create a new record in Dataverse. Inspect schema first to know required fields, then create and verify.",
             tags: ["create", "record", "write", "insert"],
             steps: [
-                { order: 1, tool: "dataverse_get_table_metadata", description: "Check required fields and column types before creating", required: true, tips: "Pay attention to required fields and lookup columns" },
-                { order: 2, tool: "dataverse_create", description: "Create the new record", required: true },
-                { order: 3, tool: "dataverse_query", description: "Verify the record was created with correct values", required: false, tips: "Query by the returned ID to confirm field values" },
+                {
+                    order: 1,
+                    tool: "dataverse_get_table_metadata",
+                    description: "Check required fields and column types before creating",
+                    required: true,
+                    tips: "Pay attention to required fields and lookup columns",
+                },
+                {
+                    order: 2,
+                    tool: "dataverse_create",
+                    description: "Create the new record",
+                    required: true,
+                },
+                {
+                    order: 3,
+                    tool: "dataverse_query",
+                    description: "Verify the record was created with correct values",
+                    required: false,
+                    tips: "Query by the returned ID to confirm field values",
+                },
             ],
         },
     ],
@@ -50,10 +116,31 @@ const WORKFLOWS = new Map([
             description: "Update an existing record. Read current values, apply changes, then verify the update.",
             tags: ["update", "record", "write", "modify"],
             steps: [
-                { order: 1, tool: "dataverse_get_table_metadata", description: "Confirm column names and types", required: true },
-                { order: 2, tool: "dataverse_get", description: "Read current record values and etag", required: true, tips: "Capture @odata.etag for optimistic concurrency" },
-                { order: 3, tool: "dataverse_update", description: "Apply the update with etag for concurrency control", required: true },
-                { order: 4, tool: "dataverse_get", description: "Verify the update was applied correctly", required: false },
+                {
+                    order: 1,
+                    tool: "dataverse_get_table_metadata",
+                    description: "Confirm column names and types",
+                    required: true,
+                },
+                {
+                    order: 2,
+                    tool: "dataverse_get",
+                    description: "Read current record values and etag",
+                    required: true,
+                    tips: "Capture @odata.etag for optimistic concurrency",
+                },
+                {
+                    order: 3,
+                    tool: "dataverse_update",
+                    description: "Apply the update with etag for concurrency control",
+                    required: true,
+                },
+                {
+                    order: 4,
+                    tool: "dataverse_get",
+                    description: "Verify the update was applied correctly",
+                    required: false,
+                },
             ],
         },
     ],
@@ -64,8 +151,20 @@ const WORKFLOWS = new Map([
             description: "Delete a record from Dataverse. Read the record first to confirm identity, then delete.",
             tags: ["delete", "record", "remove"],
             steps: [
-                { order: 1, tool: "dataverse_get", description: "Read the record to confirm it is the correct one", required: true, tips: "Show record details to the user before deletion" },
-                { order: 2, tool: "dataverse_delete", description: "Delete the record (irreversible)", required: true, tips: "Always confirm with the user before executing this step" },
+                {
+                    order: 1,
+                    tool: "dataverse_get",
+                    description: "Read the record to confirm it is the correct one",
+                    required: true,
+                    tips: "Show record details to the user before deletion",
+                },
+                {
+                    order: 2,
+                    tool: "dataverse_delete",
+                    description: "Delete the record (irreversible)",
+                    required: true,
+                    tips: "Always confirm with the user before executing this step",
+                },
             ],
         },
     ],
@@ -76,8 +175,19 @@ const WORKFLOWS = new Map([
             description: "Perform bulk create/update/delete using Dataverse batch API for efficiency.",
             tags: ["bulk", "batch", "mass", "multiple"],
             steps: [
-                { order: 1, tool: "dataverse_get_table_metadata", description: "Inspect schema to build correct request payloads", required: true },
-                { order: 2, tool: "dataverse_batch_execute", description: "Execute batch of operations in a single request", required: true, tips: "Group up to 1000 operations per batch; use changesets for transactional groups" },
+                {
+                    order: 1,
+                    tool: "dataverse_get_table_metadata",
+                    description: "Inspect schema to build correct request payloads",
+                    required: true,
+                },
+                {
+                    order: 2,
+                    tool: "dataverse_batch_execute",
+                    description: "Execute batch of operations in a single request",
+                    required: true,
+                    tips: "Group up to 1000 operations per batch; use changesets for transactional groups",
+                },
             ],
         },
     ],
@@ -88,8 +198,19 @@ const WORKFLOWS = new Map([
             description: "Full-text search across Dataverse tables, then refine results with targeted queries.",
             tags: ["search", "find", "fulltext", "relevance"],
             steps: [
-                { order: 1, tool: "dataverse_search", description: "Execute full-text search across multiple tables", required: true, tips: "Use entities filter to narrow which tables to search" },
-                { order: 2, tool: "dataverse_query", description: "Refine results with a targeted OData query on the relevant table", required: false },
+                {
+                    order: 1,
+                    tool: "dataverse_search",
+                    description: "Execute full-text search across multiple tables",
+                    required: true,
+                    tips: "Use entities filter to narrow which tables to search",
+                },
+                {
+                    order: 2,
+                    tool: "dataverse_query",
+                    description: "Refine results with a targeted OData query on the relevant table",
+                    required: false,
+                },
             ],
         },
     ],
@@ -100,9 +221,25 @@ const WORKFLOWS = new Map([
             description: "Inspect and manage Dataverse solutions and their components.",
             tags: ["solution", "customization", "deployment", "components"],
             steps: [
-                { order: 1, tool: "dataverse_list_solutions", description: "List all solutions in the environment", required: true },
-                { order: 2, tool: "dataverse_solution_components", description: "List components within a specific solution", required: true },
-                { order: 3, tool: "dataverse_publish_customizations", description: "Publish customizations after changes", required: false, tips: "Required after modifying solution components" },
+                {
+                    order: 1,
+                    tool: "dataverse_list_solutions",
+                    description: "List all solutions in the environment",
+                    required: true,
+                },
+                {
+                    order: 2,
+                    tool: "dataverse_solution_components",
+                    description: "List components within a specific solution",
+                    required: true,
+                },
+                {
+                    order: 3,
+                    tool: "dataverse_publish_customizations",
+                    description: "Publish customizations after changes",
+                    required: false,
+                    tips: "Required after modifying solution components",
+                },
             ],
         },
     ],
@@ -113,7 +250,13 @@ const WORKFLOWS = new Map([
             description: "Review audit history for records or tables to track changes and user activity.",
             tags: ["audit", "history", "changes", "tracking"],
             steps: [
-                { order: 1, tool: "dataverse_get_audit_log", description: "Retrieve audit entries filtered by record, table, user, or date range", required: true, tips: "Use at least one filter to avoid large result sets; audit must be enabled on the table" },
+                {
+                    order: 1,
+                    tool: "dataverse_get_audit_log",
+                    description: "Retrieve audit entries filtered by record, table, user, or date range",
+                    required: true,
+                    tips: "Use at least one filter to avoid large result sets; audit must be enabled on the table",
+                },
             ],
         },
     ],
@@ -124,9 +267,26 @@ const WORKFLOWS = new Map([
             description: "Upload or download files from Dataverse file/image columns.",
             tags: ["file", "upload", "download", "image", "attachment"],
             steps: [
-                { order: 1, tool: "dataverse_get_table_metadata", description: "Identify file or image columns on the table", required: true, tips: "Look for columns of type File or Image" },
-                { order: 2, tool: "dataverse_upload_file_column", description: "Upload a file to a file/image column", required: false },
-                { order: 3, tool: "dataverse_download_file_column", description: "Download a file from a file/image column", required: false, tips: "Returns base64-encoded content" },
+                {
+                    order: 1,
+                    tool: "dataverse_get_table_metadata",
+                    description: "Identify file or image columns on the table",
+                    required: true,
+                    tips: "Look for columns of type File or Image",
+                },
+                {
+                    order: 2,
+                    tool: "dataverse_upload_file_column",
+                    description: "Upload a file to a file/image column",
+                    required: false,
+                },
+                {
+                    order: 3,
+                    tool: "dataverse_download_file_column",
+                    description: "Download a file from a file/image column",
+                    required: false,
+                    tips: "Returns base64-encoded content",
+                },
             ],
         },
     ],
@@ -134,9 +294,10 @@ const WORKFLOWS = new Map([
 // ── Tool Definitions ───────────────────────────────────────────────────────────
 export const workflowTools = [
     {
-        name: "dataverse_list_workflows",
-        description: "Lists all available guided workflows with their descriptions and tags. " +
-            "Use this to discover recommended step-by-step patterns for common Dataverse tasks.",
+        name: "dataverse_list_guides",
+        description: "Lists all available step-by-step guided workflows for common Dataverse tasks (query_data, create_record, manage_solution, etc.). " +
+            "Use this to discover recommended MCP patterns. " +
+            "NOTE: these are MCP-internal task guides, NOT Dataverse automation processes — use dataverse_list_workflows to list actual Dataverse flows/workflows.",
         inputSchema: {
             type: "object",
             properties: {},
@@ -149,15 +310,16 @@ export const workflowTools = [
         },
     },
     {
-        name: "dataverse_get_workflow",
-        description: "Returns the full definition of a guided workflow including ordered steps, tool names, tips, and required flags. " +
-            "Use this to get a step-by-step plan for a common Dataverse task.",
+        name: "dataverse_get_guide",
+        description: "Returns the full definition of an MCP task guide including ordered steps, tool names, tips, and required flags. " +
+            "Use this to get a step-by-step plan for a common Dataverse task. " +
+            "NOTE: these are MCP-internal guides — use dataverse_get_workflow to retrieve an actual Dataverse process.",
         inputSchema: {
             type: "object",
             properties: {
                 name: {
                     type: "string",
-                    description: "Workflow name (e.g. query_data, explore_schema, create_record, update_record, delete_record, bulk_operations, search_data, manage_solution, inspect_audit, file_operations)",
+                    description: "Guide name (e.g. query_data, explore_schema, create_record, update_record, delete_record, bulk_operations, search_data, manage_solution, inspect_audit, file_operations)",
                 },
             },
             required: ["name"],
@@ -168,28 +330,117 @@ export const workflowTools = [
             idempotentHint: true,
         },
     },
+    {
+        name: "dataverse_list_workflows",
+        description: "Lists automation processes stored in the Dataverse environment: Power Automate cloud flows, classic workflows, " +
+            "business rules, business process flows, and actions. Optionally filter by category or partial name.",
+        inputSchema: {
+            type: "object",
+            properties: {
+                category: {
+                    type: "number",
+                    description: "Filter by process category: 0=Classic Workflow, 1=Dialog, 2=Business Rule, 3=Action, 4=Business Process Flow, 6=Power Automate (Cloud Flow). Omit to list all categories.",
+                },
+                nameContains: {
+                    type: "string",
+                    description: "Filter by partial name match (case-insensitive contains).",
+                },
+                top: {
+                    type: "number",
+                    description: "Maximum number of results to return (default 50).",
+                },
+            },
+            required: [],
+        },
+        annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+        },
+    },
+    {
+        name: "dataverse_get_workflow",
+        description: "Returns full details of a Dataverse automation process (workflow, cloud flow, business rule, or action) by its GUID.",
+        inputSchema: {
+            type: "object",
+            properties: {
+                workflowId: {
+                    type: "string",
+                    description: "GUID of the workflow/process record",
+                },
+            },
+            required: ["workflowId"],
+        },
+        annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+        },
+    },
 ];
 // ── Handler ────────────────────────────────────────────────────────────────────
-export async function handleWorkflowTool(name, args, _client) {
-    if (name === "dataverse_list_workflows") {
+const CATEGORY_LABELS = {
+    0: "Classic Workflow",
+    1: "Dialog",
+    2: "Business Rule",
+    3: "Action",
+    4: "Business Process Flow",
+    6: "Power Automate (Cloud Flow)",
+};
+export async function handleWorkflowTool(name, args, client) {
+    // ── MCP Task Guides ──────────────────────────────────────────────────────
+    if (name === "dataverse_list_guides") {
         const items = Array.from(WORKFLOWS.values()).map((w) => ({
             name: w.name,
             description: w.description,
             tags: w.tags,
             stepCount: w.steps.length,
         }));
-        return formatList("workflows", items, [
-            "Use dataverse_get_workflow with a workflow name to see detailed steps",
+        return formatList("guides", items, [
+            "Use dataverse_get_guide with a guide name to see detailed steps",
         ]);
     }
-    if (name === "dataverse_get_workflow") {
+    if (name === "dataverse_get_guide") {
         const { name: wfName } = args;
         const workflow = WORKFLOWS.get(wfName);
         if (!workflow) {
             const available = Array.from(WORKFLOWS.keys()).join(", ");
-            throw new Error(`Unknown workflow: "${wfName}". Available workflows: ${available}`);
+            throw new Error(`Unknown guide: "${wfName}". Available guides: ${available}`);
         }
-        return formatData(`Workflow "${workflow.name}": ${workflow.description}`, workflow, workflow.steps.map((s) => `Step ${s.order}: ${s.tool} — ${s.description}`));
+        return formatData(`Guide "${workflow.name}": ${workflow.description}`, workflow, workflow.steps.map((s) => `Step ${s.order}: ${s.tool} — ${s.description}`));
+    }
+    // ── Dataverse Automation Processes ──────────────────────────────────────
+    if (name === "dataverse_list_workflows") {
+        const input = args;
+        const records = await client.listDataverseWorkflows({
+            ...(input.category !== undefined ? { category: input.category } : {}),
+            ...(input.nameContains !== undefined
+                ? { nameContains: input.nameContains }
+                : {}),
+            top: Math.min(input.top ?? 50, 200),
+        });
+        const items = records.map((r) => ({
+            workflowId: r["workflowid"],
+            name: r["name"],
+            category: CATEGORY_LABELS[r["category"]] ?? r["category"],
+            state: r["statecode"] === 1 ? "Active" : "Inactive",
+            modifiedOn: r["modifiedon"],
+        }));
+        return formatList(`Dataverse workflows (${items.length} found)`, items, [
+            "Use dataverse_get_workflow with a workflowId GUID for full details",
+            "Filter with category: 0=Classic, 2=Business Rule, 4=BPF, 6=Cloud Flow",
+        ]);
+    }
+    if (name === "dataverse_get_workflow") {
+        const { workflowId } = args;
+        const record = await client.getDataverseWorkflow(workflowId);
+        const categoryNum = record["category"];
+        const displayRecord = {
+            ...record,
+            categoryLabel: CATEGORY_LABELS[categoryNum] ?? `Category ${categoryNum}`,
+            stateLabel: record["statecode"] === 1 ? "Active" : "Inactive",
+        };
+        return formatData(`Workflow: ${record["name"]}`, displayRecord, []);
     }
     throw new Error(`Unknown workflow tool: ${name}`);
 }

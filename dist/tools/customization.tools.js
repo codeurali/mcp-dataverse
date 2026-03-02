@@ -92,6 +92,38 @@ export const customizationTools = [
             openWorldHint: true,
         },
     },
+    {
+        name: "dataverse_list_connection_references",
+        description: "Lists all Power Automate connection references defined in the environment, showing their display name, connector ID, connection ID, and active status. " +
+            "Use this before importing a solution containing flows to detect broken or unmapped connections that would cause silent import failures. " +
+            "WHEN TO USE: Pre-deployment solution validation, auditing connection health, identifying broken flow connections. " +
+            "BEST PRACTICES: Look for inactive (isActive=false) references — these indicate flows that will fail after deployment. " +
+            "WORKFLOW: manage_solution.",
+        inputSchema: {
+            type: "object",
+            properties: {
+                connectorId: {
+                    type: "string",
+                    description: "Filter by connector ID substring (e.g. '/providers/Microsoft.PowerApps/apis/shared_sharepointonline')",
+                },
+                activeOnly: {
+                    type: "boolean",
+                    description: "Return only active connection references (default: false = return all)",
+                },
+                top: {
+                    type: "number",
+                    description: "Maximum records to return (default 100, max 500)",
+                },
+            },
+            required: [],
+        },
+        annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+            openWorldHint: true,
+        },
+    },
 ];
 const ListCustomActionsInput = z.object({
     top: z.number().positive().max(500).optional().default(100),
@@ -101,6 +133,11 @@ const ListPluginStepsInput = z.object({
     top: z.number().positive().max(500).optional().default(100),
     activeOnly: z.boolean().optional().default(true),
     entityLogicalName: z.string().optional(),
+});
+const ListConnectionReferencesInput = z.object({
+    connectorId: z.string().optional(),
+    activeOnly: z.boolean().optional().default(false),
+    top: z.number().int().positive().max(500).optional().default(100),
 });
 export async function handleCustomizationTool(name, args, client) {
     switch (name) {
@@ -145,7 +182,7 @@ export async function handleCustomizationTool(name, args, client) {
                     "filteringattributes",
                     "asyncautodelete",
                 ],
-                expand: "sdkmessageid_sdkmessage($select=name),plugintypeid($select=name,assemblyname),sdkmessagefilterid($select=primaryobjecttypecode)",
+                expand: "sdkmessageid($select=name,categoryname),plugintypeid($select=name,assemblyname),sdkmessagefilterid($select=primaryobjecttypecode)",
                 top,
             };
             if (activeOnly) {
@@ -161,7 +198,7 @@ export async function handleCustomizationTool(name, args, client) {
             const mapped = steps.map((s) => ({
                 id: s.sdkmessageprocessingstepid,
                 name: s.name,
-                message: s.sdkmessageid_sdkmessage?.name ?? "",
+                message: s.sdkmessageid?.name ?? "",
                 entity: s.sdkmessagefilterid?.primaryobjecttypecode ?? "",
                 assembly: s.plugintypeid?.assemblyname ?? "",
                 pluginType: s.plugintypeid?.name ?? "",
@@ -178,16 +215,68 @@ export async function handleCustomizationTool(name, args, client) {
         }
         case "dataverse_set_workflow_state": {
             const { workflowId, activate } = SetWorkflowStateInput.parse(args);
-            await client.updateRecord("workflows", workflowId, {
-                statecode: activate ? 1 : 0,
-                statuscode: activate ? 2 : 1,
-            });
+            try {
+                await client.updateRecord("workflows", workflowId, {
+                    statecode: activate ? 1 : 0,
+                    statuscode: activate ? 2 : 1,
+                });
+            }
+            catch (err) {
+                const msg = err instanceof Error ? err.message : String(err);
+                if (/0x80040203|does not refer to a valid workflow|404/i.test(msg)) {
+                    throw new Error(`Workflow '${workflowId}' not found. ` +
+                        `Use dataverse_list_workflows to retrieve valid workflow GUIDs in this environment. ` +
+                        `Original error: ${msg}`);
+                }
+                throw err;
+            }
             return formatData(`Workflow state updated for ${workflowId}`, {
                 workflowId,
                 newState: activate ? "Activated" : "Draft",
                 statecode: activate ? 1 : 0,
                 statuscode: activate ? 2 : 1,
             });
+        }
+        case "dataverse_list_connection_references": {
+            const { connectorId, activeOnly, top } = ListConnectionReferencesInput.parse(args ?? {});
+            const filters = [];
+            if (activeOnly)
+                filters.push("statecode eq 0");
+            if (connectorId)
+                filters.push(`contains(connectorid,'${esc(connectorId)}')`);
+            const queryOptions = {
+                select: [
+                    "connectionreferenceid",
+                    "connectionreferencelogicalname",
+                    "connectionreferencedisplayname",
+                    "connectorid",
+                    "connectionid",
+                    "statecode",
+                    "statuscode",
+                ],
+                orderby: "connectionreferencedisplayname asc",
+                top,
+            };
+            if (filters.length)
+                queryOptions.filter = filters.join(" and ");
+            const response = await client.query("connectionreferences", queryOptions);
+            const refs = (response.value ?? []).map((r) => ({
+                id: r["connectionreferenceid"] ?? "",
+                logicalName: r["connectionreferencelogicalname"] ?? "",
+                displayName: r["connectionreferencedisplayname"] ?? "",
+                connectorId: r["connectorid"] ?? "",
+                connectionId: r["connectionid"] ?? null,
+                isActive: r["statecode"] === 0,
+                statusCode: r["statuscode"] ?? null,
+            }));
+            const inactiveCount = refs.filter((r) => !r.isActive).length;
+            const summary = inactiveCount > 0
+                ? `${refs.length} connection references found (${inactiveCount} inactive — check before deploying)`
+                : `${refs.length} connection references found`;
+            return formatData(summary, { connectionReferences: refs, count: refs.length, inactiveCount }, [
+                "Inactive references (isActive=false) indicate broken connections that will cause flow failures",
+                "Use the Power Apps maker portal to reconnect or replace broken connection references before deploying",
+            ]);
         }
         default:
             throw new Error(`Unknown customization tool: ${name}`);
