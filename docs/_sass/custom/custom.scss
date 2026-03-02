@@ -14,135 +14,143 @@
 
 // ── Auto dark mode (follows OS preference) ──
 @media (prefers-color-scheme: dark) {
-  // Base
+  // Base - Darker background, brighter text for maximum contrast
   body {
-    background-color: #0f172a !important;
-    color: #e2e8f0 !important;
+    background-color: #020617 !important; // Deep Slate 950
+    color: #f8fafc !important; // Slate 50
   }
 
   // Sidebar
   .side-bar {
-    background-color: #1e293b !important;
+    background-color: #0f172a !important; // Slate 900
   }
 
-  .site-title { color: #f1f5f9 !important; }
+  .site-title { 
+    color: #ffffff !important; 
+    font-weight: 600 !important; 
+  }
 
   .site-nav,
   .nav-list .nav-list-item a {
-    color: #cbd5e1 !important;
+    color: #e2e8f0 !important; // Slate 200
   }
 
   .nav-list .nav-list-item a:hover,
   .nav-list .nav-list-item a.active {
-    color: #f1f5f9 !important;
-    background-color: #334155 !important;
+    color: #ffffff !important;
+    background-color: #1e293b !important; // Slate 800
   }
 
-  .site-nav .nav-list-expander { color: #94a3b8 !important; }
+  .site-nav .nav-list-expander { color: #cbd5e1 !important; } // Brighter Slate 300
 
   // Main content
   .main-content {
-    h1, h2, h3, h4, h5, h6 { color: #f1f5f9 !important; }
-    hr { border-color: #334155 !important; }
+    h1, h2, h3, h4, h5, h6 { color: #ffffff !important; }
+    hr { border-color: #1e293b !important; } // Slate 800
   }
 
-  // Links
+  // Links - Lighter indigo for better contrast against dark bg
   a:not(.btn):not(.site-title):not(.search-result) {
-    color: #818cf8 !important;
-    &:hover { color: #a5b4fc !important; }
+    color: #a5b4fc !important; // Indigo 300
+    &:hover { color: #c7d2fe !important; } // Indigo 200
   }
 
   // Code
   code {
-    background-color: #1e293b !important;
-    color: #e2e8f0 !important;
-    border-color: #334155 !important;
+    background-color: #1e293b !important; // Slate 800
+    color: #f8fafc !important; // Slate 50
+    border-color: #334155 !important; // Slate 700
   }
 
   pre {
-    background-color: #1e293b !important;
-    > code { background-color: transparent !important; }
+    background-color: #0f172a !important; // Slate 900
+    border: 1px solid #1e293b !important;
+    > code { 
+      background-color: transparent !important; 
+      border: none !important; 
+    }
   }
 
   // Tables
   table {
     th {
-      background-color: #1e293b !important;
-      color: #f1f5f9 !important;
-      border-color: #334155 !important;
+      background-color: #0f172a !important; // Slate 900
+      color: #ffffff !important;
+      border-color: #1e293b !important; // Slate 800
     }
     td {
-      border-color: #334155 !important;
-      color: #e2e8f0 !important;
+      border-color: #1e293b !important; // Slate 800
+      color: #f8fafc !important; // Slate 50
     }
     tr:nth-child(even) td {
-      background-color: rgba(30, 41, 59, 0.5) !important;
+      background-color: #0f172a !important; // Slate 900
     }
   }
 
   // Search
   .search-input {
-    background-color: #1e293b !important;
-    color: #e2e8f0 !important;
-    border-color: #334155 !important;
-    &:focus { border-color: #818cf8 !important; }
+    background-color: #0f172a !important; // Slate 900
+    color: #ffffff !important;
+    border-color: #334155 !important; // Slate 700
+    &:focus { border-color: #a5b4fc !important; } // Indigo 300
   }
 
   .search-results {
-    background-color: #1e293b !important;
-    border-color: #334155 !important;
+    background-color: #0f172a !important; // Slate 900
+    border-color: #1e293b !important; // Slate 800
   }
 
-  .search-result-title { color: #f1f5f9 !important; }
-  .search-result-previews { color: #94a3b8 !important; }
-  .search-result:hover { background-color: #334155 !important; }
+  .search-result-title { color: #ffffff !important; }
+  .search-result-previews { color: #cbd5e1 !important; } // Slate 300
+  .search-result:hover { background-color: #1e293b !important; } // Slate 800
 
   // Footer
   .site-footer {
-    border-top-color: #334155 !important;
-    color: #94a3b8 !important;
-    a { color: #818cf8 !important; }
+    border-top-color: #1e293b !important; // Slate 800
+    color: #cbd5e1 !important; // Slate 300
+    a { color: #a5b4fc !important; }
   }
 
   // Blockquotes
   blockquote {
-    border-left-color: #818cf8 !important;
-    color: #cbd5e1 !important;
+    border-left-color: #a5b4fc !important; // Indigo 300
+    color: #e2e8f0 !important; // Slate 200
   }
 
   // Buttons
   .btn:not(.btn-primary) {
-    color: #e2e8f0 !important;
-    border-color: #475569 !important;
-    background-color: #1e293b !important;
-    &:hover { background-color: #334155 !important; }
+    color: #f8fafc !important; // Slate 50
+    border-color: #475569 !important; // Slate 600
+    background-color: #0f172a !important; // Slate 900
+    &:hover { background-color: #1e293b !important; } // Slate 800
   }
 
   // Main header & breadcrumbs
   .main-header {
-    background-color: #0f172a !important;
-    border-bottom-color: #334155 !important;
+    background-color: #020617 !important; // Slate 950
+    border-bottom-color: #1e293b !important; // Slate 800
   }
 
   .breadcrumb-nav {
-    color: #94a3b8 !important;
-    a { color: #818cf8 !important; }
+    color: #cbd5e1 !important; // Slate 300
+    a { color: #a5b4fc !important; }
   }
 
   .back-to-top {
-    color: #94a3b8 !important;
-    &:hover { color: #818cf8 !important; }
+    color: #cbd5e1 !important; // Slate 300
+    &:hover { color: #a5b4fc !important; }
   }
 
   // Callouts
   .callout {
-    background-color: #1e293b !important;
-    border-color: #334155 !important;
+    background-color: #0f172a !important; // Slate 900
+    border-color: #1e293b !important; // Slate 800
+    color: #f8fafc !important;
   }
 
   // Aux links (npm, GitHub)
   .aux-nav .aux-nav-list-item a {
-    color: #94a3b8 !important;
-    &:hover { color: #f1f5f9 !important; }
+    color: #cbd5e1 !important; // Slate 300
+    &:hover { color: #ffffff !important; }
   }
 }
