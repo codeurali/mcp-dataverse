@@ -5,66 +5,66 @@ parent: Multi-Client Setup
 nav_order: 4
 ---
 
-# Guide : mcp-dataverse sur Cursor
+# Guide: mcp-dataverse on Cursor
 
-Ce guide couvre l'installation de Cursor depuis zéro jusqu'à un premier appel MCP Dataverse fonctionnel dans l'éditeur.
-
----
-
-## Qu'est-ce que Cursor ?
-
-Cursor est un éditeur de code AI-first, fork de VS Code, développé par Anysphere. Il intègre des agents autonomes, de l'autocomplétion intelligente et supporte nativement le protocole MCP pour connecter des outils externes directement à l'IA.
+This guide covers installing Cursor from scratch through to a first working MCP Dataverse call within the editor.
 
 ---
 
-## Prérequis
+## What is Cursor?
 
-| Élément | Version minimale | Remarque |
-|---------|-----------------|----------|
+Cursor is an AI-first code editor, a fork of VS Code, developed by Anysphere. It integrates autonomous agents, intelligent autocompletion, and natively supports the MCP protocol to connect external tools directly to the AI.
+
+---
+
+## Prerequisites
+
+| Item | Minimum version | Note |
+|------|-----------------|------|
 | OS | Windows 10+ / macOS 10.15 (Catalina)+ / Linux (Ubuntu 20.04+) | |
-| Node.js | 20+ | [nodejs.org](https://nodejs.org) — npx doit être disponible |
-| Compte Cursor | Gratuit (Hobby) pour démarrer | Plan Pro recommandé pour un usage intensif |
-| URL Dataverse | `https://yourorg.crm.dynamics.com` | Votre organisation Power Platform |
+| Node.js | 20+ | [nodejs.org](https://nodejs.org) — npx must be available |
+| Cursor account | Free (Hobby) to get started | Pro plan recommended for intensive use |
+| Dataverse URL | `https://yourorg.crm.dynamics.com` | Your Power Platform organisation |
 
 ---
 
-## 1. Installer Cursor
+## 1. Install Cursor
 
 ### Windows
 
-1. Télécharger depuis **[cursor.com/download](https://cursor.com/download)**
-2. Lancer le fichier `.exe` téléchargé et suivre l'assistant d'installation
-3. Cursor s'installe par défaut dans `%LOCALAPPDATA%\Programs\Cursor`
+1. Download from **[cursor.com/download](https://cursor.com/download)**
+2. Run the downloaded `.exe` file and follow the installation wizard
+3. Cursor installs by default in `%LOCALAPPDATA%\Programs\Cursor`
 
 ### macOS
 
-1. Télécharger le fichier `.dmg` depuis **[cursor.com/download](https://cursor.com/download)**
-2. Glisser l'icône **Cursor** dans le dossier Applications
-3. Lancer Cursor depuis le Launchpad ou avec `open -a Cursor`
+1. Download the `.dmg` file from **[cursor.com/download](https://cursor.com/download)**
+2. Drag the **Cursor** icon into the Applications folder
+3. Launch Cursor from the Launchpad or with `open -a Cursor`
 
 ### Linux
 
-1. Télécharger le fichier `.AppImage` ou `.deb` depuis **[cursor.com/download](https://cursor.com/download)**
-2. Pour AppImage : `chmod +x Cursor-*.AppImage && ./Cursor-*.AppImage`
-3. Pour `.deb` (Debian/Ubuntu) : `sudo apt install ./cursor-*.deb`
+1. Download the `.AppImage` or `.deb` file from **[cursor.com/download](https://cursor.com/download)**
+2. For AppImage: `chmod +x Cursor-*.AppImage && ./Cursor-*.AppImage`
+3. For `.deb` (Debian/Ubuntu): `sudo apt install ./cursor-*.deb`
 
 ---
 
-## 2. Créer un compte et se connecter
+## 2. Create an account and sign in
 
-Au premier lancement, Cursor propose de :
-- Créer un compte Cursor (email + mot de passe ou OAuth GitHub/Google)
-- Importer les paramètres VS Code existants (extensions, keybindings, thèmes)
+On first launch, Cursor offers to:
+- Create a Cursor account (e-mail + password or OAuth via GitHub/Google)
+- Import existing VS Code settings (extensions, keybindings, themes)
 
 ---
 
-## 3. Configurer mcp-dataverse
+## 3. Configure mcp-dataverse
 
-> **Format important** — Cursor utilise la clé `mcpServers` (et non `servers` comme VS Code).
+> **Important format note** — Cursor uses the `mcpServers` key (not `servers` as in VS Code).
 
-### Portée workspace (recommandée)
+### Workspace scope (recommended)
 
-Créer le fichier `.cursor/mcp.json` à la racine du workspace :
+Create the `.cursor/mcp.json` file at the root of the workspace:
 
 ```json
 {
@@ -80,11 +80,11 @@ Créer le fichier `.cursor/mcp.json` à la racine du workspace :
 }
 ```
 
-### Portée globale (tous les workspaces)
+### Global scope (all workspaces)
 
-Créer `~/.cursor/mcp.json` dans le répertoire home pour rendre les outils disponibles dans tous les projets :
+Create `~/.cursor/mcp.json` in the home directory to make the tools available across all projects:
 
-> **Windows** — Le répertoire `~\.cursor` n'est pas créé automatiquement. S'il n'existe pas encore :
+> **Windows** — The `~\.cursor` directory is not created automatically. If it does not exist yet:
 > ```powershell
 > New-Item -ItemType Directory -Force "$env:USERPROFILE\.cursor"
 > ```
@@ -103,7 +103,7 @@ Créer `~/.cursor/mcp.json` dans le répertoire home pour rendre les outils disp
 }
 ```
 
-### Utiliser un fichier de config mcp-dataverse
+### Using an mcp-dataverse config file
 
 ```json
 {
@@ -119,7 +119,7 @@ Créer `~/.cursor/mcp.json` dans le répertoire home pour rendre les outils disp
 }
 ```
 
-### Plusieurs environnements Dataverse
+### Multiple Dataverse environments
 
 ```json
 {
@@ -140,50 +140,50 @@ Créer `~/.cursor/mcp.json` dans le répertoire home pour rendre les outils disp
 
 ---
 
-## 4. Redémarrer Cursor
+## 4. Restart Cursor
 
-Après avoir créé ou modifié `.cursor/mcp.json`, **recharger la fenêtre** pour que Cursor prenne en compte les serveurs MCP :
+After creating or modifying `.cursor/mcp.json`, **reload the window** for Cursor to pick up the MCP servers:
 
-- `Ctrl+Shift+P` (Windows/Linux) ou `Cmd+Shift+P` (macOS) → **Developer: Reload Window**
-
----
-
-## 5. Authentification Dataverse
-
-Au premier appel d'un outil MCP, le serveur lance un flux Device Code :
-
-1. Ouvrir le panneau **Output** (`Ctrl+Shift+U`) → sélectionner **MCP Logs** dans la liste déroulante
-2. L'URL et le code de connexion s'affichent dans ce panneau
-3. Ouvrir l'URL dans un navigateur, entrer le code, se connecter avec le compte Microsoft 365 ayant accès à Dataverse
-4. Le token est stocké localement — l'authentification n'est pas rejouée à chaque session
+- `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS) → **Developer: Reload Window**
 
 ---
 
-## 6. Vérifier l'intégration
+## 5. Dataverse Authentication
 
-Ouvrir le chat Cursor (Agent mode) et envoyer :
+On the first call to an MCP tool, the server initiates a Device Code flow:
+
+1. Open the **Output** panel (`Ctrl+Shift+U`) → select **MCP Logs** from the drop-down list
+2. The URL and sign-in code are displayed in this panel
+3. Open the URL in a browser, enter the code, and sign in with the Microsoft 365 account that has access to Dataverse
+4. The token is stored locally — authentication is not repeated each session
+
+---
+
+## 6. Verify the integration
+
+Open the Cursor chat (Agent mode) and send:
 
 > **"Who am I in Dataverse?"**
 
-Cursor appellera `dataverse_whoami` et affichera le nom et l'ID de l'utilisateur. Une réponse correcte valide l'ensemble de la chaîne.
+Cursor will call `dataverse_whoami` and display the user's name and ID. A correct response validates the entire chain.
 
 ---
 
-## Dépannage rapide
+## Quick Troubleshooting
 
-| Symptôme | Cause probable | Solution |
-|----------|---------------|---------|
-| Serveur MCP non visible dans Cursor | `.cursor/mcp.json` absent ou mal placé | Vérifier que le fichier est à la racine du workspace ouvert |
-| Clé `servers` au lieu de `mcpServers` | Confusion avec le format VS Code | Cursor requiert `mcpServers`, pas `servers` |
-| `ENOENT npx` | Node.js absent du PATH | Installer Node.js 20+ et redémarrer Cursor |
-| Code de périphérique non visible | Panneau Output non ouvert | Output → MCP dans la liste déroulante |
-| Token expiré (90+ jours) | Refresh token révoqué | `npx mcp-dataverse-auth https://yourorg.crm.dynamics.com` |
+| Symptom | Probable cause | Solution |
+|---------|----------------|---------|
+| MCP server not visible in Cursor | `.cursor/mcp.json` missing or incorrectly placed | Check that the file is at the root of the open workspace |
+| `servers` key instead of `mcpServers` | Confusion with the VS Code format | Cursor requires `mcpServers`, not `servers` |
+| `ENOENT npx` | Node.js not on PATH | Install Node.js 20+ and restart Cursor |
+| Device code not visible | Output panel not open | Output → MCP in the drop-down list |
+| Expired token (90+ days) | Refresh token revoked | `npx mcp-dataverse-auth https://yourorg.crm.dynamics.com` |
 
 ---
 
-## Ressources
+## Resources
 
-- [Site officiel Cursor](https://cursor.com)
-- [Documentation MCP dans Cursor](https://cursor.com/docs/context/mcp)
-- [Référence complète multi-client](https://codeurali.github.io/mcp-dataverse/multi-client-setup)
-- [Diagnostic CLI](https://codeurali.github.io/mcp-dataverse/getting-started#diagnostic-cli) : `npx mcp-dataverse doctor`
+- [Official Cursor website](https://cursor.com)
+- [MCP documentation in Cursor](https://cursor.com/docs/context/mcp)
+- [Full multi-client reference](https://codeurali.github.io/mcp-dataverse/multi-client-setup)
+- [CLI diagnostic](https://codeurali.github.io/mcp-dataverse/getting-started#diagnostic-cli): `npx mcp-dataverse doctor`

@@ -5,31 +5,31 @@ parent: Multi-Client Setup
 nav_order: 1
 ---
 
-# Guide : mcp-dataverse sur Claude Code (CLI)
+# Guide: mcp-dataverse on Claude Code (CLI)
 
-Ce guide couvre l'installation de Claude Code depuis zéro jusqu'à un premier appel MCP Dataverse fonctionnel depuis le terminal.
+This guide covers the installation of Claude Code from scratch through to a first working MCP Dataverse call from the terminal.
 
 ---
 
-## Prérequis
+## Prerequisites
 
-| Élément | Version minimale | Remarque |
+| Item | Minimum version | Note |
 |---------|-----------------|----------|
-| OS | Windows 10 1809+ / macOS 13+ / Ubuntu 20.04+ | Voir [configuration réseau](https://code.claude.com/docs/en/network-config) pour les environnements restreints |
-| RAM | 4 Go+ | Recommandé |
-| Node.js | 20+ | Requis pour `npx mcp-dataverse` |
-| Compte Anthropic | Pro, Max, Teams, Enterprise ou Console | Le plan gratuit n'inclut pas Claude Code |
-| URL Dataverse | `https://yourorg.crm.dynamics.com` | Votre organisation Power Platform |
+| OS | Windows 10 1809+ / macOS 13+ / Ubuntu 20.04+ | See [network configuration](https://code.claude.com/docs/en/network-config) for restricted environments |
+| RAM | 4 GB+ | Recommended |
+| Node.js | 20+ | Required for `npx mcp-dataverse` |
+| Anthropic account | Pro, Max, Teams, Enterprise or Console | The free plan does not include Claude Code |
+| Dataverse URL | `https://yourorg.crm.dynamics.com` | Your Power Platform organisation |
 
-> **Windows** : [Git for Windows](https://git-scm.com/downloads/win) est requis. Claude Code utilise Git Bash en interne.
+> **Windows**: [Git for Windows](https://git-scm.com/downloads/win) is required. Claude Code uses Git Bash internally.
 
 ---
 
-## 1. Installer Claude Code
+## 1. Install Claude Code
 
-### Installation native (recommandée)
+### Native installation (recommended)
 
-Claude Code se met à jour automatiquement en arrière-plan et ne nécessite pas Node.js préinstallé.
+Claude Code updates automatically in the background and does not require Node.js to be pre-installed.
 
 **macOS / Linux / WSL**
 ```bash
@@ -46,7 +46,7 @@ irm https://claude.ai/install.ps1 | iex
 curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
 ```
 
-> Installer [Git for Windows](https://git-scm.com/downloads/win) avant si ce n'est pas encore fait.
+> Install [Git for Windows](https://git-scm.com/downloads/win) beforehand if not already done.
 
 ### Via Homebrew (macOS/Linux)
 
@@ -60,38 +60,38 @@ brew install --cask claude-code
 winget install Anthropic.ClaudeCode
 ```
 
-> Les installations Homebrew et WinGet **ne se mettent pas à jour automatiquement**. Utiliser `brew upgrade claude-code` ou `winget upgrade Anthropic.ClaudeCode` pour les mises à jour manuelles.
+> Homebrew and WinGet installations **do not update automatically**. Use `brew upgrade claude-code` or `winget upgrade Anthropic.ClaudeCode` for manual updates.
 
 ---
 
-## 2. Vérifier l'installation
+## 2. Verify the installation
 
 ```bash
 claude --version
 claude doctor
 ```
 
-`claude doctor` vérifie la version de Node.js, la configuration, l'authentification et la connectivité réseau.
+`claude doctor` checks the Node.js version, configuration, authentication, and network connectivity.
 
 ---
 
-## 3. Premier lancement et authentification Anthropic
+## 3. First launch and Anthropic authentication
 
-Lancer Claude Code dans le répertoire de travail :
+Launch Claude Code in the working directory:
 
 ```bash
 claude
 ```
 
-À l'invite, sélectionner **Sign in with Claude.ai** et suivre les instructions dans le navigateur. Claude Code nécessite un plan Pro, Max, Teams, Enterprise ou un compte Console API.
+At the prompt, select **Sign in with Claude.ai** and follow the instructions in the browser. Claude Code requires a Pro, Max, Teams, Enterprise plan or a Console API account.
 
 ---
 
-## 4. Configurer mcp-dataverse
+## 4. Configure mcp-dataverse
 
-### Méthode rapide — commande `mcp add`
+### Quick method — `mcp add` command
 
-Enregistrer le serveur avec la variable d'environnement intégrée et en portée globale (`--scope user`) pour que l'outil soit disponible dans tous les projets :
+Register the server with the built-in environment variable and global scope (`--scope user`) so that the tool is available in all projects:
 
 **macOS / Linux / WSL**
 ```bash
@@ -109,23 +109,23 @@ claude mcp add --transport stdio --scope user `
   -- cmd /c npx -y mcp-dataverse
 ```
 
-> **Windows natif** : le wrapper `cmd /c` est obligatoire — sans lui, `npx` ne peut pas être exécuté directement et retourne une erreur "Connection closed".
+> **Native Windows**: the `cmd /c` wrapper is mandatory — without it, `npx` cannot be executed directly and returns a "Connection closed" error.
 
-> **Ordre des arguments** : le nom du serveur (`mcp-dataverse`) doit impérativement être placé **avant** le flag `-e`/`--env`. En raison du comportement variadic de `-e <env...>`, placer le nom après la variable d'environnement provoque l'erreur `Invalid environment variable format: mcp-dataverse`.
+> **Argument order**: the server name (`mcp-dataverse`) must be placed **before** the `-e`/`--env` flag. Due to the variadic behaviour of `-e <env...>`, placing the name after the environment variable causes the error `Invalid environment variable format: mcp-dataverse`.
 
-Cette commande écrit l'entrée dans `~/.claude.json` automatiquement.
+This command writes the entry to `~/.claude.json` automatically.
 
-#### Portées disponibles (`--scope`)
+#### Available scopes (`--scope`)
 
-| Scope | Disponibilité | Fichier généré |
+| Scope | Availability | Generated file |
 |-------|--------------|----------------|
-| `local` (défaut) | Répertoire courant uniquement | `.claude/settings.local.json` |
-| `project` | Tous les membres du projet | `.mcp.json` à la racine |
-| `user` | Tous vos projets (recommandé) | `~/.claude.json` |
+| `local` (default) | Current directory only | `.claude/settings.local.json` |
+| `project` | All project members | `.mcp.json` at the root |
+| `user` | All your projects (recommended) | `~/.claude.json` |
 
-### Méthode manuelle — édition de `~/.claude.json`
+### Manual method — editing `~/.claude.json`
 
-Ouvrir (ou créer) `~/.claude.json` et ajouter la clé `mcpServers` :
+Open (or create) `~/.claude.json` and add the `mcpServers` key:
 
 ```json
 {
@@ -141,9 +141,9 @@ Ouvrir (ou créer) `~/.claude.json` et ajouter la clé `mcpServers` :
 }
 ```
 
-### Portée workspace (projet spécifique)
+### Workspace scope (project-specific)
 
-Pour limiter le serveur à un seul projet, créer `.mcp.json` à la racine du projet :
+To restrict the server to a single project, create `.mcp.json` at the project root:
 
 ```json
 {
@@ -161,31 +161,31 @@ Pour limiter le serveur à un seul projet, créer `.mcp.json` à la racine du pr
 
 ---
 
-## 5. Authentification Dataverse
+## 5. Dataverse authentication
 
-Au premier appel d'un outil MCP, le serveur lance un flux Device Code :
+On the first call of an MCP tool, the server initiates a Device Code flow:
 
-1. Le code et l'URL s'affichent **directement dans le terminal** Claude Code
-2. Ouvrir l'URL dans un navigateur, entrer le code, se connecter avec le compte Microsoft 365 ayant accès à Dataverse
-3. Le token est stocké localement — pas besoin de répéter cette étape
+1. The code and URL are displayed **directly in the Claude Code terminal**
+2. Open the URL in a browser, enter the code, and sign in with the Microsoft 365 account that has access to Dataverse
+3. The token is stored locally — there is no need to repeat this step
 
-> Le code expire après 5 minutes. En cas d'expiration, relancer la commande pour en générer un nouveau.
+> The code expires after 5 minutes. If it expires, re-run the command to generate a new one.
 
 ---
 
-## 6. Vérifier l'intégration
+## 6. Verify the integration
 
-Depuis la session Claude Code, poser la question :
+From the Claude Code session, ask:
 
 > **"Who am I in Dataverse?"**
 
-Claude appellera `dataverse_whoami`. Une réponse indiquant le nom de l'utilisateur confirme que tout fonctionne.
+Claude will call `dataverse_whoami`. A response showing the user's name confirms that everything is working.
 
 ---
 
-## Plusieurs environnements Dataverse
+## Multiple Dataverse environments
 
-Pour travailler avec plusieurs organisations, définir des entrées distinctes :
+To work with multiple organisations, define separate entries:
 
 ```json
 {
@@ -206,20 +206,20 @@ Pour travailler avec plusieurs organisations, définir des entrées distinctes :
 
 ---
 
-## Dépannage rapide
+## Quick troubleshooting
 
-| Symptôme | Cause probable | Solution |
+| Symptom | Probable cause | Solution |
 |----------|---------------|---------|
-| `ENOENT npx` | Node.js absent du PATH | Installer Node.js 20+ |
-| Code de périphérique non affiché | Variable d'environnement non définie avant le lancement | Définir `DATAVERSE_ENV_URL` dans le shell avant de lancer `claude` |
-| Supprimer un serveur MCP | — | `claude mcp remove mcp-dataverse` |
-| Lister les serveurs MCP configurés | — | `claude mcp list` |
-| Migrer depuis npm vers l'installation native | npm deprecated | `curl -fsSL https://claude.ai/install.sh \| bash` puis `npm uninstall -g @anthropic-ai/claude-code` |
+| `ENOENT npx` | Node.js absent from PATH | Install Node.js 20+ |
+| Device code not displayed | Environment variable not defined before launch | Set `DATAVERSE_ENV_URL` in the shell before launching `claude` |
+| Remove an MCP server | — | `claude mcp remove mcp-dataverse` |
+| List configured MCP servers | — | `claude mcp list` |
+| Migrate from npm to native installation | npm deprecated | `curl -fsSL https://claude.ai/install.sh \| bash` then `npm uninstall -g @anthropic-ai/claude-code` |
 
 ---
 
-## Ressources
+## Resources
 
-- [Documentation officielle Claude Code – Advanced setup](https://code.claude.com/docs/en/setup)
-- [Référence complète multi-client](https://codeurali.github.io/mcp-dataverse/multi-client-setup)
-- [Diagnostic CLI](https://codeurali.github.io/mcp-dataverse/getting-started#diagnostic-cli) : `npx mcp-dataverse doctor`
+- [Official Claude Code documentation – Advanced setup](https://code.claude.com/docs/en/setup)
+- [Full multi-client reference](https://codeurali.github.io/mcp-dataverse/multi-client-setup)
+- [CLI diagnostics](https://codeurali.github.io/mcp-dataverse/getting-started#diagnostic-cli): `npx mcp-dataverse doctor`

@@ -5,56 +5,56 @@ parent: Multi-Client Setup
 nav_order: 2
 ---
 
-# Guide : mcp-dataverse sur Claude Desktop
+# Guide: mcp-dataverse on Claude Desktop
 
-Ce guide couvre l'installation de Claude Desktop depuis zéro jusqu'à un premier appel MCP Dataverse fonctionnel.
+This guide covers the installation of Claude Desktop from scratch through to a first working MCP Dataverse call.
 
 ---
 
-## Prérequis
+## Prerequisites
 
-| Élément | Version minimale | Remarque |
+| Item | Minimum version | Note |
 |---------|-----------------|----------|
-| Node.js | 20+ | [nodejs.org](https://nodejs.org) — npx doit être disponible dans le PATH |
-| Compte Anthropic | Plan payant (Pro, Max, Team ou Enterprise) | Le plan gratuit ne suffit pas |
-| URL Dataverse | `https://yourorg.crm.dynamics.com` | Votre organisation Power Platform |
+| Node.js | 20+ | [nodejs.org](https://nodejs.org) — npx must be available in the PATH |
+| Anthropic account | Paid plan (Pro, Max, Team or Enterprise) | The free plan is not sufficient |
+| Dataverse URL | `https://yourorg.crm.dynamics.com` | Your Power Platform organisation |
 
 ---
 
-## 1. Installer Claude Desktop
+## 1. Install Claude Desktop
 
 ### Windows
 
-1. Télécharger l'installateur depuis **[claude.ai/download](https://claude.ai/download)**
-2. Lancer `ClaudeSetup.exe` et suivre l'assistant (installation silencieuse possible avec `/S`)
-3. Démarrer Claude Desktop et se connecter avec son compte Anthropic
+1. Download the installer from **[claude.ai/download](https://claude.ai/download)**
+2. Run `ClaudeSetup.exe` and follow the wizard (silent installation is possible with `/S`)
+3. Start Claude Desktop and sign in with your Anthropic account
 
-> Une version arm64 est aussi disponible sur la même page pour les machines Windows ARM.
+> An arm64 version is also available on the same page for Windows ARM machines.
 
 ### macOS
 
-1. Télécharger le fichier `.dmg` depuis **[claude.ai/download](https://claude.ai/download)**
-2. Glisser l'icône **Claude** dans le dossier Applications
-3. Lancer Claude depuis le Launchpad ou Spotlight et se connecter
+1. Download the `.dmg` file from **[claude.ai/download](https://claude.ai/download)**
+2. Drag the **Claude** icon into the Applications folder
+3. Launch Claude from Launchpad or Spotlight and sign in
 
 ---
 
-## 2. Localiser le fichier de configuration
+## 2. Locate the configuration file
 
-Claude Desktop lit sa configuration MCP dans un fichier JSON dont l'emplacement dépend de l'OS :
+Claude Desktop reads its MCP configuration from a JSON file whose location depends on the OS:
 
-| OS | Chemin |
+| OS | Path |
 |----|--------|
 | Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
 | macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
 
-Si le fichier n'existe pas encore, le créer (le répertoire parent existe après la première installation).
+If the file does not yet exist, create it (the parent directory exists after the first installation).
 
 ---
 
-## 3. Configurer mcp-dataverse
+## 3. Configure mcp-dataverse
 
-Ouvrir `claude_desktop_config.json` dans un éditeur de texte et ajouter (ou fusionner) la clé `mcpServers` :
+Open `claude_desktop_config.json` in a text editor and add (or merge) the `mcpServers` key:
 
 ```json
 {
@@ -70,9 +70,9 @@ Ouvrir `claude_desktop_config.json` dans un éditeur de texte et ajouter (ou fus
 }
 ```
 
-Remplacer `https://yourorg.crm.dynamics.com` par l'URL réelle de votre organisation Dataverse.
+Replace `https://yourorg.crm.dynamics.com` with the actual URL of your Dataverse organisation.
 
-> **Utilisateurs Power Platform CLI (`pac`)** — Si vous êtes déjà authentifié via `pac auth select`, vous pouvez déléguer l'authentification à pac au lieu du Device Code Flow en ajoutant `"AUTH_MODE": "pac"` dans `env` :
+> **Power Platform CLI (`pac`) users** — If you are already authenticated via `pac auth select`, you can delegate authentication to pac instead of the Device Code Flow by adding `"AUTH_MODE": "pac"` to `env`:
 >
 > ```json
 > "env": {
@@ -81,9 +81,9 @@ Remplacer `https://yourorg.crm.dynamics.com` par l'URL réelle de votre organisa
 > }
 > ```
 
-### Utiliser un fichier de config à la place d'une variable d'environnement
+### Using a config file instead of an environment variable
 
-Si vous préférez stocker l'URL dans `~/.mcp-dataverse/config.json` (créé par `npx mcp-dataverse install`), utiliser `MCP_CONFIG_PATH` :
+If you prefer to store the URL in `~/.mcp-dataverse/config.json` (created by `npx mcp-dataverse install`), use `MCP_CONFIG_PATH`:
 
 ```json
 {
@@ -99,9 +99,9 @@ Si vous préférez stocker l'URL dans `~/.mcp-dataverse/config.json` (créé par
 }
 ```
 
-### Installation globale (optionnelle)
+### Global installation (optional)
 
-Si `mcp-dataverse` est installé globalement (`npm install -g mcp-dataverse`), remplacer `npx` par l'exécutable direct :
+If `mcp-dataverse` is installed globally (`npm install -g mcp-dataverse`), replace `npx` with the direct executable:
 
 ```json
 {
@@ -114,53 +114,53 @@ Si `mcp-dataverse` est installé globalement (`npm install -g mcp-dataverse`), r
 
 ---
 
-## 4. Redémarrer Claude Desktop
+## 4. Restart Claude Desktop
 
-> **Important** — Claude Desktop doit être **entièrement fermé puis relancé** après chaque modification du fichier de configuration. Un simple rechargement d'onglet ne suffit pas.
+> **Important** — Claude Desktop must be **fully closed and restarted** after each modification to the configuration file. A simple tab reload is not sufficient.
 
-Sur Windows : clic-droit sur l'icône dans la barre système → **Quitter**, puis relancer.  
-Sur macOS : `Cmd+Q`, puis relancer depuis le Launchpad.
-
----
-
-## 5. Authentification Dataverse
-
-Au premier appel d'un outil MCP, le serveur lance un flux d'authentification par code de périphérique (Device Code Flow) :
-
-1. Dans Claude Desktop, cliquer sur l'**icône MCP** (marteau 🔨) dans le coin inférieur droit de la zone de saisie
-2. Ouvrir les **journaux du serveur** pour voir l'URL et le code de connexion
-3. Ouvrir l'URL dans un navigateur, entrer le code, puis se connecter avec le compte Microsoft 365 qui a accès à Dataverse
-4. Une fois authentifié, le serveur stocke le token localement — pas besoin de répéter cette étape
-
-> Le code de périphérique expire après 5 minutes. Si la fenêtre de connexion n'est pas ouverte à temps, relancer l'outil depuis Claude Desktop pour générer un nouveau code.
+On Windows: right-click the icon in the system tray → **Quit**, then relaunch.  
+On macOS: `Cmd+Q`, then relaunch from Launchpad.
 
 ---
 
-## 6. Vérifier l'installation
+## 5. Dataverse Authentication
 
-Dans la zone de saisie de Claude Desktop, envoyer ce message :
+On the first call to an MCP tool, the server initiates a device code authentication flow (Device Code Flow):
+
+1. In Claude Desktop, click the **MCP icon** (hammer 🔨) in the lower-right corner of the input area
+2. Open the **server logs** to see the URL and the sign-in code
+3. Open the URL in a browser, enter the code, then sign in with the Microsoft 365 account that has access to Dataverse
+4. Once authenticated, the server stores the token locally — there is no need to repeat this step
+
+> The device code expires after 5 minutes. If the sign-in window is not opened in time, re-run the tool from Claude Desktop to generate a new code.
+
+---
+
+## 6. Verify the installation
+
+In the Claude Desktop input area, send the following message:
 
 > **"Who am I in Dataverse?"**
 
-Claude appellera `dataverse_whoami` et retournera le nom et l'ID de l'utilisateur authentifié. Une réponse valide confirme que l'intégration fonctionne.
+Claude will call `dataverse_whoami` and return the name and ID of the authenticated user. A valid response confirms that the integration is working.
 
 ---
 
-## Dépannage rapide
+## Quick troubleshooting
 
-| Symptôme | Cause probable | Solution |
-|----------|---------------|---------|
-| Le serveur n'apparaît pas dans Claude | Config non sauvegardée ou Claude non redémarré | Vérifier le JSON, relancer complètement Claude |
-| Le code de périphérique n'apparaît pas | Journaux MCP non visibles | Cliquer sur l'icône MCP → Server logs |
-| `ENOENT npx` | Node.js absent du PATH | Installer Node.js 20+ et relancer Claude |
-| Erreur d'URL invalide | Format incorrect | L'URL doit commencer par `https://` et se terminer par `.dynamics.com` |
-| Token expiré après 90+ jours inactifs | Refresh token révoqué | Relancer : `npx mcp-dataverse-auth https://yourorg.crm.dynamics.com` |
+| Symptom | Probable cause | Solution |
+|----------|---------------|----------|
+| The server does not appear in Claude | Config not saved or Claude not restarted | Check the JSON, restart Claude completely |
+| The device code does not appear | MCP logs not visible | Click the MCP icon → Server logs |
+| `ENOENT npx` | Node.js not in the PATH | Install Node.js 20+ and relaunch Claude |
+| Invalid URL error | Incorrect format | The URL must begin with `https://` and end with `.dynamics.com` |
+| Token expired after 90+ inactive days | Refresh token revoked | Re-run: `npx mcp-dataverse-auth https://yourorg.crm.dynamics.com` |
 
 ---
 
-## Ressources
+## Resources
 
-- [Connexion d'un serveur MCP local à Claude Desktop](https://modelcontextprotocol.io/docs/develop/connect-local-servers)
-- [Référence complète multi-client](https://codeurali.github.io/mcp-dataverse/multi-client-setup)
-- [Démarrage et authentification](https://codeurali.github.io/mcp-dataverse/getting-started)
-- [Diagnostic CLI](https://codeurali.github.io/mcp-dataverse/getting-started#diagnostic-cli) : `npx mcp-dataverse doctor`
+- [Connecting a local MCP server to Claude Desktop](https://modelcontextprotocol.io/docs/develop/connect-local-servers)
+- [Full multi-client reference](https://codeurali.github.io/mcp-dataverse/multi-client-setup)
+- [Getting started and authentication](https://codeurali.github.io/mcp-dataverse/getting-started)
+- [CLI diagnostics](https://codeurali.github.io/mcp-dataverse/getting-started#diagnostic-cli) : `npx mcp-dataverse doctor`

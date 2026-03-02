@@ -5,50 +5,50 @@ parent: Multi-Client Setup
 nav_order: 7
 ---
 
-# Guide : mcp-dataverse en mode HTTP (multi-client)
+# Guide: mcp-dataverse in HTTP Mode (multi-client)
 
-Ce guide explique comment démarrer mcp-dataverse en mode serveur HTTP afin que plusieurs éditeurs ou outils IA puissent partager la même instance du serveur MCP simultanément.
-
----
-
-## Pourquoi le mode HTTP ?
-
-Le mode par défaut (`stdio`) crée un processus mcp-dataverse distinct pour **chaque** client IA. Le mode HTTP démarre **un seul processus** sur un port réseau, auquel tous les clients se connectent.
-
-| Mode | Transport | Processus | Adapté pour |
-|------|-----------|-----------|-------------|
-| stdio | Pipe stdin/stdout | 1 par client | Un seul éditeur |
-| **http** | HTTP + SSE/Streaming | **1 partagé** | Plusieurs éditeurs, équipes, dashboards |
-
-### Cas d'usage typiques
-
-- Travailler simultanément dans Cursor ET dans Claude Desktop sur le même Dataverse
-- Un pipeline CI/CD qui appelle des outils Dataverse via HTTP
-- Un dashboard (ex : n8n, LangGraph) qui interroge Dataverse via MCP
-- Partager une session authentifiée entre plusieurs membres d'une équipe (session locale uniquement)
+This guide explains how to start mcp-dataverse in HTTP server mode so that multiple editors or AI tools can share the same MCP server instance simultaneously.
 
 ---
 
-## Prérequis
+## Why HTTP Mode?
 
-| Élément | Version minimale | Remarque |
-|---------|-----------------|----------|
+The default mode (`stdio`) creates a separate mcp-dataverse process for **each** AI client. HTTP mode starts **a single process** on a network port, to which all clients connect.
+
+| Mode | Transport | Process | Suited for |
+|------|-----------|---------|------------|
+| stdio | stdin/stdout pipe | 1 per client | A single editor |
+| **http** | HTTP + SSE/Streaming | **1 shared** | Multiple editors, teams, dashboards |
+
+### Typical Use Cases
+
+- Working simultaneously in Cursor AND in Claude Desktop on the same Dataverse
+- A CI/CD pipeline that calls Dataverse tools via HTTP
+- A dashboard (e.g. n8n, LangGraph) that queries Dataverse via MCP
+- Sharing an authenticated session between several team members (local session only)
+
+---
+
+## Prerequisites
+
+| Item | Minimum Version | Note |
+|------|----------------|------|
 | Node.js | 20+ | [nodejs.org](https://nodejs.org) |
-| URL Dataverse | `https://yourorg.crm.dynamics.com` | |
+| Dataverse URL | `https://yourorg.crm.dynamics.com` | |
 
 ---
 
-## 1. Démarrer le serveur HTTP
+## 1. Starting the HTTP Server
 
-### Commande minimale
+### Minimal Command
 
 ```bash
 npx -y mcp-dataverse --transport http --port 3001
 ```
 
-Le serveur démarre et écoute sur `http://localhost:3001`.
+The server starts and listens on `http://localhost:3001`.
 
-### Avec l'URL Dataverse en variable d'environnement
+### With the Dataverse URL as an Environment Variable
 
 ```bash
 # Linux / macOS
@@ -63,7 +63,7 @@ set DATAVERSE_ENV_URL=https://yourorg.crm.dynamics.com
 npx -y mcp-dataverse --transport http --port 3001
 ```
 
-### Avec un fichier de config mcp-dataverse
+### With an mcp-dataverse Configuration File
 
 ```bash
 MCP_CONFIG_PATH=~/.mcp-dataverse/config.json npx -y mcp-dataverse --transport http --port 3001
@@ -71,13 +71,13 @@ MCP_CONFIG_PATH=~/.mcp-dataverse/config.json npx -y mcp-dataverse --transport ht
 
 ---
 
-## 2. Vérifier que le serveur est actif
+## 2. Verifying the Server is Running
 
 ```bash
 curl http://localhost:3001/health
 ```
 
-Réponse attendue :
+Expected response:
 
 ```json
 {
@@ -89,12 +89,12 @@ Réponse attendue :
 
 ---
 
-## 3. Endpoints disponibles
+## 3. Available Endpoints
 
-| Endpoint | Méthode | Description |
-|----------|---------|-------------|
-| `/mcp` | `POST`, `GET` | Endpoint MCP principal (Streamable HTTP). POST pour envoyer des messages JSON-RPC ; GET pour ouvrir un flux SSE de notifications serveur. |
-| `/health` | `GET` | Vérifie que le serveur est opérationnel |
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/mcp` | `POST`, `GET` | Main MCP endpoint (Streamable HTTP). POST to send JSON-RPC messages; GET to open an SSE stream of server notifications. |
+| `/health` | `GET` | Checks that the server is operational |
 
 ---
 
@@ -122,11 +122,11 @@ Réponse attendue :
 
 ---
 
-## 5. Connecter les clients au serveur HTTP
+## 5. Connecting Clients to the HTTP Server
 
 ### Claude Desktop
 
-Modifier `claude_desktop_config.json` :
+Modify `claude_desktop_config.json`:
 
 ```json
 {
@@ -182,9 +182,9 @@ Modifier `claude_desktop_config.json` :
 claude mcp add --transport http mcp-dataverse http://localhost:3001/mcp
 ```
 
-### Client HTTP générique (curl, scripts)
+### Generic HTTP Client (curl, scripts)
 
-Le protocole MCP Streamable HTTP requiert d'abord d'initialiser une session avant tout appel d'outil.
+The MCP Streamable HTTP protocol requires a session to be initialised before any tool call.
 
 ```bash
 # Étape 1 — Initialiser la session (récupérer le mcp-session-id)
@@ -216,27 +216,27 @@ curl -X POST http://localhost:3001/mcp \
   }'
 ```
 
-> Les clients MCP natifs (Cursor, Claude Desktop…) gèrent le cycle `initialize` → session → tools/call automatiquement. Pour les scripts personnalisés, ce cycle doit être géré explicitement.
+> Native MCP clients (Cursor, Claude Desktop, etc.) handle the `initialize` → session → tools/call cycle automatically. For custom scripts, this cycle must be managed explicitly.
 
 ---
 
-## 6. Authentification Dataverse
+## 6. Dataverse Authentication
 
-Il suffit qu'**un seul** client déclenche l'authentification — tous les autres bénéficient ensuite de la même session.
+Only **one** client needs to trigger authentication — all others then benefit from the same session.
 
-1. Démarrer le serveur HTTP dans un terminal
-2. Faire un premier appel depuis n'importe quel client connecté
-3. Le terminal affiche l'URL et le code Device Code
-4. Ouvrir l'URL dans un navigateur, saisir le code, se connecter avec le compte Microsoft 365
-5. Le token est stocké localement et partagé par toutes les connexions entrantes
+1. Start the HTTP server in a terminal
+2. Make an initial call from any connected client
+3. The terminal displays the Device Code URL and code
+4. Open the URL in a browser, enter the code, and sign in with a Microsoft 365 account
+5. The token is stored locally and shared across all incoming connections
 
 ---
 
-## 7. Démarrage automatique (optionnel)
+## 7. Automatic Start-up (Optional)
 
 ### systemd (Linux)
 
-Créer `/etc/systemd/system/mcp-dataverse.service` :
+Create `/etc/systemd/system/mcp-dataverse.service`:
 
 ```ini
 [Unit]
@@ -269,34 +269,34 @@ pm2 startup
 
 ---
 
-## 8. Sécurité
+## 8. Security
 
-> **Par défaut, le serveur écoute uniquement sur `localhost` (127.0.0.1).** Il n'est accessible que depuis la machine locale.
+> **By default, the server listens only on `localhost` (127.0.0.1).** It is only accessible from the local machine.
 
-Pour exposer le serveur à d'autres machines (partage en équipe) :
+To expose the server to other machines (team sharing):
 
-1. Utiliser un **reverse proxy** (nginx, Caddy, Traefik) avec TLS
-2. Ajouter une couche d'authentification devant le proxy (`Authorization: Bearer …`)
-3. Ne jamais exposer le port 3001 directement sur Internet
+1. Use a **reverse proxy** (nginx, Caddy, Traefik) with TLS
+2. Add an authentication layer in front of the proxy (`Authorization: Bearer …`)
+3. Never expose port 3001 directly to the Internet
 
-**Ne pas exposer le serveur HTTP sans authentification**, même en réseau local d'entreprise : le serveur agit avec les permissions du compte Dataverse authentifié.
-
----
-
-## Dépannage rapide
-
-| Symptôme | Cause probable | Solution |
-|----------|---------------|---------|
-| `Connection refused` sur `/health` | Serveur non démarré | Vérifier le terminal du serveur |
-| Port 3001 déjà utilisé | Autre processus | `--port 3002` ou libérer le port |
-| Client ne trouve pas les outils | URL incorrecte | Vérifier que l'URL pointe sur `/mcp` (pas `/`) |
-| Token non partagé | Clients en mode stdio en parallèle | Vérifier que tous les clients utilisent le mode `http` |
-| Code Device Code invisible | Serveur démarré en arrière-plan | Utiliser pm2 logs ou journalctl |
+**Do not expose the HTTP server without authentication**, even on a corporate local network: the server acts with the permissions of the authenticated Dataverse account.
 
 ---
 
-## Ressources
+## Quick Troubleshooting
 
-- [Page multi-client officielle](https://codeurali.github.io/mcp-dataverse/multi-client-setup)
+| Symptom | Probable Cause | Solution |
+|---------|---------------|---------|
+| `Connection refused` on `/health` | Server not started | Check the server terminal |
+| Port 3001 already in use | Another process | `--port 3002` or free the port |
+| Client cannot find tools | Incorrect URL | Verify the URL points to `/mcp` (not `/`) |
+| Token not shared | Clients running in stdio mode in parallel | Verify all clients are using `http` mode |
+| Device Code not visible | Server started in the background | Use pm2 logs or journalctl |
+
+---
+
+## Resources
+
+- [Official multi-client page](https://codeurali.github.io/mcp-dataverse/multi-client-setup)
 - [Diagnostic CLI](https://codeurali.github.io/mcp-dataverse/getting-started) : `npx mcp-dataverse doctor`
 - [Guide démarrage rapide](https://codeurali.github.io/mcp-dataverse/getting-started)

@@ -5,74 +5,74 @@ parent: Multi-Client Setup
 nav_order: 6
 ---
 
-# Guide : mcp-dataverse sur Windsurf
+# Guide: mcp-dataverse on Windsurf
 
-Ce guide couvre l'installation de Windsurf depuis zéro jusqu'à un premier appel MCP Dataverse fonctionnel dans l'éditeur.
-
----
-
-## Qu'est-ce que Windsurf ?
-
-Windsurf est le premier IDE "agentic" selon ses créateurs (Cognition / Codeium), fork de VS Code. Son IA principale, **Cascade**, maintient une conscience contextuelle complète du codebase en temps réel. Il supporte nativement le protocole MCP pour connecter des outils externes comme Dataverse à l'IA.
+This guide covers installing Windsurf from scratch through to a first working MCP Dataverse call within the editor.
 
 ---
 
-## Prérequis
+## What is Windsurf?
 
-| Élément | Version minimale | Remarque |
-|---------|-----------------|----------|
+Windsurf is described by its creators (Cognition / Codeium) as the first "agentic" IDE, forked from VS Code. Its primary AI, **Cascade**, maintains full contextual awareness of the codebase in real time. It natively supports the MCP protocol for connecting external tools such as Dataverse to the AI.
+
+---
+
+## Prerequisites
+
+| Item | Minimum version | Notes |
+|------|-----------------|-------|
 | OS | Windows 10+ / macOS 13 (Ventura)+ / Linux (Ubuntu 20.04+) | |
-| Node.js | 20+ | [nodejs.org](https://nodejs.org) — npx doit être disponible |
-| Compte Windsurf | Gratuit (tier Free disponible) | [windsurf.com](https://windsurf.com) |
-| URL Dataverse | `https://yourorg.crm.dynamics.com` | Votre organisation Power Platform |
+| Node.js | 20+ | [nodejs.org](https://nodejs.org) — npx must be available |
+| Windsurf account | Free (Free tier available) | [windsurf.com](https://windsurf.com) |
+| Dataverse URL | `https://yourorg.crm.dynamics.com` | Your Power Platform organisation |
 
 ---
 
-## 1. Installer Windsurf
+## 1. Install Windsurf
 
 ### Windows
 
-1. Télécharger depuis **[windsurf.com/download](https://windsurf.com/download)**
-   - Version x64 : pour les PC Intel/AMD classiques
-   - Version arm64 : pour les PC Windows ARM (Surface Pro X, Snapdragon…)
-2. Lancer le fichier `.exe` et suivre l'assistant d'installation
+1. Download from **[windsurf.com/download](https://windsurf.com/download)**
+   - x64 version: for standard Intel/AMD PCs
+   - arm64 version: for Windows ARM PCs (Surface Pro X, Snapdragon, etc.)
+2. Run the `.exe` file and follow the installation wizard
 
 ### macOS
 
-1. Télécharger le fichier `.dmg` depuis **[windsurf.com/download](https://windsurf.com/download)**
-2. Glisser l'icône **Windsurf** dans le dossier Applications
+1. Download the `.dmg` file from **[windsurf.com/download](https://windsurf.com/download)**
+2. Drag the **Windsurf** icon into the Applications folder
 
 ### Linux
 
-1. Télécharger le paquet correspondant à votre distribution depuis **[windsurf.com/download](https://windsurf.com/download)**
-2. Pour `.deb` (Debian/Ubuntu) : `sudo dpkg -i windsurf-*.deb`
-3. Pour `.rpm` (Fedora/RHEL) : `sudo rpm -i windsurf-*.rpm`
+1. Download the package for your distribution from **[windsurf.com/download](https://windsurf.com/download)**
+2. For `.deb` (Debian/Ubuntu): `sudo dpkg -i windsurf-*.deb`
+3. For `.rpm` (Fedora/RHEL): `sudo rpm -i windsurf-*.rpm`
 
 ---
 
-## 2. Créer un compte et se connecter
+## 2. Create an account and sign in
 
-Au premier lancement, Windsurf invite à créer un compte ou se connecter via Google / GitHub. Le plan Free offre 25 crédits Cascade par mois.
+On first launch, Windsurf prompts you to create an account or sign in via Google / GitHub. The Free plan includes 25 Cascade credits per month.
 
 ---
 
-## 3. Configurer mcp-dataverse
+## 3. Configure mcp-dataverse
 
-Windsurf supporte deux portées de configuration MCP :
+Windsurf supports two MCP configuration scopes:
 
-| Portée | Chemin | Quand l'utiliser |
-|--------|--------|-----------------|
-| **Global** (tous les workspaces) | `~/.codeium/windsurf/mcp_config.json` | Configuration partagée entre tous les projets |
-| **Workspace** (projet courant) | `.windsurf/mcp.json` à la racine du projet | Configuration isolée par projet, recommandée pour les équipes |
+| Scope | Path | When to use |
+|-------|------|-------------|
+| **Global** (all workspaces) | `~/.codeium/windsurf/mcp_config.json` | Shared configuration across all projects |
+| **Workspace** (current project) | `.windsurf/mcp.json` at the project root | Isolated per-project configuration, recommended for teams |
 
-### Portée globale
+### Global scope
 
-| OS | Chemin |
-|----|--------|
+| OS | Path |
+|----|------|
 | Windows | `%USERPROFILE%\.codeium\windsurf\mcp_config.json` |
 | macOS / Linux | `~/.codeium/windsurf/mcp_config.json` |
 
-Créer ou éditer ce fichier :
+Create or edit this file:
 
 ```json
 {
@@ -88,11 +88,11 @@ Créer ou éditer ce fichier :
 }
 ```
 
-Remplacer l'URL par celle de votre organisation Dataverse.
+Replace the URL with that of your Dataverse organisation.
 
-### Portée workspace
+### Workspace scope
 
-Créer le fichier `.windsurf/mcp.json` à la racine de votre projet (committer ce fichier permet de partager la configuration avec l'équipe) :
+Create the file `.windsurf/mcp.json` at the root of your project (committing this file allows the configuration to be shared with the team):
 
 ```json
 {
@@ -108,9 +108,9 @@ Créer le fichier `.windsurf/mcp.json` à la racine de votre projet (committer c
 }
 ```
 
-> La portée workspace est prioritaire sur la portée globale si les deux existent.
+> The workspace scope takes precedence over the global scope when both are present.
 
-### Utiliser un fichier de config mcp-dataverse
+### Using an mcp-dataverse config file
 
 ```json
 {
@@ -126,7 +126,7 @@ Créer le fichier `.windsurf/mcp.json` à la racine de votre projet (committer c
 }
 ```
 
-### Plusieurs environnements Dataverse
+### Multiple Dataverse environments
 
 ```json
 {
@@ -145,7 +145,7 @@ Créer le fichier `.windsurf/mcp.json` à la racine de votre projet (committer c
 }
 ```
 
-### Paramètres fins
+### Advanced parameters
 
 ```json
 {
@@ -159,61 +159,61 @@ Créer le fichier `.windsurf/mcp.json` à la racine de votre projet (committer c
 
 ---
 
-## 4. Accéder aux paramètres MCP dans Windsurf
+## 4. Accessing MCP settings in Windsurf
 
-**Via l'interface graphique Cascade :**
+**Via the Cascade graphical interface:**
 
-1. Dans le panneau **Cascade**, cliquer sur l'icône **MCPs** (menu en haut à droite du panneau)
-2. OU : **Windsurf Settings** → **Cascade** → **MCP Servers**
+1. In the **Cascade** panel, click the **MCPs** icon (menu at the top right of the panel)
+2. OR: **Windsurf Settings** → **Cascade** → **MCP Servers**
 
-**En éditant le fichier directement :**
+**By editing the file directly:**
 
-Ouvrir `~/.codeium/windsurf/mcp_config.json` (`%USERPROFILE%\.codeium\windsurf\mcp_config.json` sur Windows) dans n'importe quel éditeur de texte.
+Open `~/.codeium/windsurf/mcp_config.json` (`%USERPROFILE%\.codeium\windsurf\mcp_config.json` on Windows) in any text editor.
 
-> La commande palette `Ctrl+Shift+P` / `Cmd+Shift+P` → **Windsurf: Open MCP Config** peut également fonctionner selon la version installée, mais n'est pas documentée officiellement.
+> The command palette `Ctrl+Shift+P` / `Cmd+Shift+P` → **Windsurf: Open MCP Config** may also work depending on the installed version, but is not officially documented.
 
-Après modification du fichier, **recharger la fenêtre** (`Developer: Reload Window`) pour que les serveurs soient pris en compte.
-
----
-
-## 5. Authentification Dataverse
-
-Au premier appel d'un outil MCP depuis Cascade, le serveur lance un flux Device Code :
-
-1. Dans Windsurf, ouvrir le panneau **Output** → sélectionner **MCP** dans la liste déroulante
-2. L'URL et le code de connexion s'affichent
-3. Ouvrir l'URL dans un navigateur, entrer le code, se connecter avec le compte Microsoft 365 ayant accès à Dataverse
-4. Le token est stocké localement — l'authentification n'est pas rejouée à chaque session
-
-> Le code expire après 5 minutes. Reposer une question via Cascade pour en générer un nouveau.
+After modifying the file, **reload the window** (`Developer: Reload Window`) for the servers to be recognised.
 
 ---
 
-## 6. Vérifier l'intégration
+## 5. Dataverse authentication
 
-Ouvrir le panneau **Cascade** (icône vague en bas à droite ou `Ctrl+L`) et envoyer :
+On the first call to an MCP tool from Cascade, the server initiates a Device Code flow:
+
+1. In Windsurf, open the **Output** panel → select **MCP** from the dropdown list
+2. The login URL and code are displayed
+3. Open the URL in a browser, enter the code, and sign in with the Microsoft 365 account that has access to Dataverse
+4. The token is stored locally — authentication is not repeated each session
+
+> The code expires after 5 minutes. Submit a new question via Cascade to generate a fresh one.
+
+---
+
+## 6. Verify the integration
+
+Open the **Cascade** panel (wave icon at the bottom right or `Ctrl+L`) and send:
 
 > **"Who am I in Dataverse?"**
 
-Cascade appellera `dataverse_whoami` et affichera le nom et l'ID de l'utilisateur. Une réponse correcte valide la connexion complète.
+Cascade will call `dataverse_whoami` and display the user's name and ID. A correct response confirms the full connection is working.
 
 ---
 
-## Dépannage rapide
+## Quick troubleshooting
 
-| Symptôme | Cause probable | Solution |
-|----------|---------------|---------|
-| Serveur MCP non chargé | Fichier `mcp_config.json` absent ou mal formé | Vérifier `~/.codeium/windsurf/mcp_config.json` |
-| `ENOENT npx` | Node.js absent du PATH | Installer Node.js 20+ et recharger Windsurf |
-| Code de périphérique invisible | Panneau Output non ouvert | Output → liste déroulante → MCP |
-| JSON invalide | Erreur de syntaxe | Valider le JSON avec un linter |
-| Token expiré (90+ jours) | Refresh token révoqué | `npx mcp-dataverse-auth https://yourorg.crm.dynamics.com` |
+| Symptom | Likely cause | Solution |
+|---------|-------------|---------|
+| MCP server not loaded | `mcp_config.json` file missing or malformed | Check `~/.codeium/windsurf/mcp_config.json` |
+| `ENOENT npx` | Node.js not found in PATH | Install Node.js 20+ and reload Windsurf |
+| Device code not visible | Output panel not open | Output → dropdown list → MCP |
+| Invalid JSON | Syntax error | Validate the JSON with a linter |
+| Expired token (90+ days) | Refresh token revoked | `npx mcp-dataverse-auth https://yourorg.crm.dynamics.com` |
 
 ---
 
-## Ressources
+## Resources
 
-- [Site officiel Windsurf](https://windsurf.com)
-- [Documentation MCP Windsurf](https://docs.windsurf.com/windsurf/cascade/mcp)
-- [Référence complète multi-client](https://codeurali.github.io/mcp-dataverse/multi-client-setup)
-- [Diagnostic CLI](https://codeurali.github.io/mcp-dataverse/getting-started#diagnostic-cli) : `npx mcp-dataverse doctor`
+- [Windsurf official site](https://windsurf.com)
+- [Windsurf MCP documentation](https://docs.windsurf.com/windsurf/cascade/mcp)
+- [Full multi-client reference](https://codeurali.github.io/mcp-dataverse/multi-client-setup)
+- [CLI diagnostic](https://codeurali.github.io/mcp-dataverse/getting-started#diagnostic-cli): `npx mcp-dataverse doctor`

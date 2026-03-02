@@ -5,51 +5,51 @@ parent: Multi-Client Setup
 nav_order: 3
 ---
 
-# Guide : mcp-dataverse sur Codex CLI (OpenAI)
+# Guide: mcp-dataverse on Codex CLI (OpenAI)
 
-Ce guide couvre l'installation de Codex CLI depuis zéro jusqu'à un premier appel MCP Dataverse fonctionnel depuis le terminal.
-
----
-
-## Qu'est-ce que Codex CLI ?
-
-Codex CLI est l'agent de code local d'OpenAI. Il s'exécute dans le terminal, accède à vos fichiers locaux, et supporte les serveurs MCP pour étendre ses capacités vers des outils externes comme Dataverse.
+This guide covers installing Codex CLI from scratch through to a first working MCP Dataverse call from the terminal.
 
 ---
 
-## Prérequis
+## What is Codex CLI?
 
-| Élément | Version minimale | Remarque |
+Codex CLI is OpenAI's local code agent. It runs in the terminal, accesses your local files, and supports MCP servers to extend its capabilities to external tools such as Dataverse.
+
+---
+
+## Prerequisites
+
+| Item | Minimum version | Note |
 |---------|-----------------|----------|
-| Node.js | 18+ | [nodejs.org](https://nodejs.org) — nécessaire pour `npx mcp-dataverse` (pas pour Codex CLI lui-même) |
-| Compte OpenAI | ChatGPT Plus, Pro, Team, Edu ou Enterprise | Ou une clé API OpenAI avec crédits |
-| URL Dataverse | `https://yourorg.crm.dynamics.com` | Votre organisation Power Platform |
+| Node.js | 18+ | [nodejs.org](https://nodejs.org) — required for `npx mcp-dataverse` (not for Codex CLI itself) |
+| OpenAI account | ChatGPT Plus, Pro, Team, Edu or Enterprise | Or an OpenAI API key with credits |
+| Dataverse URL | `https://yourorg.crm.dynamics.com` | Your Power Platform organisation |
 
-> **Note :** Installé via npm (`npm install -g @openai/codex`), Codex CLI est un package Node.js/JavaScript. Des builds natifs (Rust ou autre) peuvent exister pour certaines plateformes, mais la version npm — la plus répandue — s'exécute sur Node.js. Node.js reste nécessaire pour lancer le serveur mcp-dataverse via `npx`.
+> **Note:** When installed via npm (`npm install -g @openai/codex`), Codex CLI is a Node.js/JavaScript package. Native builds (Rust or otherwise) may exist for certain platforms, but the npm version — the most widely used — runs on Node.js. Node.js remains required to launch the mcp-dataverse server via `npx`.
 
 ---
 
-## 1. Installer Codex CLI
+## 1. Install Codex CLI
 
-### Via npm (toutes plateformes)
+### Via npm (all platforms)
 
 ```bash
 npm install -g @openai/codex
 ```
 
-### Via Homebrew (macOS uniquement)
+### Via Homebrew (macOS only)
 
 ```bash
 brew install --cask codex
 ```
 
-### Via binaire direct
+### Via direct binary
 
-Télécharger le binaire correspondant à votre plateforme depuis la [dernière release GitHub](https://github.com/openai/codex/releases/latest) et l'ajouter au PATH.
+Download the binary for your platform from the [latest GitHub release](https://github.com/openai/codex/releases/latest) and add it to your PATH.
 
 ---
 
-## 2. Vérifier l'installation
+## 2. Verify the installation
 
 ```bash
 codex --version
@@ -57,17 +57,17 @@ codex --version
 
 ---
 
-## 3. Authentification OpenAI
+## 3. OpenAI Authentication
 
-Lancer Codex CLI :
+Launch Codex CLI:
 
 ```bash
 codex
 ```
 
-À l'invite, sélectionner **Sign in with ChatGPT** pour utiliser votre plan ChatGPT (Plus, Pro, Team, Edu ou Enterprise).
+At the prompt, select **Sign in with ChatGPT** to use your ChatGPT plan (Plus, Pro, Team, Edu, or Enterprise).
 
-Pour utiliser une clé API à la place :
+To use an API key instead:
 
 ```bash
 export OPENAI_API_KEY="sk-..."   # macOS / Linux
@@ -77,11 +77,11 @@ codex
 
 ---
 
-## 4. Configurer mcp-dataverse
+## 4. Configure mcp-dataverse
 
-Codex CLI lit ses serveurs MCP depuis `~/.codex/config.toml` (format TOML).
+Codex CLI reads its MCP servers from `~/.codex/config.toml` (TOML format).
 
-Créer ou éditer ce fichier pour y ajouter `mcp-dataverse` :
+Create or edit this file to add `mcp-dataverse`:
 
 ```toml
 [mcp_servers.mcp-dataverse]
@@ -92,18 +92,18 @@ args = ["-y", "mcp-dataverse"]
 DATAVERSE_ENV_URL = "https://yourorg.crm.dynamics.com"
 ```
 
-Remplacer `https://yourorg.crm.dynamics.com` par l'URL réelle de votre organisation.
+Replace `https://yourorg.crm.dynamics.com` with the actual URL of your organisation.
 
-### Chemin du fichier de config
+### Configuration file path
 
-| OS | Chemin |
+| OS | Path |
 |----|--------|
 | Windows | `%USERPROFILE%\.codex\config.toml` |
 | macOS / Linux | `~/.codex/config.toml` |
 
-### Utiliser un fichier de config mcp-dataverse
+### Using an mcp-dataverse configuration file
 
-Alternative à `DATAVERSE_ENV_URL` pour centraliser les paramètres :
+An alternative to `DATAVERSE_ENV_URL` for centralising configuration:
 
 ```toml
 [mcp_servers.mcp-dataverse]
@@ -116,31 +116,31 @@ MCP_CONFIG_PATH = "/Users/votreNom/.mcp-dataverse/config.json"
 
 ---
 
-## 5. Authentification Dataverse
+## 5. Dataverse Authentication
 
-Au premier appel d'un outil MCP, le serveur lance un flux Device Code :
+On the first call to an MCP tool, the server initiates a Device Code flow:
 
-1. L'URL et le code s'affichent **dans le terminal** Codex
-2. Ouvrir l'URL dans un navigateur, entrer le code, se connecter avec le compte Microsoft 365 ayant accès à Dataverse
-3. Le token est stocké localement — l'authentification n'est pas rejouée à chaque session
+1. The URL and code are displayed **in the Codex terminal**
+2. Open the URL in a browser, enter the code, and sign in with the Microsoft 365 account that has access to Dataverse
+3. The token is stored locally — authentication is not repeated each session
 
-> Le code expire au bout de 5 minutes. En cas d'expiration, relancer l'outil depuis Codex pour en générer un nouveau.
+> The code expires after 5 minutes. If it expires, re-invoke the tool from Codex to generate a new one.
 
 ---
 
-## 6. Vérifier l'intégration
+## 6. Verify the integration
 
-Dans une session Codex CLI, envoyer :
+In a Codex CLI session, send:
 
 > **"Who am I in Dataverse?"**
 
-Codex appellera `dataverse_whoami` et retournera le nom et l'ID de l'utilisateur. Une réponse correcte valide l'ensemble de la chaîne.
+Codex will call `dataverse_whoami` and return the user's name and ID. A correct response validates the entire chain.
 
 ---
 
-## Paramètres fins
+## Fine-tuning parameters
 
-Ajouter dans le bloc `env` pour ajuster les timeouts et retries :
+Add the following to the `env` block to adjust timeouts and retries:
 
 ```toml
 [mcp_servers.mcp-dataverse.env]
@@ -151,22 +151,22 @@ MAX_RETRIES = "5"
 
 ---
 
-## Dépannage rapide
+## Quick troubleshooting
 
-| Symptôme | Cause probable | Solution |
+| Symptom | Probable cause | Solution |
 |----------|---------------|---------|
-| `ENOENT npx` | Node.js absent du PATH | Installer Node.js et vérifier que `npx` est dans le PATH |
-| Serveur MCP non chargé | Fichier config mal situé ou mauvais format | Vérifier `~/.codex/config.toml` (format TOML, pas JSON) |
-| Erreur de syntaxe TOML | TOML invalide dans config | Valider le TOML avec un linter (extension VS Code **Even Better TOML**) |
-| Code de périphérique expiré | Délai de 5 min dépassé | Reposer la question dans Codex pour régénérer un code |
-| Token expiré (90+ jours) | Refresh token révoqué | `npx mcp-dataverse-auth https://yourorg.crm.dynamics.com` |
+| `ENOENT npx` | Node.js not in PATH | Install Node.js and verify that `npx` is in the PATH |
+| MCP server not loaded | Config file in wrong location or incorrect format | Check `~/.codex/config.toml` (TOML format, not JSON) |
+| TOML syntax error | Invalid TOML in config file | Validate the TOML with a linter (VS Code extension **Even Better TOML**) |
+| Device code expired | 5-minute timeout exceeded | Re-send the query in Codex to regenerate a code |
+| Token expired (90+ days) | Refresh token revoked | `npx mcp-dataverse-auth https://yourorg.crm.dynamics.com` |
 
 ---
 
-## Ressources
+## Resources
 
-- [Dépôt GitHub officiel Codex CLI](https://github.com/openai/codex)
-- [Documentation Codex](https://developers.openai.com/codex)
-- [Référence de configuration Codex](https://developers.openai.com/codex/config-reference)
-- [Référence complète multi-client](https://codeurali.github.io/mcp-dataverse/multi-client-setup)
-- [Diagnostic CLI](https://codeurali.github.io/mcp-dataverse/getting-started#diagnostic-cli) : `npx mcp-dataverse doctor`
+- [Official Codex CLI GitHub repository](https://github.com/openai/codex)
+- [Codex documentation](https://developers.openai.com/codex)
+- [Codex configuration reference](https://developers.openai.com/codex/config-reference)
+- [Full multi-client reference](https://codeurali.github.io/mcp-dataverse/multi-client-setup)
+- [CLI diagnostics](https://codeurali.github.io/mcp-dataverse/getting-started#diagnostic-cli): `npx mcp-dataverse doctor`
