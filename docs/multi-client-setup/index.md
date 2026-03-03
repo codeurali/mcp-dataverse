@@ -21,7 +21,7 @@ How to configure **mcp-dataverse** with every major MCP client. Paste the releva
 | [VS Code (Copilot)](#vs-code-github-copilot) | stdio | `.vscode/mcp.json` or user-level settings |
 | [Claude Desktop](#claude-desktop) | stdio | OS-specific `claude_desktop_config.json` |
 | [Claude Code (CLI)](#claude-code-cli) | stdio | `claude mcp add` or `~/.claude.json` |
-| [Codex CLI (OpenAI)](#codex-cli-openai) | stdio | `~/.codex/config.json` or env vars |
+| [Codex CLI (OpenAI)](#codex-cli-openai) | stdio | `~/.codex/config.toml` or env vars |
 | [Gemini CLI (Google)](#gemini-cli-google) | stdio | `~/.gemini/settings.json` |
 | [Cursor](#cursor) | stdio | `.cursor/mcp.json` |
 | [Windsurf](#windsurf) | stdio | `~/.codeium/windsurf/mcp_config.json` |
