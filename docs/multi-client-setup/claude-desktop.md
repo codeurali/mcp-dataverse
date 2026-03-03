@@ -72,15 +72,6 @@ Open `claude_desktop_config.json` in a text editor and add (or merge) the `mcpSe
 
 Replace `https://yourorg.crm.dynamics.com` with the actual URL of your Dataverse organisation.
 
-> **Power Platform CLI (`pac`) users** — If you are already authenticated via `pac auth select`, you can delegate authentication to pac instead of the Device Code Flow by adding `"AUTH_MODE": "pac"` to `env`:
->
-> ```json
-> "env": {
->   "DATAVERSE_ENV_URL": "https://yourorg.crm.dynamics.com",
->   "AUTH_MODE": "pac"
-> }
-> ```
-
 ### Using a config file instead of an environment variable
 
 If you prefer to store the URL in `~/.mcp-dataverse/config.json` (created by `npx mcp-dataverse install`), use `MCP_CONFIG_PATH`:
