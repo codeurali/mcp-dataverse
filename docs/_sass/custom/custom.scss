@@ -1,0 +1,13 @@
+// Modern accent colors for MCP Dataverse docs
+// Just the Docs v0.10.1 — custom.scss is loaded last in cascade
+
+// ── Light mode accents ──
+.btn-primary {
+  background-color: #4f46e5 !important;
+  border-color: #4f46e5 !important;
+  &:hover { background-color: #4338ca !important; }
+}
+
+.label-green  { background-color: #059669 !important; }
+.label-yellow { background-color: #d97706 !important; }
+.label-purple { background-color: #7c3aed !important; }

@@ -1,0 +1,5 @@
+{
+  "environmentUrl": "https://yourorg.crm.dynamics.com",
+  "requestTimeoutMs": 30000,
+  "maxRetries": 3
+}
