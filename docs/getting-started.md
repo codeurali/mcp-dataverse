@@ -125,6 +125,54 @@ npx mcp-dataverse --transport http --port 3001
 
 The MCP endpoint is available at `http://localhost:3001/mcp`.
 
+## HTTP Transport
+
+The server can run in HTTP mode instead of stdio, which enables multi-client connections and browser-based access.
+
+### Starting the HTTP server
+
+Set the `MCP_TRANSPORT` environment variable to `http`:
+
+```bash
+MCP_TRANSPORT=http MCP_HTTP_PORT=3000 node dist/server.js
+```
+
+Or in `config.json`:
+```json
+{
+  "transport": "http",
+  "httpPort": 3000
+}
+```
+
+### Environment variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `MCP_HTTP_PORT` | `3000` | Port to listen on |
+| `MCP_HTTP_JSON_RESPONSE` | `true` | Enable JSON response mode (vs SSE streaming) |
+| `MCP_HTTP_SECRET` | *(none)* | Bearer token for authentication. If set, all `/mcp` requests must include `Authorization: Bearer <token>` |
+| `BEARER_TOKEN` | *(none)* | Deprecated alias for `MCP_HTTP_SECRET`. Use `MCP_HTTP_SECRET` in new setups. |
+| `MCP_HTTP_CORS_ORIGIN` | `*` | Allowed CORS origin. Set to your app origin (e.g. `http://localhost:5173`) when auth is enabled to restrict browser access. |
+
+### Authentication
+
+When `MCP_HTTP_SECRET` is set, every request to `/mcp` must include:
+```
+Authorization: Bearer your-secret-token
+```
+
+### Health check
+
+```
+GET /health
+```
+Returns `{"status":"ok","version":"...","tools":<count>}`. No authentication required.
+
+### Multi-client support
+
+Each client gets a dedicated MCP session identified by `mcp-session-id`. Sessions are automatically cleaned up on disconnect.
+
 ## Diagnostics
 
 Run the built-in health check to verify your configuration and connectivity:

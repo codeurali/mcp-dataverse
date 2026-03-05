@@ -6,8 +6,6 @@
 
 **The most complete MCP server for Microsoft Dataverse.**
 
-Give your AI agents real-time access to Dataverse — query records with OData & FetchXML, manage metadata, inspect solutions, run batch operations, audit changes, and more. Zero-config auth via Microsoft device code flow.
-
 63 tools · 4 resources · 10 guided workflows · Zero config auth
 
 [![npm](https://img.shields.io/npm/v/mcp-dataverse)](https://www.npmjs.com/package/mcp-dataverse)
@@ -77,6 +75,31 @@ Re-authenticate after ~90 days of inactivity: `npx mcp-dataverse-auth`
 | **Assistance**          | 4     | Tool router, workflow guide                                    |
 
 [→ Full Capabilities Reference](https://codeurali.github.io/mcp-dataverse/capabilities)
+
+---
+
+## HTTP Transport
+
+Run as an HTTP server for multi-client use:
+
+```bash
+MCP_TRANSPORT=http MCP_HTTP_PORT=3000 MCP_HTTP_SECRET=mysecret node dist/server.js
+```
+
+Connect using VS Code / Copilot with:
+```json
+{
+  "servers": {
+    "dataverse": {
+      "type": "http",
+      "url": "http://localhost:3000/mcp",
+      "headers": {
+        "Authorization": "Bearer mysecret"
+      }
+    }
+  }
+}
+```
 
 ---
 
