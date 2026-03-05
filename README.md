@@ -6,6 +6,8 @@
 
 **The most complete MCP server for Microsoft Dataverse.**
 
+Give your AI agents real-time access to Dataverse — query records with OData & FetchXML, manage metadata, inspect solutions, run batch operations, audit changes, and more. Zero-config auth via Microsoft device code flow.
+
 63 tools · 4 resources · 10 guided workflows · Zero config auth
 
 [![npm](https://img.shields.io/npm/v/mcp-dataverse)](https://www.npmjs.com/package/mcp-dataverse)
@@ -14,7 +16,6 @@
 [![Node 20+](https://img.shields.io/badge/Node.js-20%2B-green)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue)](https://www.typescriptlang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
-[![Glama](https://glama.ai/mcp/servers/@codeurali/mcp-dataverse/badge)](https://glama.ai/mcp/servers/@codeurali/mcp-dataverse)
 
 **[→ Full Documentation](https://codeurali.github.io/mcp-dataverse)**
 
