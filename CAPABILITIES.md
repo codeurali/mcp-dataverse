@@ -1,8 +1,8 @@
 # MCP Dataverse Server — Complete Capabilities Reference
 
-> **Version**: 0.3.6 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
+> **Version**: 0.4.0 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
 
-63 tools across 24 categories for full Dataverse lifecycle: schema, CRUD, FetchXML, solutions, plugins, audit, files, users, teams, RBAC, environment variables, workflows, and more.
+67 tools across 25 categories for full Dataverse lifecycle: schema, CRUD, FetchXML, solutions, plugins, audit, files, users, teams, RBAC, attribute management, environment variables, workflows, and more.
 
 ---
 
@@ -32,6 +32,10 @@
   - [19. Views (1)](#19-views-1-tool)
   - [20. Files (2)](#20-files-2-tools)
   - [21. Org (1)](#21-org-1-tool)
+  - [22. RBAC (3)](#22-rbac-3-tools)
+  - [23. Workflows (2)](#23-workflows-2-tools)
+  - [24. Assistance (4)](#24-assistance-4-tools)
+  - [25. Attributes (4)](#25-attributes-4-tools)
 - [Error Handling & Retry Behavior](#error-handling--retry-behavior)
 - [Security](#security)
 - [Limitations & Known Constraints](#limitations--known-constraints)
@@ -91,7 +95,7 @@ Server communicates over **stdio** (MCP SDK `StdioServerTransport`). Connect fro
 
 ```mermaid
 graph LR
-    MCP["MCP Dataverse Server<br/><i>63 tools · 24 categories</i>"]
+    MCP["MCP Dataverse Server<br/><i>67 tools · 25 categories</i>"]
 
     MCP --> AUTH["🔑 Auth (1)"]
     MCP --> META["📋 Metadata (8)"]
@@ -104,25 +108,27 @@ graph LR
     MCP --> SOL["🧩 Solutions (3)"]
     MCP --> IMP["👤 Impersonation (1)"]
     MCP --> CUST["🔧 Customization (3)"]
-    MCP --> ENV["⚙️ Environment (2)"]
+    MCP --> ENV["⚙️ Environment (3)"]
     MCP --> TRACE["🔎 Trace (2)"]
     MCP --> SRCH["🔍 Search (1)"]
     MCP --> AUDIT["📜 Audit (1)"]
     MCP --> QUAL["✅ Quality (1)"]
     MCP --> NOTE["📝 Annotations (2)"]
     MCP --> USR["👥 Users (2)"]
+    MCP --> RBAC["🛡️ RBAC (3)"]
     MCP --> VIEWS["👁️ Views (1)"]
     MCP --> FILES["📁 Files (2)"]
-    MCP --> ORG["🏢 Org (1)"]
-    MCP --> TEAMS["👥 Teams (1)"]
+    MCP --> ORG["🏢 Org (2)"]
+    MCP --> WF["⚙️ Workflows (2)"]
     MCP --> ASSIST["🤖 Assistance (4)"]
+    MCP --> ATTR["🏗️ Attributes (4)"]
 ```
 
 All tool handlers validate inputs with **Zod** before calling the `DataverseAdvancedClient`. Auth tokens are cached and refreshed proactively; transient errors (429, 503, 504) are retried with exponential backoff.
 
 ---
 
-## Tool Reference (63 tools)
+## Tool Reference (67 tools)
 
 ### 1. Auth (1 tool)
 
@@ -942,7 +948,7 @@ Downloads a file from a Dataverse file-type column. Returns the file as a base64
 
 ---
 
-### 21. Org (1 tool)
+### 21. Org (2 tools)
 
 #### `dataverse_list_business_units`
 
@@ -954,6 +960,255 @@ Lists business units in the environment with name, ID, parent BU ID, disabled st
 | `includeDisabled` | `boolean` | —   | Include disabled BUs (default `false`) |
 
 > "List all active business units in my Dataverse environment"
+
+---
+
+#### `dataverse_list_teams`
+
+Lists Dataverse teams (owner teams and access teams) within one or all business units.
+
+| Parameter        | Type                      | Req | Notes                                          |
+| ---------------- | ------------------------- | --- | ---------------------------------------------- |
+| `top`            | `number`                  | —   | Default `50`, max `200`                        |
+| `teamType`       | `"Owner"\|"Access"\|"AAD"` | —   | Filter by team type; omit for all              |
+| `businessUnitId` | `string (UUID)`           | —   | Filter by business unit                        |
+
+> "List all owner teams in the environment"
+
+---
+
+### 22. RBAC (3 tools)
+
+#### `dataverse_list_roles`
+
+Lists security roles in the environment, optionally filtered by name.
+
+| Parameter    | Type     | Req | Notes                        |
+| ------------ | -------- | --- | ---------------------------- |
+| `nameFilter` | `string` | —   | Substring match on role name |
+| `top`        | `number` | —   | Default `50`, max `200`      |
+
+> "List all security roles that contain 'Sales'"
+
+```json
+{
+  "total": 3,
+  "roles": [{ "roleId": "...", "name": "Salesperson", "businessUnitId": "..." }]
+}
+```
+
+---
+
+#### `dataverse_assign_role_to_user`
+
+Assigns a security role to a system user (idempotent — returns `"already_assigned"` if the role is already assigned).
+
+| Parameter | Type            | Req | Notes             |
+| --------- | --------------- | --- | ----------------- |
+| `userId`  | `string (UUID)` | ✓   | System user GUID  |
+| `roleId`  | `string (UUID)` | ✓   | Security role ID  |
+
+> "Assign role r1s2t3u4 to user u1v2w3x4"
+
+---
+
+#### `dataverse_remove_role_from_user`
+
+Removes a security role from a system user.
+
+| Parameter | Type            | Req | Notes            |
+| --------- | --------------- | --- | ---------------- |
+| `userId`  | `string (UUID)` | ✓   | System user GUID |
+| `roleId`  | `string (UUID)` | ✓   | Security role ID |
+
+> "Remove role r1s2t3u4 from user u1v2w3x4"
+
+---
+
+### 23. Workflows (2 tools)
+
+#### `dataverse_list_workflows`
+
+Lists classic Dataverse workflows and modern cloud flows registered in the environment.
+
+| Parameter     | Type      | Req | Notes                                        |
+| ------------- | --------- | --- | -------------------------------------------- |
+| `top`         | `number`  | —   | Default `50`, max `200`                      |
+| `activeOnly`  | `boolean` | —   | Return only activated workflows (default `false`) |
+| `nameFilter`  | `string`  | —   | Substring match on workflow name             |
+
+> "List all active workflows on the account table"
+
+---
+
+#### `dataverse_get_workflow`
+
+Retrieves a single workflow definition by ID, including its trigger, steps, and current state.
+
+| Parameter    | Type            | Req | Notes         |
+| ------------ | --------------- | --- | ------------- |
+| `workflowId` | `string (UUID)` | ✓   | Workflow GUID |
+
+> "Get the definition of workflow w1x2y3z4"
+
+---
+
+### 24. Assistance (4 tools)
+
+#### `dataverse_suggest_tools`
+
+Returns a ranked list of MCP tools relevant to a natural-language task description. Use this when unsure which tool to call — it uses tag-based matching to surface the right tools.
+
+| Parameter     | Type     | Req | Notes                              |
+| ------------- | -------- | --- | ---------------------------------- |
+| `task`        | `string` | ✓   | Natural-language description of the task |
+| `top`         | `number` | —   | Max results (default `5`)          |
+
+> "Which tool should I use to create a new lookup column?"
+
+---
+
+#### `dataverse_list_guides`
+
+Lists available built-in guides that walk through common multi-step Dataverse tasks.
+
+| Parameter | Type | Req | Notes |
+| --------- | ---- | --- | ----- |
+| —         | —    | —   | No parameters |
+
+> "What guides are available in this MCP server?"
+
+---
+
+#### `dataverse_get_guide`
+
+Retrieves the full step-by-step content for a specific guide by name.
+
+| Parameter   | Type     | Req | Notes               |
+| ----------- | -------- | --- | ------------------- |
+| `guideName` | `string` | ✓   | Guide name from `list_guides` |
+
+> "Show me the steps for the entity-audit guide"
+
+---
+
+#### `dataverse_list_connection_references`
+
+Lists connection references used in solutions (Power Automate connectors).
+
+| Parameter      | Type     | Req | Notes                            |
+| -------------- | -------- | --- | -------------------------------- |
+| `top`          | `number` | —   | Default `50`, max `200`          |
+| `nameFilter`   | `string` | —   | Substring match on display name  |
+
+> "List all SharePoint connection references in my environment"
+
+---
+
+### 25. Attributes (4 tools)
+
+Attribute tools manage **column-level schema** in Dataverse tables. All write operations require `confirm: true` and auto-publish the entity definition by default.
+
+#### `dataverse_create_attribute`
+
+Creates a new column on an existing Dataverse table. Supports 11 attribute types with type-specific parameters.
+
+| Parameter            | Type                                                                                                             | Req | Notes                                                           |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------- | --- | --------------------------------------------------------------- |
+| `entityLogicalName`  | `string`                                                                                                         | ✓   | Target table (e.g. `"account"`)                                 |
+| `schemaName`         | `string`                                                                                                         | ✓   | Must include publisher prefix (e.g. `"new_CustomField"`)        |
+| `attributeType`      | `"String"\|"Memo"\|"Integer"\|"Decimal"\|"Money"\|"DateTime"\|"Boolean"\|"Picklist"\|"MultiSelectPicklist"\|"AutoNumber"\|"Image"` | ✓   | Column type                                                     |
+| `displayName`        | `string`                                                                                                         | ✓   | Human-readable label                                            |
+| `description`        | `string`                                                                                                         | —   | Column description                                              |
+| `requiredLevel`      | `"None"\|"ApplicationRequired"\|"Recommended"`                                                                  | —   | Requirement level (default `"None"`)                            |
+| `maxLength`          | `number`                                                                                                         | —   | String/Memo max chars                                           |
+| `minValue`/`maxValue`| `number`                                                                                                         | —   | Integer/Decimal range bounds                                    |
+| `precision`          | `number`                                                                                                         | —   | Decimal/Money decimal places                                    |
+| `dateTimeFormat`     | `"DateOnly"\|"DateAndTime"`                                                                                      | —   | DateTime display format                                         |
+| `defaultBooleanValue`| `boolean`                                                                                                        | —   | Default for Boolean columns                                     |
+| `picklistOptions`    | `{value: number, label: string}[]`                                                                               | —   | Option values for Picklist/MultiSelectPicklist                  |
+| `autoNumberFormat`   | `string`                                                                                                         | —   | Format string for AutoNumber, e.g. `"INV-{SEQNUM:5}"`          |
+| `languageCode`       | `number`                                                                                                         | —   | Label language code (default `1033` = English)                  |
+| `autoPublish`        | `boolean`                                                                                                        | —   | Publish after create (default `true`)                           |
+| `confirm`            | `true`                                                                                                           | ✓   | Must be `true`                                                  |
+
+> "Add a text column 'new_ExternalId' to the account table with max 100 characters"
+
+```json
+{
+  "logicalName": "new_externalid",
+  "schemaName": "new_ExternalId",
+  "attributeType": "String",
+  "entityLogicalName": "account",
+  "published": true
+}
+```
+
+---
+
+#### `dataverse_update_attribute`
+
+Updates properties of an existing column. Only columns with `IsCustomizable = true` can be modified.
+
+| Parameter             | Type                                            | Req | Notes                                       |
+| --------------------- | ----------------------------------------------- | --- | ------------------------------------------- |
+| `entityLogicalName`   | `string`                                        | ✓   | Table containing the column                 |
+| `attributeLogicalName`| `string`                                        | ✓   | Column logical name (e.g. `"new_myfield"`)  |
+| `displayName`         | `string`                                        | —   | New display label                           |
+| `description`         | `string`                                        | —   | New description                             |
+| `requiredLevel`       | `"None"\|"ApplicationRequired"\|"Recommended"`  | —   | New requirement level                       |
+| `maxLength`           | `number`                                        | —   | Increase only (cannot decrease)             |
+| `isSearchable`        | `boolean`                                       | —   | Include in Quick Find views                 |
+| `languageCode`        | `number`                                        | —   | Default `1033`                              |
+| `autoPublish`         | `boolean`                                       | —   | Default `true`                              |
+| `confirm`             | `true`                                          | ✓   | Must be `true`                              |
+
+> "Update new_externalid on account to be required"
+
+---
+
+#### `dataverse_delete_attribute`
+
+⚠️ **DESTRUCTIVE** — permanently deletes a custom column and all its data from all records.
+
+| Parameter             | Type     | Req | Notes                                            |
+| --------------------- | -------- | --- | ------------------------------------------------ |
+| `entityLogicalName`   | `string` | ✓   | Table containing the column                      |
+| `attributeLogicalName`| `string` | ✓   | Column logical name (must be a custom column)    |
+| `autoPublish`         | `boolean`| —   | Publish after delete (default `true`)            |
+| `confirm`             | `true`   | ✓   | Must be `true`                                   |
+
+> "Delete the column new_externalid from account"
+
+---
+
+#### `dataverse_create_lookup_attribute`
+
+Creates a lookup (N:1) column on a table, simultaneously defining a 1:N relationship between two tables. This is the correct way to add a foreign-key-style reference to another table.
+
+| Parameter             | Type     | Req | Notes                                                                       |
+| --------------------- | -------- | --- | --------------------------------------------------------------------------- |
+| `entityLogicalName`   | `string` | ✓   | Table that will contain the lookup column (the "many" side)                 |
+| `schemaName`          | `string` | ✓   | Must include publisher prefix (e.g. `"new_ParentAccount"`)                  |
+| `displayName`         | `string` | ✓   | Human-readable label                                                        |
+| `referencedEntity`    | `string` | ✓   | Table being looked up (the "one" side, e.g. `"account"`)                    |
+| `description`         | `string` | —   | Column description                                                          |
+| `requiredLevel`       | `"None"\|"ApplicationRequired"\|"Recommended"` | — | Default `"None"`                          |
+| `languageCode`        | `number` | —   | Default `1033`                                                              |
+| `autoPublish`         | `boolean`| —   | Default `true`                                                              |
+| `confirm`             | `true`   | ✓   | Must be `true`                                                              |
+
+> "Add a lookup to 'account' on the contact table called new_PrimaryAccount"
+
+```json
+{
+  "lookupLogicalName": "new_primaryaccount",
+  "relationshipSchemaName": "new_contact_primaryaccount",
+  "referencedEntity": "account",
+  "referencingEntity": "contact",
+  "published": true
+}
+```
 
 ---
 
@@ -1036,4 +1291,4 @@ Dataverse error bodies are formatted as `Dataverse error <code>: <message>`. Tim
 
 ---
 
-_This document reflects the MCP Dataverse server codebase as of v0.3.6 — 63 tools across 24 categories._
+_This document reflects the MCP Dataverse server codebase as of v0.4.0 — 67 tools across 25 categories._

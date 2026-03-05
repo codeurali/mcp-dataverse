@@ -7,9 +7,9 @@ permalink: /capabilities
 
 # Full Capabilities Reference
 
-> **Version**: 0.3.8 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
+> **Version**: 0.4.0 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
 
-63 tools across 24 categories for full Dataverse lifecycle management.
+67 tools across 25 categories for full Dataverse lifecycle management.
 
 For detailed input/output examples, see the [Use Cases]({{ site.baseurl }}/use-cases) section.
 
@@ -43,7 +43,8 @@ For detailed input/output examples, see the [Use Cases]({{ site.baseurl }}/use-c
 | 22 | **Org** | 2 | `list_business_units`, `list_teams` |
 | 23 | **Workflows** | 2 | `list_workflows`, `get_workflow` |
 | 24 | **Assistance** | 4 | `suggest_tools`, `list_guides`, `get_guide`, `list_connection_references` |
-| | **Total** | **63** | |
+| 25 | **Attributes** | 4 | `create_attribute`, `update_attribute`, `delete_attribute`, `create_lookup_attribute` |
+| | **Total** | **67** | |
 
 All tool names are prefixed with `dataverse_` (e.g., `dataverse_query`, `dataverse_create`).
 
@@ -52,7 +53,7 @@ All tool names are prefixed with `dataverse_` (e.g., `dataverse_query`, `dataver
 ## Architecture Overview
 
 ```
-MCP Dataverse Server (63 tools · 24 categories)
+MCP Dataverse Server (67 tools · 25 categories)
 ├── 🔑 Auth (1)
 ├── 📋 Metadata (8)
 ├── 🔍 Query (3)
@@ -76,7 +77,8 @@ MCP Dataverse Server (63 tools · 24 categories)
 ├── 📁 Files (2)
 ├── 🏢 Org (2)
 ├── ⚙️ Workflows (2)
-└── 🤖 Assistance (4)
+├── 🤖 Assistance (4)
+└── 🏗️ Attributes (4)
 ```
 
 All tool handlers validate inputs with **Zod** before calling the Dataverse Web API. Auth tokens are cached and refreshed proactively; transient errors (429, 503, 504) are retried with exponential backoff.

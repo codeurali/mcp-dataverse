@@ -5,6 +5,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — [Semantic V
 
 ---
 
+## [0.4.2] — 2026-03-07
+
+### Changed
+
+- **Uniform camelCase parameter names in `dataverse_create_annotation`**: `notetext` → `noteText`, `filename` → `fileName`, `mimetype` → `mimeType`, `documentbody` → `documentBody`. Dataverse wire field names in the POST body are unchanged.
+- **`errorCategory` in all structured error responses**: `formatPrerequisiteError` now automatically infers and includes `errorCategory` (`ENV_LIMITATION` for `feature_disabled`, `PERMISSIONS` for `permission_required`, `SCHEMA_MISMATCH` for `schema_missing`). `dataverse_delete_attribute` (error codes `0x80048405`, `HAS_DEPENDENCIES`) and `dataverse_update_entity` (`0x80060888`) also include `errorCategory: "SCHEMA_MISMATCH"` in their error payloads.
+- **`dataverse_search` expanded error detection**: The Relevance Search disabled check now uses a comprehensive regex covering HTTP 403/404/400, `0x80048D0B` (official Dataverse error code for disabled search), `search disabled`, `search not configured`, and `search unavailable` messages — up from 2 patterns to 7.
+- **Search API upgraded to v2.0**: The Dataverse search endpoint is now `/api/search/v2.0/query` (was `v1.0`, which is legacy/deprecated).
+
+---
+
 ## [0.4.1] — 2026-03-06
 
 ### Fixed
