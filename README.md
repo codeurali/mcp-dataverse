@@ -31,6 +31,10 @@ AI agents hallucinate schema, guess column names, and build broken OData queries
 - **Guardrails** — destructive operations require explicit confirmation
 - **Encrypted tokens** — AES-256-GCM cached credentials, never logged
 
+<a href="https://glama.ai/mcp/servers/@codeurali/mcp-dataverse">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@codeurali/mcp-dataverse/badge" alt="Dataverse MCP server" />
+</a>
+
 ---
 
 ## Install
