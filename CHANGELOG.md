@@ -5,6 +5,55 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — [Semantic V
 
 ---
 
+## [0.4.1] — 2026-03-06
+
+### Fixed
+
+- **A1 — Customization lock retry**: `requestWithRetry` now detects HTTP 400 responses with Dataverse error code `0x80071151` (import-job lock) and automatically retries up to 5 times with exponential backoff (5 s → 10 s → 20 s → 40 s → 80 s). Prevents all write tools from failing during concurrent deployments.
+- **A2 — Timeout masking success on `dataverse_create_lookup_attribute`**: A network timeout on the relationship creation POST no longer results in a confusing error. The tool now verifies via `getTableMetadata` whether the attribute was actually created; if found, it returns a success response with a warning and skips publish (the operation was committed server-side).
+- **A3 — `dataverse_get_relationships` missing custom lookups on large tables**: The three relationship navigation properties (`OneToManyRelationships`, `ManyToOneRelationships`, `ManyToManyRelationships`) now follow `@odata.nextLink` pagination. Previously only the first page was fetched; on tables with 100+ relationships (e.g. `lead`) custom lookup columns from page 2 were silently dropped.
+- **A4 — `dataverse_get_attribute_option_set` unsupported on MultiSelectPicklist**: The metadata type list now includes `MultiSelectPicklistAttributeMetadata`, allowing option retrieval for multi-select columns (previously returned a "not a valid option-set attribute" error).
+
+---
+
+## [0.4.0] — 2026-03-05
+
+### Added
+
+- **Attribute Management** — 4 new tools:
+  - `dataverse_create_attribute` — create columns for String, Memo, Integer, Decimal, Money, DateTime, Boolean, Picklist, MultiSelectPicklist, AutoNumber, Image types with full type-specific parameters (maxLength, precision, picklistOptions, autoNumberFormat, etc.)
+  - `dataverse_update_attribute` — update column properties (display name, description, requirement level, searchability)
+  - `dataverse_delete_attribute` — remove custom columns with a `confirm: true` guardrail (⚠️ permanent — deletes all data in the column)
+  - `dataverse_create_lookup_attribute` — create a lookup (N:1) column that defines a 1:N relationship between two tables
+- **HTTP Transport hardening**:
+  - Bearer token auth with HMAC-SHA256 timing-safe verification (eliminates length timing oracle)
+  - `WWW-Authenticate: Bearer realm="MCP Dataverse"` header auto-sent on 401
+  - Configurable CORS via `MCP_HTTP_CORS_ORIGIN` env var
+  - GET/DELETE requests without a `sessionId` now return 400 instead of silently failing
+  - `enableJsonResponse` toggle via `MCP_HTTP_JSON_RESPONSE` env var for non-streaming clients
+
+### Changed
+
+- Schema: `confirm` parameter uses `const: true` on all destructive tools (uniform guardrail)
+- Preflight: `hasSysAdmin` environment flag now handled in `checkPrerequisites` before tool dispatch
+- Quality: `detect_duplicates` caches `EntitySetName` to eliminate redundant metadata calls per invocation
+- Code: `attribute.tools.ts` split into `attribute.definitions.ts` (JSON schemas, 253 lines) + `attribute.tools.ts` (handlers, 202 lines) — both under the 400-line file limit
+- `config.example.json` renamed to `config.example.jsonc` (supports comments)
+
+### Fixed
+
+- `MultiSelectPicklist` attribute type now correctly uses `OptionSetType: "MultiSelect"` (not `"Picklist"`)
+- Batch executor: request body boundary now uses CRLF (`\r\n`) per RFC 2046 spec
+- `dataverse_search`: URL now constructed from `environmentUrl` config (eliminates relative `../../` path hack)
+- `dataverse_execute_function`: aliased typed parameters now correctly passed (not coerced to strings)
+- `dataverse_execute_bound_function`: namespace prefix correctly applied when calling bound functions
+- Metadata write operations: `MSCRM.MergeLabels: true` header added on all PUT/PATCH calls to preserve multi-language label translations
+- `createRelationship`: reads `OData-EntityId` response header (metadata POST returns 204 No Content with no body)
+- `buildLookupRelationshipBody`: SchemaName formula no longer generates double publisher prefix; 100-char length guard added
+- `suggest_tools`: no longer surfaces non-callable internal tools to the AI agent
+
+---
+
 ## [0.3.8] — 2026-03-02
 
 ### Changed
