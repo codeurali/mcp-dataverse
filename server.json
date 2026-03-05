@@ -10,10 +10,11 @@
       "sizes": ["any"]
     }
   ],
-  "websiteUrl": "https://www.npmjs.com/package/mcp-dataverse",
+  "websiteUrl": "https://www.linkedin.com/in/alitaggaz",
   "repository": {
     "url": "https://github.com/codeurali/mcp-dataverse",
-    "source": "github"
+    "source": "github",
+    "id": "1163599879"
   },
   "version": "0.3.8",
   "packages": [
