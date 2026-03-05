@@ -20,7 +20,8 @@ Desktop.ini
 # Source code (kept private — published via npm only)
 src/
 tests/
-scripts/
+scripts/*
+!scripts/build.mjs
 mcp-template/
 autoparc/
 assets/
