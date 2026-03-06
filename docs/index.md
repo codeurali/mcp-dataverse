@@ -12,7 +12,7 @@ permalink: /
 The most complete MCP server for Microsoft Dataverse.
 {: .fs-6 .fw-300 }
 
-63 tools · 4 resources · 10 guided workflows · Zero config auth
+67 tools · 4 resources · 10 guided workflows · Zero config auth
 {: .fs-5 .fw-300 }
 
 [Get Started]({{ site.baseurl }}/getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
