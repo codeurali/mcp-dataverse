@@ -37,12 +37,12 @@ For detailed input/output examples, see the [Use Cases]({{ site.baseurl }}/use-c
 | 16 | **Quality** | 1 | `detect_duplicates` |
 | 17 | **Annotations** | 2 | `get_annotations`, `create_annotation` |
 | 18 | **Users** | 2 | `list_users`, `get_user_roles` |
-| 19 | **RBAC** | 3 | `list_roles`, `assign_role_to_user`, `remove_role_from_user` |
+| 19 | **RBAC** | 4 | `list_roles`, `assign_role_to_user`, `remove_role_from_user`, `assign_role_to_team` |
 | 20 | **Views** | 1 | `list_views` |
 | 21 | **Files** | 2 | `upload_file_column`, `download_file_column` |
 | 22 | **Org** | 2 | `list_business_units`, `list_teams` |
 | 23 | **Workflows** | 2 | `list_workflows`, `get_workflow` |
-| 24 | **Assistance** | 4 | `suggest_tools`, `list_guides`, `get_guide`, `list_connection_references` |
+| 24 | **Assistance** | 5 | `suggest_tools`, `list_guides`, `get_guide`, `list_connection_references`, `list_tool_tags` |
 | 25 | **Attributes** | 4 | `create_attribute`, `update_attribute`, `delete_attribute`, `create_lookup_attribute` |
 | | **Total** | **67** | |
 
@@ -72,12 +72,12 @@ MCP Dataverse Server (67 tools · 25 categories)
 ├── ✅ Quality (1)
 ├── 📝 Annotations (2)
 ├── 👥 Users (2)
-├── 🛡️ RBAC (3)
+├── 🛡️ RBAC (4)
 ├── 👁️ Views (1)
 ├── 📁 Files (2)
 ├── 🏢 Org (2)
 ├── ⚙️ Workflows (2)
-├── 🤖 Assistance (4)
+├── 🤖 Assistance (5)
 └── 🏗️ Attributes (4)
 ```
 

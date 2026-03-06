@@ -10,11 +10,11 @@
 
 - [Quick Start](#quick-start)
 - [Architecture Overview](#architecture-overview)
-- [Tool Reference (63 tools)](#tool-reference-63-tools)
+- [Tool Reference (67 tools)](#tool-reference-67-tools)
   - [1. Auth (1)](#1-auth-1-tool)
   - [2. Metadata (8)](#2-metadata-8-tools)
   - [3. Query (3)](#3-query-3-tools)
-  - [4. CRUD (5)](#4-crud-5-tools)
+  - [4. CRUD (6)](#4-crud-6-tools)
   - [5. Relations (2)](#5-relations-2-tools)
   - [6. Actions & Functions (6)](#6-actions--functions-6-tools)
   - [7. Batch (1)](#7-batch-1-tool)
@@ -22,7 +22,7 @@
   - [9. Solutions (3)](#9-solutions-3-tools)
   - [10. Impersonation (1)](#10-impersonation-1-tool)
   - [11. Customization (3)](#11-customization-3-tools)
-  - [12. Environment (2)](#12-environment-2-tools)
+  - [12. Environment (3)](#12-environment-3-tools)
   - [13. Trace (2)](#13-trace-2-tools)
   - [14. Search (1)](#14-search-1-tool)
   - [15. Audit (1)](#15-audit-1-tool)
@@ -31,10 +31,10 @@
   - [18. Users (2)](#18-users-2-tools)
   - [19. Views (1)](#19-views-1-tool)
   - [20. Files (2)](#20-files-2-tools)
-  - [21. Org (1)](#21-org-1-tool)
-  - [22. RBAC (3)](#22-rbac-3-tools)
+  - [21. Org (2)](#21-org-2-tools)
+  - [22. RBAC (4)](#22-rbac-4-tools)
   - [23. Workflows (2)](#23-workflows-2-tools)
-  - [24. Assistance (4)](#24-assistance-4-tools)
+  - [24. Assistance (5)](#24-assistance-5-tools)
   - [25. Attributes (4)](#25-attributes-4-tools)
 - [Error Handling & Retry Behavior](#error-handling--retry-behavior)
 - [Security](#security)
@@ -115,12 +115,12 @@ graph LR
     MCP --> QUAL["✅ Quality (1)"]
     MCP --> NOTE["📝 Annotations (2)"]
     MCP --> USR["👥 Users (2)"]
-    MCP --> RBAC["🛡️ RBAC (3)"]
+    MCP --> RBAC["🛡️ RBAC (4)"]
     MCP --> VIEWS["👁️ Views (1)"]
     MCP --> FILES["📁 Files (2)"]
     MCP --> ORG["🏢 Org (2)"]
     MCP --> WF["⚙️ Workflows (2)"]
-    MCP --> ASSIST["🤖 Assistance (4)"]
+    MCP --> ASSIST["🤖 Assistance (5)"]
     MCP --> ATTR["🏗️ Attributes (4)"]
 ```
 
@@ -279,7 +279,7 @@ Retrieves ALL matching records by auto-following `@odata.nextLink` pages. Use wh
 
 ---
 
-### 4. CRUD (5 tools)
+### 4. CRUD (6 tools)
 
 #### `dataverse_get`
 
@@ -357,6 +357,21 @@ Create-or-update via an alternate key (no GUID needed). Returns `"created"` or `
   "message": "Record created successfully"
 }
 ```
+
+---
+
+#### `dataverse_assign`
+
+Assigns a Dataverse record to a different user or team owner. Sets the `ownerid` lookup field using OData bind syntax.
+
+| Parameter       | Type                   | Req | Notes                   |
+| --------------- | ---------------------- | --- | ----------------------- |
+| `entitySetName` | `string`               | ✓   | OData entity set name   |
+| `id`            | `string (UUID)`        | ✓   | Record GUID to reassign |
+| `ownerType`     | `"systemuser"\|"team"` | ✓   | Target owner type       |
+| `ownerId`       | `string (UUID)`        | ✓   | GUID of user or team    |
+
+> "Reassign account a1b2c3d4 to user u1v2w3x4"
 
 ---
 
@@ -657,7 +672,7 @@ Activates or deactivates a classic Dataverse workflow (statecode/statuscode upda
 
 ---
 
-### 12. Environment (2 tools)
+### 12. Environment (3 tools)
 
 #### `dataverse_get_environment_variable`
 
@@ -691,6 +706,24 @@ Sets or updates an environment variable's current value (creates or updates the 
 | `value`      | `string` | ✓   | New value to set                        |
 
 > "Set environment variable new_FeatureFlag to 'true'"
+
+---
+
+#### `dataverse_create_environment_variable`
+
+Creates a new Dataverse environment variable definition and sets its initial value. Use when the variable does not yet exist.
+
+| Parameter      | Type                                     | Req | Notes                                                   |
+| -------------- | ---------------------------------------- | --- | ------------------------------------------------------- |
+| `schemaName`   | `string`                                 | ✓   | Schema name (publisher prefix required, e.g. `new_MyVar`) |
+| `displayName`  | `string`                                 | ✓   | Human-readable label                                    |
+| `type`         | `"String"\|"Integer"\|"Boolean"\|"JSON"` | ✓   | Variable data type                                      |
+| `value`        | `string`                                 | ✓   | Initial value                                           |
+| `description`  | `string`                                 | —   | Optional description                                    |
+| `defaultValue` | `string`                                 | —   | Optional default value                                  |
+| `confirm`      | `true`                                   | ✓   | Explicit confirmation required                          |
+
+> "Create environment variable new_MaxRetries of type Integer with value 3"
 
 ---
 
@@ -977,7 +1010,7 @@ Lists Dataverse teams (owner teams and access teams) within one or all business 
 
 ---
 
-### 22. RBAC (3 tools)
+### 22. RBAC (4 tools)
 
 #### `dataverse_list_roles`
 
@@ -1025,6 +1058,20 @@ Removes a security role from a system user.
 
 ---
 
+#### `dataverse_assign_role_to_team`
+
+Assigns a security role to a Dataverse team. All team members inherit the role permissions.
+
+| Parameter | Type            | Req | Notes                          |
+| --------- | --------------- | --- | ------------------------------ |
+| `teamId`  | `string (UUID)` | ✓   | Team GUID                      |
+| `roleId`  | `string (UUID)` | ✓   | Security role GUID             |
+| `confirm` | `true`          | ✓   | Explicit confirmation required |
+
+> "Assign role r1s2t3u4 to team t1e2a3m4"
+
+---
+
 ### 23. Workflows (2 tools)
 
 #### `dataverse_list_workflows`
@@ -1053,7 +1100,7 @@ Retrieves a single workflow definition by ID, including its trigger, steps, and 
 
 ---
 
-### 24. Assistance (4 tools)
+### 24. Assistance (5 tools)
 
 #### `dataverse_suggest_tools`
 
@@ -1102,6 +1149,18 @@ Lists connection references used in solutions (Power Automate connectors).
 | `nameFilter`   | `string` | —   | Substring match on display name  |
 
 > "List all SharePoint connection references in my environment"
+
+---
+
+#### `dataverse_list_tool_tags`
+
+Lists all available tool tags with the number of tools in each category. Use this to discover what kinds of operations are available before calling `dataverse_suggest_tools`.
+
+| Parameter | Type | Req | Notes         |
+| --------- | ---- | --- | ------------- |
+| —         | —    | —   | No parameters |
+
+> "What categories of tools are available in this MCP server?"
 
 ---
 

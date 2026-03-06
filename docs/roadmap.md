@@ -59,7 +59,7 @@ The foundation already exists — `StreamableHTTPServerTransport` is implemented
 | Fix batch request body to use CRLF (`\r\n`) per RFC 2046                                     | ✅ Done    |
 | `detect_duplicates` — align description with actual implementation (FetchXML field-OR match) | ✅ Done    |
 | `search` — construct URL from `environmentUrl` instead of relative `../../` hack             | ✅ Done    |
-| `executeFunction` — support aliased typed parameters (not just string)                       | ✅ Done    |}
+| `executeFunction` — support aliased typed parameters (not just string)                       | ✅ Done    |
 
 **Why it matters:** HTTP transport unlocks remote servers, shared team instances, and integration with orchestrators that can't spawn stdio processes. Schema consistency reduces AI agent confusion and improves first-call success rates. Attribute management brings column-level CRUD natively. Audit fixes harden Web API compliance.
 
