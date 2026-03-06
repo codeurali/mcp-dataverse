@@ -159,16 +159,6 @@ Planned
 
 ---
 
-## Beyond v0.7
-
-Ideas under consideration for future releases:
-
-- **On-Behalf-Of auth (OBO)** — multi-tenant, per-user authentication via Entra ID for enterprise deployment
-- **Streaming queries** — SSE-based streaming for large dataset retrieval
-- **Real-time subscriptions** — Dataverse webhook integration for push notifications
-
----
-
 ## Feature Requests
 
 Have an idea? [Open an issue](https://github.com/codeurali/mcp-dataverse/issues) with the `enhancement` label.

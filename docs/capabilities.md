@@ -7,7 +7,7 @@ permalink: /capabilities
 
 # Full Capabilities Reference
 
-> **Version**: 0.4.0 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
+> **Version**: 0.4.2 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
 
 67 tools across 25 categories for full Dataverse lifecycle management.
 
@@ -98,6 +98,14 @@ Every tool returns a consistent structure:
   "suggestions": ["Next steps the AI agent can take"]
 }
 ```
+
+When an error has a well-known root cause, tools also include an `errorCategory` field to enable programmatic error handling:
+
+| Value             | Meaning                                                  |
+|:------------------|:---------------------------------------------------------|
+| `ENV_LIMITATION`  | Feature not enabled or unavailable in this environment   |
+| `PERMISSIONS`     | Insufficient privileges for the operation                |
+| `SCHEMA_MISMATCH` | Input conflicts with the table’s metadata schema         |
 
 ### Guardrails
 

@@ -1,6 +1,6 @@
 # MCP Dataverse Server — Complete Capabilities Reference
 
-> **Version**: 0.4.0 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
+> **Version**: 0.4.2 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
 
 67 tools across 25 categories for full Dataverse lifecycle: schema, CRUD, FetchXML, solutions, plugins, audit, files, users, teams, RBAC, attribute management, environment variables, workflows, and more.
 
@@ -730,7 +730,7 @@ Retrieves AsyncOperation records for background/classic workflow executions. Not
 
 #### `dataverse_search`
 
-Full-text Relevance Search across all configured Dataverse tables. Returns ranked results with entity name, record ID, score, highlights, and matched fields. Requires **Relevance Search** enabled in Dataverse admin.
+Full-text Relevance Search across all configured Dataverse tables. Returns ranked results with entity name, record ID, score, highlights, and matched fields. Uses the **Search API v2.0** endpoint. Requires **Relevance Search** enabled in Dataverse admin. If Relevance Search is disabled or no entities are configured for search, returns a structured error with `errorCategory: "ENV_LIMITATION"` and setup instructions.
 
 | Parameter    | Type               | Req | Notes                                               |
 | ------------ | ------------------ | --- | --------------------------------------------------- |
@@ -807,7 +807,7 @@ Retrieves notes and file attachments linked to a record. Set `includeContent=tru
 | Parameter        | Type            | Req | Notes                                    |
 | ---------------- | --------------- | --- | ---------------------------------------- |
 | `recordId`       | `string (UUID)` | ✓   | Parent record GUID                       |
-| `includeContent` | `boolean`       | —   | Include `documentbody` (default `false`) |
+| `includeContent` | `boolean`       | —   | Include `documentBody` (default `false`) |
 | `top`            | `number`        | —   | Default `20`, max `100`                  |
 | `mimeTypeFilter` | `string`        | —   | e.g. `"application/pdf"`                 |
 
@@ -817,17 +817,17 @@ Retrieves notes and file attachments linked to a record. Set `includeContent=tru
 
 #### `dataverse_create_annotation`
 
-Creates a note or file attachment linked to a Dataverse record. Provide `notetext` for a text note, `documentbody` (base64) for a file, or both.
+Creates a note or file attachment linked to a Dataverse record. Provide `noteText` for a text note, `documentBody` (base64) for a file, or both.
 
 | Parameter       | Type            | Req | Notes                                                   |
 | --------------- | --------------- | --- | ------------------------------------------------------- |
 | `recordId`      | `string (UUID)` | ✓   | Parent record GUID                                      |
 | `entitySetName` | `string`        | ✓   | Parent entity set, e.g. `"accounts"`                    |
-| `notetext`      | `string`        | —   | Text content (required if no `documentbody`)            |
+| `noteText`      | `string`        | —   | Text content (required if no `documentBody`)            |
 | `subject`       | `string`        | —   | Note subject/title                                      |
-| `filename`      | `string`        | —   | File name (for attachments)                             |
-| `mimetype`      | `string`        | —   | MIME type, e.g. `"application/pdf"`                     |
-| `documentbody`  | `string`        | —   | Base64-encoded file content (required if no `notetext`) |
+| `fileName`      | `string`        | —   | File name (for attachments)                             |
+| `mimeType`      | `string`        | —   | MIME type, e.g. `"application/pdf"`                     |
+| `documentBody`  | `string`        | —   | Base64-encoded file content (required if no `noteText`) |
 
 > "Attach a PDF report to account a1b2c3d4"
 
@@ -1225,6 +1225,16 @@ All tool handlers return `{ isError: true, content: [{ type: "text", text: "Erro
 | **Other**           | Throw immediately                             | 0                        |
 
 Dataverse error bodies are formatted as `Dataverse error <code>: <message>`. Timeouts (`ECONNABORTED`) produce `Request timed out. Check your Dataverse environment URL.`
+
+### Error Categories
+
+Certain tools include an `errorCategory` field in the error text when the failure has a well-known cause:
+
+| `errorCategory`   | Meaning                                                      | Example                                                   |
+| ----------------- | ------------------------------------------------------------ | --------------------------------------------------------- |
+| `ENV_LIMITATION`  | Feature not enabled or unavailable in this environment       | `dataverse_search` when Relevance Search is disabled      |
+| `PERMISSIONS`     | Operation denied due to insufficient privileges              | Restricted table or action                                |
+| `SCHEMA_MISMATCH` | Supplied data conflicts with the table's metadata schema     | Wrong attribute type in `dataverse_create_attribute`      |
 
 ---
 

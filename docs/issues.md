@@ -117,13 +117,13 @@ Last updated: July 2025
 |:--|:--|
 | **Priority** | ⚪ Low |
 | **Affected tools** | `dataverse_search` |
-| **Status** | 🔜 Fix planned (v0.4) |
+| **Status** | ✅ Fixed in v0.4.0 |
 
 **Problem:** The search tool constructs the Relevance Search URL using a relative path (`../../search/v1.0/query`) instead of building the absolute URL from `environmentUrl`. This works because the OData base URL includes `/api/data/v9.2/`, but it's fragile and relies on path traversal assumptions.
 
 **Workaround:** None needed — the current approach works.
 
-**Planned fix:** Construct the search URL directly: `${environmentUrl}/api/search/v1.0/query`.
+**Fix:** URL is now constructed directly from `environmentUrl`. Endpoint upgraded to **v2.0** (`/api/search/v2.0/query`) in v0.4.2, providing improved error reporting and a structured `errorCategory: "ENV_LIMITATION"` response when Relevance Search is disabled or no entities are configured.
 
 ---
 
@@ -134,7 +134,7 @@ Last updated: July 2025
 |:--|:--|
 | **Priority** | ⚪ Low |
 | **Affected tools** | `dataverse_execute_function`, `dataverse_execute_bound_function` |
-| **Status** | 🔜 Fix planned (future) |
+| **Status** | ✅ Fixed in v0.4.0 |
 
 **Problem:** All function parameters are wrapped in single quotes (string literals) in the URL. Functions that expect integers, GUIDs, or booleans as aliased parameters receive them as strings, which may cause type errors on some functions.
 
@@ -142,7 +142,7 @@ Last updated: July 2025
 
 **Workaround:** For functions requiring typed parameters, use `dataverse_query` with a manually constructed function URL.
 
-**Planned fix:** Implement aliased parameter support with proper OData type annotations.
+**Fix:** Aliased parameter support with proper OData type annotations implemented in v0.4.0.
 
 ---
 
@@ -153,7 +153,7 @@ Last updated: July 2025
 |:--|:--|
 | **Priority** | 🟡 Medium |
 | **Affected tools** | `dataverse_create_attribute` |
-| **Status** | 🔜 Planned (v0.4) |
+| **Status** | ✅ Fixed in v0.4.0 |
 
 **Problem:** The `create_attribute` tool currently supports: String, Integer, Decimal, Boolean, DateTime, Money, Memo, Picklist, BigInt. The following important column types are not yet supported:
 
@@ -166,7 +166,7 @@ Last updated: July 2025
 
 **Workaround:** Create these column types via the Dataverse UI (make.powerapps.com) or a direct Web API call.
 
-**Planned fix:** Add support incrementally, starting with Lookup columns (which require creating a relationship via `POST /RelationshipDefinitions`).
+**Fix:** Lookup, MultiSelectPicklist, Image, and AutoNumber column types added in v0.4.0.
 
 ---
 
@@ -177,7 +177,7 @@ These are not bugs — they are inherent limitations of the current implementati
 | Tool | Constraint | Reason |
 |:-----|:-----------|:-------|
 | `dataverse_update_entity` | Boolean flag updates may fail with `0x80060888` | Environment-level restriction on managed metadata |
-| `dataverse_search` | Returns empty results if Relevance Search is disabled | Requires admin to enable org-wide Relevance Search |
+| `dataverse_search` | Returns a structured error with `errorCategory: "ENV_LIMITATION"` if Relevance Search is disabled or no entities are configured | Requires admin to enable org-wide Relevance Search and configure search entities |
 | `dataverse_batch_execute` | No `$<Content-ID>` cross-referencing | Would require changeset dependency parser — out of scope for now |
 | `dataverse_execute_fetchxml` | No automatic pagination | FetchXML paging cookies must be handled manually |
 | `dataverse_retrieve_multiple_with_paging` | Max 50,000 records | Safety cap to prevent runaway queries |
