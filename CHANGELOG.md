@@ -5,6 +5,37 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — [Semantic V
 
 ---
 
+## [0.4.5] — 2026-03-06
+
+### Fixed
+
+- **BUG-033 — `dataverse_search`: `querytype` invalid as top-level parameter**: The `searchType: "full"` option was incorrectly sent as `body.querytype = "full"` (top-level). Per the Search API v2.0 spec, `querytype` belongs inside the serialized `options` string. `searchType: "full"` now maps to `body.options = '{"querytype":"lucene"}'`. `searchType: "simple"` (default) produces no `options` field.
+- **BUG-034 — `dataverse_search`: `select` invalid as top-level parameter**: The `select` parameter was sent as a top-level field in the request body, which is not recognized by the v2.0 API. Selected columns must be per entity (`selectColumns`). `select` is now embedded inside each object of the `entities` array as `selectColumns`.
+- **BUG-035 — `dataverse_search`: `entities` must be a JSON-serialized string**: The `entities` array was sent as a native JSON array. The Search API v2.0 requires `entities` to be a **JSON-serialized string** of entity objects (`"[{\"name\":\"account\",...}]"`), not a native array. Parameter is now serialized via `JSON.stringify(entityObjects)`.
+- **BONUS — `facets` and `orderby` serialized as JSON strings**: Per the v2.0 API spec (both parameters typed as `string`), `facets` and `orderby` are now passed as `JSON.stringify(...)` of their arrays, not as native arrays.
+
+---
+
+## [0.4.4] — 2026-03-06
+
+### Fixed
+
+- **BUG-029 — `isError` absent from `content[0].text` body**: All tool errors returned `result.isError = true` at the MCP envelope level, but the inner `content[0].text` JSON body did not include `isError`. AI agents that parse the text body would not detect the error and could try to use the result as valid data. `output.utils.ts` now consistently sets `isError: true` inside the serialized text body whenever `errorCategory` is present.
+- **BUG-032 — `dataverse_search`: `returntotalrecordcount` invalid in v2.0 payload**: The `returntotalrecordcount` parameter from the v1.0 API was still being sent in the v2.0 request body. The correct v2.0 parameter is `count` (boolean). Removed `returntotalrecordcount`; the v2.0 API already returns counts via `QueryContext.@Search.totalCount` in the response.
+
+---
+
+## [0.4.3] — 2026-03-06
+
+### Fixed
+
+- **BUG-025 — `dataverse_update_entity`: suggestions included non-modifiable attributes**: The suggestion list returned after a preflight failure or as guidance could include read-only system attributes. The suggestion generator now filters to modifiable attributes only.
+- **BUG-028 — `dataverse_delete_attribute`: raw exception on protected columns**: Deleting OOB (out-of-box) attributes or columns with active dependencies raised an unhandled exception. The tool now catches `0x80048405` (managed attribute) and `HAS_DEPENDENCIES` codes and returns a structured error with `errorCategory: "SCHEMA_MISMATCH"` and an actionable message.
+- **BUG-030 — `dataverse_update_entity`: missing preflight check**: Large metadata PATCH calls could fail mid-way if environment prerequisites were not met. A `hasSysAdmin` preflight check is now performed before executing any write.
+- **BUG-031 — `dataverse_search`: `searchMode` invalid as top-level parameter in v2.0**: The `searchMode` parameter (valid in v1.0) is not a recognized top-level parameter in the v2.0 API. Removed from the request body to eliminate `0x80048d19` deserialization errors.
+
+---
+
 ## [0.4.2] — 2026-03-07
 
 ### Changed

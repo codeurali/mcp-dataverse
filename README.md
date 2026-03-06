@@ -6,7 +6,7 @@
 
 **The most complete MCP server for Microsoft Dataverse.**
 
-63 tools · 4 resources · 10 guided workflows · Zero config auth
+67 tools · 4 resources · 10 guided workflows · Zero config auth
 
 [![npm](https://img.shields.io/npm/v/mcp-dataverse)](https://www.npmjs.com/package/mcp-dataverse)
 [![npm downloads](https://img.shields.io/npm/dm/mcp-dataverse)](https://www.npmjs.com/package/mcp-dataverse)
@@ -125,8 +125,8 @@ MCP Dataverse is designed to be comprehensive, but most AI models work best with
 
 | Version | Feature | Status |
 | ------- | ------- | ------ |
-| **v0.4** | HTTP transport + schema consistency + new auth methods | 🟢 In progress |
-| **v0.5** | MCP Prompts — workflow templates | 🔴 Planned |
+| **v0.4** | HTTP transport + attribute management + schema consistency | ✅ Released |
+| **v0.5** | Enterprise auth (Client Credentials, Managed Identity) + MCP Prompts | 🔴 Planned |
 
 [→ Full Roadmap](https://codeurali.github.io/mcp-dataverse/roadmap)
 

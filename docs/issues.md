@@ -11,7 +11,7 @@ permalink: /issues
 Issues identified during the Web API compliance audit. Each issue references the affected tool and planned fix.
 {: .fs-5 .fw-300 }
 
-Last updated: July 2025
+Last updated: March 2026
 {: .text-grey-dk-000 }
 
 <details open markdown="block">
@@ -26,19 +26,19 @@ Last updated: July 2025
 ## Active Issues
 
 ### ISSUE-01 — Missing `MSCRM.MergeLabels` header on metadata writes
-{: .text-red-300 }
+{: .text-grey-dk-000 }
 
 | | |
 |:--|:--|
 | **Priority** | 🔴 High |
 | **Affected tools** | `dataverse_update_entity`, `dataverse_update_attribute` |
-| **Status** | 🔜 Fix planned (v0.4) |
+| **Status** | ✅ Fixed in v0.4.0 |
 
 **Problem:** `PATCH /EntityDefinitions` and `PUT /EntityDefinitions(.../Attributes(...)` calls do not include the `MSCRM.MergeLabels: true` header. In multi-language environments, this causes non-primary-language labels (DisplayName, Description) to be erased on every update.
 
 **Workaround:** After updating metadata, manually re-apply non-English labels via the Dataverse UI or a direct API call with the header set.
 
-**Planned fix:** Add `MSCRM.MergeLabels: true` header to all metadata PATCH/PUT operations in the client layer.
+**Fix:** `MSCRM.MergeLabels: true` header added to all metadata PATCH/PUT operations in v0.4.0.
 
 ---
 
@@ -75,30 +75,30 @@ Last updated: July 2025
 ---
 
 ### ISSUE-04 — Batch requests use `\n` instead of `\r\n`
-{: .text-yellow-300 }
+{: .text-grey-dk-000 }
 
 | | |
 |:--|:--|
 | **Priority** | 🟡 Medium-Low |
 | **Affected tools** | `dataverse_batch_execute` |
-| **Status** | 🔜 Fix planned (v0.4) |
+| **Status** | ✅ Fixed in v0.4.0 |
 
 **Problem:** The batch request body uses Unix-style line endings (`\n`) instead of CRLF (`\r\n`) as required by RFC 2046 for MIME multipart messages. The Dataverse Web API currently accepts `\n`, but this violates the spec and may break with future API versions or stricter proxies.
 
 **Workaround:** None needed — Dataverse currently tolerates `\n`.
 
-**Planned fix:** Replace `\n` with `\r\n` in batch body construction in `dataverse-client.batch.ts`.
+**Fix:** Batch request boundary now uses CRLF (`\r\n`) per RFC 2046 — resolved in v0.4.0.
 
 ---
 
 ### ISSUE-05 — `detect_duplicates` description is misleading
-{: .text-yellow-300 }
+{: .text-grey-dk-000 }
 
 | | |
 |:--|:--|
 | **Priority** | 🟡 Medium |
 | **Affected tools** | `dataverse_detect_duplicates` |
-| **Status** | 🔜 Fix planned (v0.4) |
+| **Status** | ✅ Fixed in v0.4.0 |
 
 **Problem:** The tool description says "Uses Dataverse built-in duplicate detection rules", but the actual implementation uses FetchXML with field-level OR matching. This is a functional approximation — it does not invoke the real `RetrieveDuplicates` function or respect published duplicate detection rules in the environment.
 
@@ -106,7 +106,7 @@ Last updated: July 2025
 
 **Workaround:** For authoritative duplicate detection, use the Dataverse UI or call `RetrieveDuplicates` directly via the Web API.
 
-**Planned fix:** Update the tool description to accurately reflect the FetchXML-based approach. Optionally, add a separate tool that calls the real `RetrieveDuplicates` function.
+**Fix:** Tool description updated in v0.4.0 to accurately reflect the FetchXML field-OR matching approach. A future tool wrapping the real `RetrieveDuplicates` function remains in the ideas backlog.
 
 ---
 
@@ -177,7 +177,7 @@ These are not bugs — they are inherent limitations of the current implementati
 | Tool | Constraint | Reason |
 |:-----|:-----------|:-------|
 | `dataverse_update_entity` | Boolean flag updates may fail with `0x80060888` | Environment-level restriction on managed metadata |
-| `dataverse_search` | Returns a structured error with `errorCategory: "ENV_LIMITATION"` if Relevance Search is disabled or no entities are configured | Requires admin to enable org-wide Relevance Search and configure search entities |
+| `dataverse_search` | Returns a structured error with `errorCategory: "ENV_LIMITATION"` if Relevance Search is disabled or no entities are configured for search | Enable via **Power Platform Admin Center → Environments → [env] → Settings → Product → Features → Dataverse Search = On** (requires System Administrator). Once enabled, allow 15–30 min for initial indexing. |
 | `dataverse_batch_execute` | No `$<Content-ID>` cross-referencing | Would require changeset dependency parser — out of scope for now |
 | `dataverse_execute_fetchxml` | No automatic pagination | FetchXML paging cookies must be handled manually |
 | `dataverse_retrieve_multiple_with_paging` | Max 50,000 records | Safety cap to prevent runaway queries |

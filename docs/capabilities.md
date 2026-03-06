@@ -7,7 +7,7 @@ permalink: /capabilities
 
 # Full Capabilities Reference
 
-> **Version**: 0.4.2 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
+> **Version**: 0.4.5 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
 
 67 tools across 25 categories for full Dataverse lifecycle management.
 
