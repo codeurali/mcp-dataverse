@@ -7,9 +7,9 @@ permalink: /capabilities
 
 # Full Capabilities Reference
 
-> **Version**: 0.4.5 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
+> **Version**: 0.4.6 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
 
-67 tools across 25 categories for full Dataverse lifecycle management.
+73 tools across 25 categories for full Dataverse lifecycle management.
 
 For detailed input/output examples, see the [Use Cases]({{ site.baseurl }}/use-cases) section.
 
@@ -20,31 +20,31 @@ For detailed input/output examples, see the [Use Cases]({{ site.baseurl }}/use-c
 | # | Category | Count | Tools |
 |:--|:---------|:------|:------|
 | 1 | **Auth** | 1 | `whoami` |
-| 2 | **Metadata** | 8 | `list_tables`, `get_table_metadata`, `get_relationships`, `list_global_option_sets`, `get_option_set`, `get_entity_key`, `get_attribute_option_set`, `update_entity` |
+| 2 | **Metadata** | 9 | `list_tables`, `get_table_metadata`, `get_relationships`, `list_global_option_sets`, `get_option_set`, `get_entity_key`, `get_attribute_option_set`, `update_entity`, `resolve_entity_name` |
 | 3 | **Query** | 3 | `query`, `execute_fetchxml`, `retrieve_multiple_with_paging` |
 | 4 | **CRUD** | 6 | `get`, `create`, `update`, `delete`, `upsert`, `assign` |
-| 5 | **Relations** | 2 | `associate`, `disassociate` |
+| 5 | **Relations** | 4 | `associate`, `associate_bulk`, `disassociate`, `query_associations` |
 | 6 | **Actions & Functions** | 6 | `execute_action`, `execute_function`, `execute_bound_action`, `execute_bound_function`, `list_dependencies`, `retrieve_dependencies_for_delete` |
 | 7 | **Batch** | 1 | `batch_execute` |
 | 8 | **Change Tracking** | 1 | `change_detection` |
-| 9 | **Solutions** | 3 | `list_solutions`, `solution_components`, `publish_customizations` |
+| 9 | **Solutions** | 2 | `publish_customizations`, `create_sitemap` |
 | 10 | **Impersonation** | 1 | `impersonate` |
-| 11 | **Customization** | 3 | `list_custom_actions`, `list_plugin_steps`, `set_workflow_state` |
-| 12 | **Environment** | 3 | `get_environment_variable`, `set_environment_variable`, `create_environment_variable` |
+| 11 | **Customization** | 4 | `list_custom_actions`, `list_plugin_steps`, `set_workflow_state`, `list_connection_references` |
+| 12 | **Environment** | 4 | `get_environment_variable`, `set_environment_variable`, `create_environment_variable`, `environment_capabilities` |
 | 13 | **Trace** | 2 | `get_plugin_trace_logs`, `get_workflow_trace_logs` |
 | 14 | **Search** | 1 | `search` |
 | 15 | **Audit** | 1 | `get_audit_log` |
 | 16 | **Quality** | 1 | `detect_duplicates` |
 | 17 | **Annotations** | 2 | `get_annotations`, `create_annotation` |
 | 18 | **Users** | 2 | `list_users`, `get_user_roles` |
-| 19 | **RBAC** | 4 | `list_roles`, `assign_role_to_user`, `remove_role_from_user`, `assign_role_to_team` |
+| 19 | **RBAC** | 7 | `list_roles`, `assign_role_to_user`, `remove_role_from_user`, `assign_role_to_team`, `get_role_privileges`, `add_role_privileges`, `replace_role_privileges` |
 | 20 | **Views** | 1 | `list_views` |
 | 21 | **Files** | 2 | `upload_file_column`, `download_file_column` |
 | 22 | **Org** | 2 | `list_business_units`, `list_teams` |
-| 23 | **Workflows** | 2 | `list_workflows`, `get_workflow` |
-| 24 | **Assistance** | 5 | `suggest_tools`, `list_guides`, `get_guide`, `list_connection_references`, `list_tool_tags` |
+| 23 | **Workflows** | 4 | `list_workflows`, `get_workflow`, `list_guides`, `get_guide` |
+| 24 | **Assistance** | 2 | `suggest_tools`, `list_tool_tags` |
 | 25 | **Attributes** | 4 | `create_attribute`, `update_attribute`, `delete_attribute`, `create_lookup_attribute` |
-| | **Total** | **67** | |
+| | **Total** | **73** | |
 
 All tool names are prefixed with `dataverse_` (e.g., `dataverse_query`, `dataverse_create`).
 
@@ -53,31 +53,31 @@ All tool names are prefixed with `dataverse_` (e.g., `dataverse_query`, `dataver
 ## Architecture Overview
 
 ```
-MCP Dataverse Server (67 tools · 25 categories)
+MCP Dataverse Server (73 tools · 25 categories)
 ├── 🔑 Auth (1)
-├── 📋 Metadata (8)
+├── 📋 Metadata (9)
 ├── 🔍 Query (3)
 ├── ✏️ CRUD (6)
-├── 🔗 Relations (2)
+├── 🔗 Relations (4)
 ├── ⚡ Actions & Functions (6)
 ├── 📦 Batch (1)
 ├── 🔄 Change Tracking (1)
-├── 🧩 Solutions (3)
+├── 🧩 Solutions (2)
 ├── 👤 Impersonation (1)
-├── 🔧 Customization (3)
-├── ⚙️ Environment (3)
+├── 🔧 Customization (4)
+├── ⚙️ Environment (4)
 ├── 🔎 Trace (2)
 ├── 🔍 Search (1)
 ├── 📜 Audit (1)
 ├── ✅ Quality (1)
 ├── 📝 Annotations (2)
 ├── 👥 Users (2)
-├── 🛡️ RBAC (4)
+├── 🛡️ RBAC (7)
 ├── 👁️ Views (1)
 ├── 📁 Files (2)
 ├── 🏢 Org (2)
-├── ⚙️ Workflows (2)
-├── 🤖 Assistance (5)
+├── ⚙️ Workflows (4)
+├── 🤖 Assistance (2)
 └── 🏗️ Attributes (4)
 ```
 

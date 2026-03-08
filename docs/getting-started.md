@@ -7,7 +7,7 @@ permalink: /getting-started
 
 # Getting Started
 
-Quick start guide for MCP Dataverse — an MCP server exposing 67 AI-callable tools for Microsoft Dataverse.
+Quick start guide for MCP Dataverse — an MCP server exposing 73 AI-callable tools for Microsoft Dataverse.
 
 ## Prerequisites
 

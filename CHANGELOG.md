@@ -5,6 +5,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — [Semantic V
 
 ---
 
+## [0.4.6] — 2026-03-08
+
+### Added
+
+- **`dataverse_create_sitemap`** — New tool to create or update a model-driven app sitemap. Builds the XML structure from `areas` (groups) containing `sub_areas` (entries), publishes it to Dataverse, and optionally attaches it to an existing App Module via `appModuleUniqueName`. Zod-validated inputs; idempotent upsert via GET + conditional PATCH.
+
+### Fixed
+
+- **BUG-038 — `dataverse_suggest_tools` phantom registry**: `TOOL_TAGS` and `TOOL_DESCRIPTIONS` in `router.tools.ts` previously held arbitrary string keys that were out-of-sync with the real tool registry (phantom entries, missing real tools). Both maps are now rebuilt against the live 73-tool registry — every key is a real callable tool name. `suggest_tools` and `list_tool_tags` now return accurate routing guidance.
+- **`dataverse_get_role_privileges` — documentation enriched**: Description now documents the Dataverse OData quirk where the entity set for role privileges is named `roleprivilegess` (double‑s). A FetchXML join pattern using `roleprivileges` ↔ `privilege` is included as a reliable alternative when the OData endpoint returns empty results.
+
+### Removed
+
+- **`dataverse_list_solutions`** — Removed. Listing solutions has low AI-agent utility and is adequately covered by the Dataverse UI or PAC CLI for human operators.
+- **`dataverse_solution_components`** — Removed. Superseded; component management is out of scope for AI-agent automation at this stage.
+- **`dataverse_add_solution_component`** — Removed. ALM operations require human review and are better handled via dedicated ALM tools (PAC CLI, pipelines).
+- **`dataverse_remove_solution_component`** — Removed. Same rationale as above.
+
+---
+
 ## [0.4.5] — 2026-03-06
 
 ### Fixed

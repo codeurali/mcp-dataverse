@@ -12,7 +12,7 @@ permalink: /
 The most complete MCP server for Microsoft Dataverse.
 {: .fs-6 .fw-300 }
 
-67 tools · 4 resources · 10 guided workflows · Zero config auth
+73 tools · 4 resources · 10 guided workflows · Zero config auth
 {: .fs-5 .fw-300 }
 
 [Get Started]({{ site.baseurl }}/getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
@@ -51,21 +51,23 @@ Requires Node.js 20+. See [Multi-Client Setup]({{ site.baseurl }}/multi-client-s
 
 | Category | Count | Description |
 |:---------|:------|:------------|
-| **Metadata** | 8 | Tables, schema, relationships, option sets, entity keys |
+| **Metadata** | 9 | Tables, schema, relationships, option sets, entity keys, resolve entity name |
 | **Query** | 3 | OData, FetchXML, paginated retrieval |
 | **CRUD** | 6 | Get, create, update, delete, upsert, assign |
+| **Relations** | 4 | Associate, associate bulk, disassociate, query associations |
 | **Actions & Functions** | 6 | Bound/unbound Dataverse actions and functions |
 | **Batch** | 1 | Up to 1 000 operations atomically |
-| **Solutions** | 3 | List solutions, components, publish customizations |
+| **Solutions** | 2 | Publish customizations, create sitemap |
 | **Search** | 1 | Full-text Relevance Search |
-| **Users & Teams** | 3 | Users, roles, teams |
+| **Users & Teams** | 4 | Users, roles, teams, role assignment |
+| **RBAC** | 7 | Role privileges: list, assign, remove, add, replace, get, team assignment |
 | **Files** | 2 | Upload/download file and image columns |
 | **Audit & Trace** | 3 | Audit log, plugin trace logs, workflow trace logs |
 | **Annotations** | 2 | Notes and file attachments |
-| **Customization** | 6 | Custom actions, plugins, workflows, env variables, entity updates |
-| **RBAC** | 2 | Assign/remove security roles |
-| **Assistance** | 4 | Tool router, workflow guides |
-| **+ more** | … | Delta tracking, impersonation, views, business units, duplicate detection |
+| **Customization** | 4 | Custom actions, plugins, env variables, connection references |
+| **Workflows** | 4 | List/get workflows and guided workflow templates |
+| **Assistance** | 2 | Tool router, tool tags |
+| **+ more** | … | Delta tracking, impersonation, views, business units, duplicate detection, attributes |
 
 [→ Full Capabilities Reference]({{ site.baseurl }}/capabilities)
 

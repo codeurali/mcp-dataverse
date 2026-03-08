@@ -18,7 +18,7 @@ The MCP Dataverse project follows semantic versioning and ships incremental impr
 Released
 {: .label .label-purple }
 
-**Goal:** First-class HTTP/SSE support for multi-client and remote deployment scenarios, attribute-level schema management (create/update/delete columns + lookup), and fixes surfaced by the Web API audit. Released 2026-03-05 as v0.4.0 (67 tools across 25 categories).
+**Goal:** First-class HTTP/SSE support for multi-client and remote deployment scenarios, attribute-level schema management (create/update/delete columns + lookup), and fixes surfaced by the Web API audit. Released 2026-03-05 as v0.4.0, updated through v0.4.6 (73 tools across 25 categories).
 
 The foundation already exists — `StreamableHTTPServerTransport` is implemented and functional (`npx mcp-dataverse --transport http`). This milestone polishes it for production and resolves the schema inconsistencies identified during 8 live testing sessions.
 

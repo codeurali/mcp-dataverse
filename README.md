@@ -6,7 +6,7 @@
 
 **The most complete MCP server for Microsoft Dataverse.**
 
-67 tools · 4 resources · 10 guided workflows · Zero config auth
+73 tools · 4 resources · 10 guided workflows · Zero config auth
 
 [![npm](https://img.shields.io/npm/v/mcp-dataverse)](https://www.npmjs.com/package/mcp-dataverse)
 [![npm downloads](https://img.shields.io/npm/dm/mcp-dataverse)](https://www.npmjs.com/package/mcp-dataverse)

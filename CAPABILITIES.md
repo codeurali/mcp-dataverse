@@ -1,8 +1,8 @@
 # MCP Dataverse Server — Complete Capabilities Reference
 
-> **Version**: 0.4.5 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
+> **Version**: 0.4.6 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
 
-67 tools across 25 categories for full Dataverse lifecycle: schema, CRUD, FetchXML, solutions, plugins, audit, files, users, teams, RBAC, attribute management, environment variables, workflows, and more.
+73 tools across 25 categories for full Dataverse lifecycle: schema, CRUD, FetchXML, solutions, plugins, audit, files, users, teams, RBAC, attribute management, environment variables, workflows, and more.
 
 ---
 
@@ -10,19 +10,19 @@
 
 - [Quick Start](#quick-start)
 - [Architecture Overview](#architecture-overview)
-- [Tool Reference (67 tools)](#tool-reference-67-tools)
+- [Tool Reference (73 tools)](#tool-reference-73-tools)
   - [1. Auth (1)](#1-auth-1-tool)
-  - [2. Metadata (8)](#2-metadata-8-tools)
+  - [2. Metadata (9)](#2-metadata-9-tools)
   - [3. Query (3)](#3-query-3-tools)
   - [4. CRUD (6)](#4-crud-6-tools)
-  - [5. Relations (2)](#5-relations-2-tools)
+  - [5. Relations (4)](#5-relations-4-tools)
   - [6. Actions & Functions (6)](#6-actions--functions-6-tools)
   - [7. Batch (1)](#7-batch-1-tool)
   - [8. Change Tracking (1)](#8-change-tracking-1-tool)
-  - [9. Solutions (3)](#9-solutions-3-tools)
+  - [9. Solutions (2)](#9-solutions-2-tools)
   - [10. Impersonation (1)](#10-impersonation-1-tool)
-  - [11. Customization (3)](#11-customization-3-tools)
-  - [12. Environment (3)](#12-environment-3-tools)
+  - [11. Customization (4)](#11-customization-4-tools)
+  - [12. Environment (4)](#12-environment-4-tools)
   - [13. Trace (2)](#13-trace-2-tools)
   - [14. Search (1)](#14-search-1-tool)
   - [15. Audit (1)](#15-audit-1-tool)
@@ -32,9 +32,9 @@
   - [19. Views (1)](#19-views-1-tool)
   - [20. Files (2)](#20-files-2-tools)
   - [21. Org (2)](#21-org-2-tools)
-  - [22. RBAC (4)](#22-rbac-4-tools)
-  - [23. Workflows (2)](#23-workflows-2-tools)
-  - [24. Assistance (5)](#24-assistance-5-tools)
+  - [22. RBAC (7)](#22-rbac-7-tools)
+  - [23. Workflows (4)](#23-workflows-4-tools)
+  - [24. Assistance (2)](#24-assistance-2-tools)
   - [25. Attributes (4)](#25-attributes-4-tools)
 - [Error Handling & Retry Behavior](#error-handling--retry-behavior)
 - [Security](#security)
@@ -95,32 +95,32 @@ Server communicates over **stdio** (MCP SDK `StdioServerTransport`). Connect fro
 
 ```mermaid
 graph LR
-    MCP["MCP Dataverse Server<br/><i>67 tools · 25 categories</i>"]
+    MCP["MCP Dataverse Server<br/><i>73 tools · 25 categories</i>"]
 
     MCP --> AUTH["🔑 Auth (1)"]
-    MCP --> META["📋 Metadata (8)"]
+    MCP --> META["📋 Metadata (9)"]
     MCP --> QUERY["🔍 Query (3)"]
     MCP --> CRUD["✏️ CRUD (6)"]
-    MCP --> REL["🔗 Relations (2)"]
+    MCP --> REL["🔗 Relations (4)"]
     MCP --> ACT["⚡ Actions & Functions (6)"]
     MCP --> BATCH["📦 Batch (1)"]
     MCP --> TRACK["🔄 Change Tracking (1)"]
-    MCP --> SOL["🧩 Solutions (3)"]
+    MCP --> SOL["🧩 Solutions (2)"]
     MCP --> IMP["👤 Impersonation (1)"]
-    MCP --> CUST["🔧 Customization (3)"]
-    MCP --> ENV["⚙️ Environment (3)"]
+    MCP --> CUST["🔧 Customization (4)"]
+    MCP --> ENV["⚙️ Environment (4)"]
     MCP --> TRACE["🔎 Trace (2)"]
     MCP --> SRCH["🔍 Search (1)"]
     MCP --> AUDIT["📜 Audit (1)"]
     MCP --> QUAL["✅ Quality (1)"]
     MCP --> NOTE["📝 Annotations (2)"]
     MCP --> USR["👥 Users (2)"]
-    MCP --> RBAC["🛡️ RBAC (4)"]
+    MCP --> RBAC["🛡️ RBAC (7)"]
     MCP --> VIEWS["👁️ Views (1)"]
     MCP --> FILES["📁 Files (2)"]
     MCP --> ORG["🏢 Org (2)"]
-    MCP --> WF["⚙️ Workflows (2)"]
-    MCP --> ASSIST["🤖 Assistance (5)"]
+    MCP --> WF["⚙️ Workflows (4)"]
+    MCP --> ASSIST["🤖 Assistance (2)"]
     MCP --> ATTR["🏗️ Attributes (4)"]
 ```
 
@@ -128,7 +128,7 @@ All tool handlers validate inputs with **Zod** before calling the `DataverseAdva
 
 ---
 
-## Tool Reference (67 tools)
+## Tool Reference (73 tools)
 
 ### 1. Auth (1 tool)
 
@@ -140,7 +140,7 @@ Returns the current authenticated user context (userId, businessUnitId, organiza
 
 ---
 
-### 2. Metadata (8 tools)
+### 2. Metadata (9 tools)
 
 #### `dataverse_list_tables`
 
@@ -375,7 +375,7 @@ Assigns a Dataverse record to a different user or team owner. Sets the `ownerid`
 
 ---
 
-### 5. Relations (2 tools)
+### 5. Relations (4 tools)
 
 #### `dataverse_associate`
 
@@ -535,7 +535,7 @@ Delta-query for incremental sync. Pass `deltaToken: null` for initial snapshot; 
 
 ---
 
-### 9. Solutions (3 tools)
+### 9. Solutions (2 tools)
 
 #### `dataverse_list_solutions`
 
@@ -612,7 +612,7 @@ Executes any other tool on behalf of a different Dataverse user by injecting `MS
 
 ---
 
-### 11. Customization (3 tools)
+### 11. Customization (4 tools)
 
 #### `dataverse_list_custom_actions`
 
@@ -672,7 +672,7 @@ Activates or deactivates a classic Dataverse workflow (statecode/statuscode upda
 
 ---
 
-### 12. Environment (3 tools)
+### 12. Environment (4 tools)
 
 #### `dataverse_get_environment_variable`
 
@@ -1010,7 +1010,7 @@ Lists Dataverse teams (owner teams and access teams) within one or all business 
 
 ---
 
-### 22. RBAC (4 tools)
+### 22. RBAC (7 tools)
 
 #### `dataverse_list_roles`
 
@@ -1072,7 +1072,7 @@ Assigns a security role to a Dataverse team. All team members inherit the role p
 
 ---
 
-### 23. Workflows (2 tools)
+### 23. Workflows (4 tools)
 
 #### `dataverse_list_workflows`
 
@@ -1100,7 +1100,7 @@ Retrieves a single workflow definition by ID, including its trigger, steps, and 
 
 ---
 
-### 24. Assistance (5 tools)
+### 24. Assistance (2 tools)
 
 #### `dataverse_suggest_tools`
 
@@ -1360,4 +1360,4 @@ Certain tools include an `errorCategory` field in the error text when the failur
 
 ---
 
-_This document reflects the MCP Dataverse server codebase as of v0.4.0 — 67 tools across 25 categories._
+_This document reflects the MCP Dataverse server codebase as of v0.4.6 — 73 tools across 25 categories._
