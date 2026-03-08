@@ -5,6 +5,21 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — [Semantic V
 
 ---
 
+## [0.4.7] — 2026-03-08
+
+### Fixed
+
+- **BUG-035 — `dataverse_add_role_privileges` wrong action name**: The OData bound action for adding privileges to a role is `AddPrivilegesRole` (no "To"). A spurious "To" introduced in a previous fix session caused `0x80060888 Resource not found` errors. Fixed in `role-privileges.tools.ts`; action name is now driven by the `CRM_BOUND_ACTIONS` constants file to prevent recurrence.
+- **BUG-036 — `dataverse_replace_role_privileges` wrong action name**: Same root cause — `ReplacePrivilegesRole` (no "To") is the correct Dataverse OData action name. Fixed identically.
+- **`scripts/check-file-size.js` false positive**: The line counter used `.split('\n').length` which counted a trailing newline as a phantom extra line, causing `dataverse-client.ts` (450 real lines) to fail the 450-line limit check. Fixed with `.trimEnd()` before splitting.
+
+### Internal
+
+- **`src/dataverse/crm-action-names.ts`** — New constants file (`CRM_BOUND_ACTIONS`, `CRM_FUNCTIONS`) as single source of truth for all Dataverse CRM action/function names. JSDoc links to the official Microsoft WebAPI reference. Prevents inline string typos for all future callers.
+- **`tests/unit/role-privileges-tools.test.ts`** — 13 new contract tests including explicit `.not.toContain("To")` guards on action names. Total test suite: 588 tests.
+
+---
+
 ## [0.4.6] — 2026-03-08
 
 ### Added
