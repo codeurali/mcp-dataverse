@@ -54,3 +54,17 @@ jobs:
 
       - name: Publish to MCP Registry
         run: ./mcp-publisher publish
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: v${{ env.VERSION }}
+          body: |
+            See [CHANGELOG.md](https://github.com/codeurali/mcp-dataverse/blob/master/CHANGELOG.md) for details.
+
+            **Install / upgrade:**
+            ```
+            npx mcp-dataverse install
+            ```
+          generate_release_notes: true
