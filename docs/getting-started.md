@@ -67,43 +67,16 @@ All config values can be set via environment variables (useful for MCP client `e
 
 ## Authentication
 
-MCP Dataverse uses **Microsoft device code flow** (MSAL Public Client) — no Azure AD app registration or PAT required.
+Three methods are supported — choose based on where the server runs:
 
-### First connection
+→ [Authentication overview & setup guide]({{ site.baseurl }}/authentication)
 
-Authentication triggers on the **first tool call** after the server starts:
+**Quick start (device code, local use):** authentication triggers on the first tool call.
 
-1. Open the VS Code **Output** panel → select **MCP**
-2. A sign-in prompt appears with a device code (auto-copied to clipboard)
-3. Open `https://microsoft.com/devicelogin`, paste the code, sign in with your work account
-4. The Output panel confirms: `Authenticated ✓`
+1. Check VS Code **Output** panel → **MCP** for a device code and sign-in URL
+2. Open `https://microsoft.com/devicelogin`, paste the code, and log in with your work account
 
-> If the device code times out, simply retry the tool call — a fresh code is generated automatically. If authentication fails repeatedly, restart the MCP server.
-
-### Subsequent launches
-
-Tokens are cached encrypted (AES-256-GCM) in `~/.mcp-dataverse/`. Renewal is fully silent — no prompt needed until the refresh token expires (~90 days of inactivity).
-
-To force re-authentication:
-
-```bash
-npx mcp-dataverse-auth https://yourorg.crm.dynamics.com
-```
-
-### Upcoming authentication methods
-{: .d-inline-block }
-
-Planned
-{: .label .label-yellow }
-
-The authentication architecture is built on a pluggable `AuthProvider` interface with a factory pattern — adding new auth strategies requires no breaking changes. Two additional methods are planned:
-
-| Method | Use case | Status |
-|:-------|:---------|:-------|
-| **Azure AD app registration** (Client Credentials) | Service-to-service, CI/CD pipelines, unattended scenarios | 🔜 Planned |
-| **Managed Identity** | Azure-hosted deployments (App Service, Container Apps, Azure VM) — zero-secret auth | 🔜 Planned |
-
-Both will be selectable via a `authMethod` configuration option (`"device-code"` / `"client-credentials"` / `"managed-identity"`).
+Tokens are cached encrypted (AES-256-GCM) and renewed silently (~90 days).
 
 ## Running the Server
 

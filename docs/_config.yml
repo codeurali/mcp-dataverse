@@ -1,5 +1,5 @@
 title: MCP Dataverse
-description: The most complete MCP server for Microsoft Dataverse — 63 tools, zero config auth
+description: The most complete MCP server for Microsoft Dataverse — 73 tools, multi-mode authentication
 url: https://codeurali.github.io
 baseurl: /mcp-dataverse
 
@@ -37,6 +37,7 @@ exclude:
   - _bmad-output/
   - mcp-template/
   - autoparc/
+  - _drafts/
 
 footer_content: "MIT License &copy; <a href=\"https://www.linkedin.com/in/alitaggaz/\">Ali Taggaz</a>. Built with <a href=\"https://just-the-docs.com\">Just the Docs</a>."
 

@@ -13,6 +13,25 @@ coverage/
 test-output.txt
 *.local
 
+# Jekyll local dev
+docs/Gemfile.lock
+docs/_site/
+docs/_config_local.yml
+
+# Dev tooling (not needed by npm consumers)
+eslint.config.js
+jest.config.js
+tsconfig.json
+Dockerfile
+
+# Build / publish artifacts
+*.tgz
+*.zip
+.webappignore
+
+# Private planning docs
+ROADMAP-AUTH-METHODS.md
+
 # Windows
 Thumbs.db
 Desktop.ini
@@ -29,6 +48,7 @@ debug/
 !assets/logo.webp
 
 # Private planning & internal artifacts (security/privacy)
+workdoc/
 _bmad/
 _bmad-output/
 .codex/

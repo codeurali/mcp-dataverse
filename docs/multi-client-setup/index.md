@@ -9,8 +9,8 @@ permalink: /multi-client-setup
 
 How to configure **mcp-dataverse** with every major MCP client. Paste the relevant snippet into your client's config file and you're ready in under 5 minutes.
 
-> **Prerequisites**: Node.js 20+, a Dataverse environment URL (`https://yourorg.crm.dynamics.com`).  
-> See [Getting Started](getting-started.md) for authentication details (device code flow).
+> **Prerequisites**: Node.js 20+, a Dataverse environment URL (`https://yourorg.crm.dynamics.com`).
+> For authentication setup, see [Authentication]({{ site.baseurl }}/authentication).
 
 ---
 
@@ -25,7 +25,8 @@ How to configure **mcp-dataverse** with every major MCP client. Paste the releva
 | [Gemini CLI (Google)](#gemini-cli-google) | stdio | `~/.gemini/settings.json` |
 | [Cursor](#cursor) | stdio | `.cursor/mcp.json` |
 | [Windsurf](#windsurf) | stdio | `~/.codeium/windsurf/mcp_config.json` |
-| [HTTP (multi-client)](#http-multi-client-setup) | http | Any client supporting Streamable HTTP |
+| [HTTP (local server)](#http-multi-client-setup) | http | Any client supporting Streamable HTTP |
+| [HTTP (hosted on Azure)](#hosted-server) | http | VS Code, Azure CLI; other clients depend on Entra support |
 
 ---
 
@@ -475,6 +476,37 @@ claude mcp add --transport http mcp-dataverse http://localhost:3001/mcp
 ```
 
 > **Security note**: The HTTP server binds to `localhost` by default. For remote access, place it behind a reverse proxy with authentication. Do not expose the server directly to the internet — it grants full Dataverse API access with the authenticated user's permissions.
+
+---
+
+## Hosted Server
+{: #hosted-server }
+
+When MCP Dataverse runs on Azure (App Service or Container Apps), connect clients to its public
+HTTPS URL. Inbound requests are validated using Entra ID JWT — VS Code handles the sign-in automatically.
+
+For server deployment steps, see [Authentication — Managed Identity]({{ site.baseurl }}/authentication/hosted).
+
+**VS Code** (`.vscode/mcp.json`)
+
+```json
+{
+  "servers": {
+    "mcp-dataverse": {
+      "type": "http",
+      "url": "https://your-app.azurewebsites.net/mcp"
+    }
+  }
+}
+```
+
+VS Code auto-discovers the Entra auth server and performs a silent SSO sign-in.
+
+**Claude Desktop** — does not yet support dynamic Entra authentication. Use the static bearer
+secret (`MCP_HTTP_SECRET`) or a pre-obtained token until OAuth support is added.
+
+**Cursor / Windsurf** — replace the `url` value with the hosted HTTPS URL (same format as local).
+Entra SSO depends on client support.
 
 ---
 

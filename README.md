@@ -6,7 +6,7 @@
 
 **The most complete MCP server for Microsoft Dataverse.**
 
-73 tools · 4 resources · 10 guided workflows · Zero config auth
+73 tools · 4 resources · 10 guided workflows · Three auth modes
 
 [![npm](https://img.shields.io/npm/v/mcp-dataverse)](https://www.npmjs.com/package/mcp-dataverse)
 [![npm downloads](https://img.shields.io/npm/dm/mcp-dataverse)](https://www.npmjs.com/package/mcp-dataverse)
@@ -25,7 +25,7 @@
 
 AI agents hallucinate schema, guess column names, and build broken OData queries. This server gives them **real-time access** to your Dataverse environment — schema, records, metadata, solutions — through the [Model Context Protocol](https://modelcontextprotocol.io).
 
-- **No Azure AD app registration** — device code flow, zero pre-configuration
+- **Three auth modes** — device code (local), client credentials (CI/CD), managed identity (Azure-hosted)
 - **Works with any MCP client** — VS Code, Claude, Cursor, Windsurf, Gemini, Codex CLI
 - **Atomic tools** — each tool does one thing well; the AI picks the right one
 - **Structured outputs** — every response returns `{summary, data, suggestions}`
@@ -48,31 +48,45 @@ The interactive wizard configures your environment, registers the server in VS C
 
 ## Authentication
 
-**No PAC CLI, no app registration, no client secret.** Uses Microsoft's device code flow (MSAL):
+Three modes — choose based on where the server runs:
 
-1. **First tool call** → a sign-in code appears in the MCP Output panel (`View → Output → MCP`)
-2. Open `https://microsoft.com/devicelogin` → enter the code → sign in with your work account
-3. **Done.** Token is cached encrypted — all future starts are silent
+| Mode | When to use |
+|:-----|:------------|
+| **Device Code** (default) | Local development — interactive Microsoft login, token cached on disk |
+| **Client Credentials** | Unattended: CI/CD, Docker, Azure services — `authMethod: "client-credentials"` + App Registration |
+| **Managed Identity** | Azure-hosted (App Service, Container Apps) — zero secrets, `authMethod: "managed-identity"` |
 
-Re-authenticate after ~90 days of inactivity: `npx mcp-dataverse-auth`
+**Device code quick start:** authentication triggers on the first tool call.
+
+1. Open `View → Output → MCP` — a sign-in code appears
+2. Go to `https://microsoft.com/devicelogin`, enter the code, sign in with your work account
+3. Token is cached encrypted — all future starts are silent
+
+For client credentials and managed identity setup, see [Authentication docs](https://codeurali.github.io/mcp-dataverse/authentication).
 
 ---
 
 ## Capabilities
 
-| Category                | Count | Description                                                    |
+| Category | Count | Description |
 | ----------------------- | ----- | -------------------------------------------------------------- |
-| **Metadata**            | 8     | Tables, schema, relationships, option sets, entity keys        |
-| **Query**               | 3     | OData, FetchXML, paginated retrieval                           |
-| **CRUD**                | 6     | Get, create, update, delete, upsert, assign                    |
-| **Actions & Functions** | 6     | Bound/unbound Dataverse actions and functions                  |
-| **Batch**               | 1     | Up to 1000 operations atomically                               |
-| **Solutions**           | 3     | List solutions, components, publish customizations             |
-| **Search**              | 1     | Full-text Relevance Search                                     |
-| **Users & Teams**       | 3     | Users, roles, teams                                            |
-| **Files**               | 2     | Upload/download file and image columns                         |
-| **+ more**              | …     | Audit, trace logs, delta tracking, impersonation, annotations… |
-| **Assistance**          | 4     | Tool router, workflow guide                                    |
+| **Metadata** | 9 | Tables, schema, relationships, option sets, entity keys |
+| **Query** | 3 | OData, FetchXML, paginated retrieval |
+| **CRUD** | 6 | Get, create, update, delete, upsert, assign |
+| **Relations** | 4 | Associate, associate bulk, disassociate, query associations |
+| **Actions & Functions** | 6 | Bound/unbound Dataverse actions and functions |
+| **Batch** | 1 | Up to 1000 operations atomically |
+| **Solutions** | 2 | Publish customizations, create sitemap |
+| **Search** | 1 | Full-text Relevance Search |
+| **Users & Teams** | 4 | Users, roles, teams, role assignment |
+| **RBAC** | 7 | Role privileges: list, assign, remove, add, replace, get, team |
+| **Files** | 2 | Upload/download file and image columns |
+| **Audit & Trace** | 3 | Audit log, plugin trace logs, workflow trace logs |
+| **Annotations** | 2 | Notes and file attachments |
+| **Customization** | 4 | Custom actions, plugins, env variables, connection references |
+| **Attributes** | 5 | Create, update, delete columns; lookup and multi-select types |
+| **Assistance** | 2 | Tool router, tool tags |
+| **+ more** | … | Delta sync, impersonation, views, business units, duplicate detection |
 
 [→ Full Capabilities Reference](https://codeurali.github.io/mcp-dataverse/capabilities)
 
@@ -126,7 +140,8 @@ MCP Dataverse is designed to be comprehensive, but most AI models work best with
 | Version | Feature | Status |
 | ------- | ------- | ------ |
 | **v0.4** | HTTP transport + attribute management + schema consistency | ✅ Released |
-| **v0.5** | Enterprise auth (Client Credentials, Managed Identity) + MCP Prompts | 🔴 Planned |
+| **v0.5** | Enterprise auth (Client Credentials, Managed Identity, Entra JWT) | ✅ Released |
+| **v0.6** | MCP Prompts + ERD generator + API snippet generator | 🔜 Planned |
 
 [→ Full Roadmap](https://codeurali.github.io/mcp-dataverse/roadmap)
 

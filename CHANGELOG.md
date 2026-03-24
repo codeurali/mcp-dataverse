@@ -5,6 +5,31 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — [Semantic V
 
 ---
 
+## [0.5.0] — 2026-03-24
+
+### Added
+
+- **Client Credentials auth** — App Registration-based service identity for unattended scenarios: CI/CD pipelines, Docker, Azure services. Configured via `authMethod: "client-credentials"` plus `tenantId`, `clientId`, and `clientSecret` (or `AZURE_CLIENT_SECRET` env var — recommended over config file).
+- **Managed Identity auth** — zero-secret outbound auth for Azure-hosted deployments (App Service, Container Apps, Azure VMs). Supports both system-assigned and user-assigned identities (`managedIdentityClientId`). Configured via `authMethod: "managed-identity"`.
+- **Entra JWT inbound validation** — when the server runs in HTTP transport mode, bearer tokens are validated against Entra ID JWKS. Implements RFC 9728 `/.well-known/oauth-protected-resource` for automatic MCP client discovery. Validation covers RS256 signature, issuer (`login.microsoftonline.com/{tenantId}/v2.0`), audience (bare GUID), required scope, `exp`/`nbf`, and 30-second clock skew. JWKS is cached with automatic rotation on `kid` miss.
+- **`authMethod` config option** — selects the auth provider: `"device-code"` (default, unchanged behavior), `"client-credentials"`, or `"managed-identity"`. Also available as the `AUTH_METHOD` environment variable.
+- **New environment variables** — `AUTH_METHOD`, `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AZURE_MANAGED_IDENTITY_CLIENT_ID` map to their config equivalents. Documented in `config.example.jsonc`.
+
+### Documentation
+
+- New `/authentication` section with one page per method: Device Code, Client Credentials, Managed Identity. Includes Azure platform setup steps, Dataverse App User registration, environment variable reference, and a sequence diagram for the hosted flow.
+
+### Internal
+
+- **`src/auth/auth-provider.interface.ts`** — `AuthProvider` contract; all providers implement `getToken(resource): Promise<string>`.
+- **`src/auth/auth-provider.factory.ts`** — Reads `authMethod` from config/env and instantiates the correct provider. Adding a new method requires no changes outside the factory.
+- **`src/auth/client-credentials-auth-provider.ts`** — MSAL confidential client flow (client_credentials grant) with in-memory token cache.
+- **`src/auth/managed-identity-auth-provider.ts`** — Azure IMDS token endpoint (`169.254.169.254`); falls back to `DefaultAzureCredential`-style resolution for user-assigned identities.
+- **`src/auth/entra-jwt-validator.ts`** — HTTP middleware; validates inbound Bearer tokens for the HTTP server.
+- **`src/auth/crypto-utils.ts`** — JWKS fetch + caching utilities extracted into a shared module.
+
+---
+
 ## [0.4.7] — 2026-03-08
 
 ### Fixed

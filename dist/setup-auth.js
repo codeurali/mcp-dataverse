@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import{a as n}from"./chunk-SUDI4JM6.js";import{a as s}from"./chunk-24RDOMG4.js";async function t(){process.stderr.write(`MCP Dataverse \u2014 One-time Authentication Setup
+import{a as n}from"./chunk-OQ46VPYS.js";import{a as s}from"./chunk-RYRO3QPE.js";import"./chunk-KJ3HM2VM.js";async function t(){process.stderr.write(`MCP Dataverse \u2014 One-time Authentication Setup
 `),process.stderr.write(`\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 `);let e=process.argv[2];e&&(process.env.DATAVERSE_ENV_URL=e);let r;try{r=n()}catch{process.stderr.write(`Environment URL is required.
 Usage: npx mcp-dataverse-auth https://yourorg.crm.dynamics.com

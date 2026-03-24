@@ -1,10 +1,37 @@
 {
   "environmentUrl": "https://yourorg.crm.dynamics.com",
   "requestTimeoutMs": 30000,
-  "maxRetries": 3
+  "maxRetries": 3,
 }
 
-// HTTP transport mode (optional — uncomment to use)
+// ── Auth methods ──────────────────────────────────────────────────────────────
+//
+// Default (device-code) — interactive Microsoft login, token cached on disk.
+// No extra fields needed.
+//
+// Client Credentials — Azure AD App Registration for CI/CD and unattended scenarios.
+// {
+//   "environmentUrl": "https://yourorg.crm.dynamics.com",
+//   "authMethod": "client-credentials",
+//   "tenantId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+//   "clientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+//   "clientSecret": "your-client-secret"     // prefer AZURE_CLIENT_SECRET env var
+// }
+//
+// Managed Identity — zero-secret auth for Azure-hosted deployments.
+// System-assigned:
+// {
+//   "environmentUrl": "https://yourorg.crm.dynamics.com",
+//   "authMethod": "managed-identity"
+// }
+// User-assigned:
+// {
+//   "environmentUrl": "https://yourorg.crm.dynamics.com",
+//   "authMethod": "managed-identity",
+//   "managedIdentityClientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+// }
+//
+// ── HTTP transport mode (optional — uncomment to use) ─────────────────────────
 // {
 //   "environmentUrl": "https://yourorg.crm.dynamics.com",
 //   "requestTimeoutMs": 30000,
@@ -13,8 +40,16 @@
 //   "httpPort": 3000
 // }
 //
-// Matching environment variables:
-//   MCP_TRANSPORT=http
-//   MCP_HTTP_PORT=3000
-//   MCP_HTTP_SECRET=your-bearer-token   (optional: enables Authorization header check)
-//   MCP_HTTP_JSON_RESPONSE=true         (default: true; set to false for SSE streaming)
+// ── Environment variable reference ───────────────────────────────────────────
+//   DATAVERSE_ENV_URL                   environmentUrl
+//   AUTH_METHOD                         authMethod  (device-code | client-credentials | managed-identity)
+//   AZURE_TENANT_ID                     tenantId
+//   AZURE_CLIENT_ID                     clientId
+//   AZURE_CLIENT_SECRET                 clientSecret  (recommended over config file)
+//   AZURE_MANAGED_IDENTITY_CLIENT_ID    managedIdentityClientId
+//   REQUEST_TIMEOUT_MS                  requestTimeoutMs
+//   MAX_RETRIES                         maxRetries
+//   MCP_TRANSPORT                       http | stdio
+//   MCP_HTTP_PORT                       httpPort
+//   MCP_HTTP_SECRET                     bearer token for HTTP transport (optional)
+//   MCP_HTTP_JSON_RESPONSE              true | false  (default: true)

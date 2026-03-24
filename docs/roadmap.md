@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Roadmap
-nav_order: 7
+nav_order: 8
 permalink: /roadmap
 ---
 
@@ -69,8 +69,8 @@ The foundation already exists — `StreamableHTTPServerTransport` is implemented
 
 {: .d-inline-block }
 
-Planned
-{: .label .label-yellow }
+Done
+{: .label .label-green }
 
 **Goal:** Enterprise-grade authentication options so teams can deploy MCP Dataverse without PAC CLI, plus the remaining consistency fixes from v0.4.
 
@@ -78,9 +78,9 @@ Planned
 
 | Item                                                                                                    | Status     |
 | :------------------------------------------------------------------------------------------------------ | :--------- |
-| **Azure AD app registration** (Client Credentials) — service-to-service, CI/CD, unattended scenarios   | 🔜 Planned |
-| **Managed Identity** — zero-secret auth for Azure-hosted deployments (App Service, Container Apps, VM) | 🔜 Planned |
-| `authMethod` config option (`"pac"` / `"client-credentials"` / `"managed-identity"`)                   | 🔜 Planned |
+| **Azure AD app registration** (Client Credentials) — service-to-service, CI/CD, unattended scenarios   | ✅ Done    |
+| **Managed Identity** — zero-secret auth for Azure-hosted deployments (App Service, Container Apps, VM) | ✅ Done    |
+| `authMethod` config option (`"pac"` / `"client-credentials"` / `"managed-identity"`)                   | ✅ Done    |
 
 ### Schema & Error Consistency
 
