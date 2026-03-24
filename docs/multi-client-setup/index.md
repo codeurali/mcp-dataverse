@@ -16,17 +16,17 @@ How to configure **mcp-dataverse** with every major MCP client. Paste the releva
 
 ## Quick Reference
 
-| Client | Transport | Config location |
-|--------|-----------|-----------------|
-| [VS Code (Copilot)](#vs-code-github-copilot) | stdio | `.vscode/mcp.json` or user-level settings |
-| [Claude Desktop](#claude-desktop) | stdio | OS-specific `claude_desktop_config.json` |
-| [Claude Code (CLI)](#claude-code-cli) | stdio | `claude mcp add` or `~/.claude.json` |
-| [Codex CLI (OpenAI)](#codex-cli-openai) | stdio | `~/.codex/config.toml` or env vars |
-| [Gemini CLI (Google)](#gemini-cli-google) | stdio | `~/.gemini/settings.json` |
-| [Cursor](#cursor) | stdio | `.cursor/mcp.json` |
-| [Windsurf](#windsurf) | stdio | `~/.codeium/windsurf/mcp_config.json` |
-| [HTTP (local server)](#http-multi-client-setup) | http | Any client supporting Streamable HTTP |
-| [HTTP (hosted on Azure)](#hosted-server) | http | VS Code, Azure CLI; other clients depend on Entra support |
+| Client                                          | Transport | Config location                                           |
+| ----------------------------------------------- | --------- | --------------------------------------------------------- |
+| [VS Code (Copilot)](#vs-code-github-copilot)    | stdio     | `.vscode/mcp.json` or user-level settings                 |
+| [Claude Desktop](#claude-desktop)               | stdio     | OS-specific `claude_desktop_config.json`                  |
+| [Claude Code (CLI)](#claude-code-cli)           | stdio     | `claude mcp add` or `~/.claude.json`                      |
+| [Codex CLI (OpenAI)](#codex-cli-openai)         | stdio     | `~/.codex/config.toml` or env vars                        |
+| [Gemini CLI (Google)](#gemini-cli-google)       | stdio     | `~/.gemini/settings.json`                                 |
+| [Cursor](#cursor)                               | stdio     | `.cursor/mcp.json`                                        |
+| [Windsurf](#windsurf)                           | stdio     | `~/.codeium/windsurf/mcp_config.json`                     |
+| [HTTP (local server)](#http-multi-client-setup) | http      | Any client supporting Streamable HTTP                     |
+| [HTTP (hosted on Azure)](#hosted-server)        | http      | VS Code, Azure CLI; other clients depend on Entra support |
 
 ---
 
@@ -58,12 +58,12 @@ The config file (`~/.mcp-dataverse/config.json`) contains:
 
 **Optional env vars** for fine-tuning:
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DATAVERSE_ENV_URL` | — | Dataverse org URL (required if no config file) |
-| `MCP_CONFIG_PATH` | `~/.mcp-dataverse/config.json` | Path to config file |
-| `REQUEST_TIMEOUT_MS` | `30000` | HTTP timeout in ms |
-| `MAX_RETRIES` | `3` | Retry count on transient errors |
+| Variable             | Default                        | Description                                    |
+| -------------------- | ------------------------------ | ---------------------------------------------- |
+| `DATAVERSE_ENV_URL`  | —                              | Dataverse org URL (required if no config file) |
+| `MCP_CONFIG_PATH`    | `~/.mcp-dataverse/config.json` | Path to config file                            |
+| `REQUEST_TIMEOUT_MS` | `30000`                        | HTTP timeout in ms                             |
+| `MAX_RETRIES`        | `3`                            | Retry count on transient errors                |
 
 ---
 
@@ -145,10 +145,10 @@ If you installed globally (`npm install -g mcp-dataverse`), replace `npx` with a
 
 Edit the Claude Desktop configuration file:
 
-| OS | Path |
-|----|------|
-| Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
-| macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
+| OS      | Path                                                              |
+| ------- | ----------------------------------------------------------------- |
+| Windows | `%APPDATA%\Claude\claude_desktop_config.json`                     |
+| macOS   | `~/Library/Application Support/Claude/claude_desktop_config.json` |
 
 ```json
 {
@@ -175,6 +175,7 @@ Edit the Claude Desktop configuration file:
 ### Quick add
 
 **macOS / Linux / WSL**
+
 ```bash
 claude mcp add --transport stdio --scope user \
   mcp-dataverse \
@@ -183,6 +184,7 @@ claude mcp add --transport stdio --scope user \
 ```
 
 **Windows (PowerShell)**
+
 ```powershell
 claude mcp add --transport stdio --scope user `
   mcp-dataverse `
@@ -196,11 +198,11 @@ claude mcp add --transport stdio --scope user `
 
 #### Scopes
 
-| Scope | Availability | Config file |
-|-------|-------------|------------|
-| `local` (default) | Current directory only | `.claude/settings.local.json` |
-| `project` | All project members | `.mcp.json` at the project root |
-| `user` | All your projects (recommended) | `~/.claude.json` |
+| Scope             | Availability                    | Config file                     |
+| ----------------- | ------------------------------- | ------------------------------- |
+| `local` (default) | Current directory only          | `.claude/settings.local.json`   |
+| `project`         | All project members             | `.mcp.json` at the project root |
+| `user`            | All your projects (recommended) | `~/.claude.json`                |
 
 ### Manual config
 
@@ -226,10 +228,10 @@ Edit `~/.claude.json`:
 
 Codex CLI reads MCP servers from `~/.codex/config.toml` (**TOML format — not JSON**).
 
-| OS | Path |
-|----|------|
-| Windows | `%USERPROFILE%\.codex\config.toml` |
-| macOS / Linux | `~/.codex/config.toml` |
+| OS            | Path                               |
+| ------------- | ---------------------------------- |
+| Windows       | `%USERPROFILE%\.codex\config.toml` |
+| macOS / Linux | `~/.codex/config.toml`             |
 
 ```toml
 [mcp_servers.mcp-dataverse]
@@ -295,6 +297,7 @@ Create `.cursor/mcp.json` at the root of your workspace:
 Create `~/.cursor/mcp.json` to make the tools available in every project.
 
 > **Windows** — The `~\.cursor` directory is not created automatically. If it does not exist:
+>
 > ```powershell
 > New-Item -ItemType Directory -Force "$env:USERPROFILE\.cursor"
 > ```
@@ -321,10 +324,10 @@ After creating or editing any Cursor config, **reload the window**: `Ctrl+Shift+
 
 Windsurf supports two configuration scopes:
 
-| Scope | Path |
-|-------|------|
-| **Global** (all workspaces) | `~/.codeium/windsurf/mcp_config.json` (`%USERPROFILE%\.codeium\windsurf\mcp_config.json` on Windows) |
-| **Workspace** (current project) | `.windsurf/mcp.json` at the project root |
+| Scope                           | Path                                                                                                 |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Global** (all workspaces)     | `~/.codeium/windsurf/mcp_config.json` (`%USERPROFILE%\.codeium\windsurf\mcp_config.json` on Windows) |
+| **Workspace** (current project) | `.windsurf/mcp.json` at the project root                                                             |
 
 ### Global scope
 
@@ -374,13 +377,13 @@ By default, each client spawns its own `mcp-dataverse` process via stdio. The HT
 
 ### When to use HTTP vs stdio
 
-| | stdio (default) | HTTP (`--transport http`) |
-|-|-----------------|--------------------------|
-| **Setup** | Zero config — client manages the process | Start server manually, configure URL in clients |
-| **Clients** | One process per client | Multiple clients share one server |
-| **Auth** | Each process authenticates independently | Single auth session, shared across connections |
-| **Use case** | Single user, single editor | Team dashboards, web tools, multi-editor workflows |
-| **Network** | Local only (stdin/stdout) | Local or remote (TCP) |
+|              | stdio (default)                          | HTTP (`--transport http`)                          |
+| ------------ | ---------------------------------------- | -------------------------------------------------- |
+| **Setup**    | Zero config — client manages the process | Start server manually, configure URL in clients    |
+| **Clients**  | One process per client                   | Multiple clients share one server                  |
+| **Auth**     | Each process authenticates independently | Single auth session, shared across connections     |
+| **Use case** | Single user, single editor               | Team dashboards, web tools, multi-editor workflows |
+| **Network**  | Local only (stdin/stdout)                | Local or remote (TCP)                              |
 
 ### Start the HTTP server
 
@@ -398,7 +401,7 @@ The server exposes:
 
 - `POST /mcp` — Send JSON-RPC messages (Streamable HTTP MCP endpoint)
 - `GET /mcp` — Open an SSE stream of server notifications
-- `GET /health` — Health check (`{"status":"ok","version":"...","tools":63}`)
+- `GET /health` — Health check (`{"status":"ok","version":"...","tools":73}`)
 
 ### Architecture
 
@@ -425,6 +428,7 @@ The server exposes:
 ### Connecting clients to the HTTP server
 
 **VS Code** (`.vscode/mcp.json`)
+
 ```json
 {
   "servers": {
@@ -437,6 +441,7 @@ The server exposes:
 ```
 
 **Claude Desktop** (`claude_desktop_config.json`)
+
 ```json
 {
   "mcpServers": {
@@ -449,11 +454,13 @@ The server exposes:
 ```
 
 **Claude Code (CLI)**
+
 ```bash
 claude mcp add --transport http mcp-dataverse http://localhost:3001/mcp
 ```
 
 **Cursor** (`.cursor/mcp.json`)
+
 ```json
 {
   "mcpServers": {
@@ -465,6 +472,7 @@ claude mcp add --transport http mcp-dataverse http://localhost:3001/mcp
 ```
 
 **Windsurf** (`~/.codeium/windsurf/mcp_config.json`)
+
 ```json
 {
   "mcpServers": {
@@ -480,6 +488,7 @@ claude mcp add --transport http mcp-dataverse http://localhost:3001/mcp
 ---
 
 ## Hosted Server
+
 {: #hosted-server }
 
 When MCP Dataverse runs on Azure (App Service or Container Apps), connect clients to its public
@@ -563,26 +572,26 @@ This checks Node.js version, configuration, authentication, and Dataverse API co
 
 ### Common issues
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| Server not appearing in client | Config not saved or client not restarted | Save the config file and fully restart the client |
-| Auth prompt not showing | Output panel not visible | VS Code: **View → Output → MCP**. Claude Desktop: check MCP server logs |
-| `Invalid configuration` error | Bad URL format | Ensure `DATAVERSE_ENV_URL` starts with `https://` and ends with `.dynamics.com` |
-| `ENOENT npx` | Node.js not on PATH | Install Node.js 20+ and ensure `npx` is available in your shell |
-| Device code expired | Took longer than 5 min to sign in | Retry the tool call — a fresh code is generated |
-| Token refresh fails | Inactive for 90+ days | Re-authenticate: `npx mcp-dataverse-auth https://yourorg.crm.dynamics.com` |
-| Timeout errors | Large queries or slow network | Increase `REQUEST_TIMEOUT_MS` to `60000` or higher |
-| HTTP server: `EADDRINUSE` | Port already in use | Use a different port: `--port 3002` |
+| Symptom                        | Cause                                    | Fix                                                                             |
+| ------------------------------ | ---------------------------------------- | ------------------------------------------------------------------------------- |
+| Server not appearing in client | Config not saved or client not restarted | Save the config file and fully restart the client                               |
+| Auth prompt not showing        | Output panel not visible                 | VS Code: **View → Output → MCP**. Claude Desktop: check MCP server logs         |
+| `Invalid configuration` error  | Bad URL format                           | Ensure `DATAVERSE_ENV_URL` starts with `https://` and ends with `.dynamics.com` |
+| `ENOENT npx`                   | Node.js not on PATH                      | Install Node.js 20+ and ensure `npx` is available in your shell                 |
+| Device code expired            | Took longer than 5 min to sign in        | Retry the tool call — a fresh code is generated                                 |
+| Token refresh fails            | Inactive for 90+ days                    | Re-authenticate: `npx mcp-dataverse-auth https://yourorg.crm.dynamics.com`      |
+| Timeout errors                 | Large queries or slow network            | Increase `REQUEST_TIMEOUT_MS` to `60000` or higher                              |
+| HTTP server: `EADDRINUSE`      | Port already in use                      | Use a different port: `--port 3002`                                             |
 
 ### Where to find logs
 
-| Client | Log location |
-|--------|-------------|
-| VS Code | **View → Output** → select **MCP** in the dropdown |
-| Claude Desktop | Click the MCP plug icon → **Server logs** |
-| Claude Code | Printed directly in the terminal |
-| Cursor | **Output** panel → MCP |
-| HTTP server | Printed to stderr in the terminal running the server |
+| Client         | Log location                                         |
+| -------------- | ---------------------------------------------------- |
+| VS Code        | **View → Output** → select **MCP** in the dropdown   |
+| Claude Desktop | Click the MCP plug icon → **Server logs**            |
+| Claude Code    | Printed directly in the terminal                     |
+| Cursor         | **Output** panel → MCP                               |
+| HTTP server    | Printed to stderr in the terminal running the server |
 
 ### Verifying the connection
 

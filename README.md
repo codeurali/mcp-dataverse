@@ -50,11 +50,11 @@ The interactive wizard configures your environment, registers the server in VS C
 
 Three modes — choose based on where the server runs:
 
-| Mode | When to use |
-|:-----|:------------|
-| **Device Code** (default) | Local development — interactive Microsoft login, token cached on disk |
-| **Client Credentials** | Unattended: CI/CD, Docker, Azure services — `authMethod: "client-credentials"` + App Registration |
-| **Managed Identity** | Azure-hosted (App Service, Container Apps) — zero secrets, `authMethod: "managed-identity"` |
+| Mode                      | When to use                                                                                       |
+| :------------------------ | :------------------------------------------------------------------------------------------------ |
+| **Device Code** (default) | Local development — interactive Microsoft login, token cached on disk                             |
+| **Client Credentials**    | Unattended: CI/CD, Docker, Azure services — `authMethod: "client-credentials"` + App Registration |
+| **Managed Identity**      | Azure-hosted (App Service, Container Apps) — zero secrets, `authMethod: "managed-identity"`       |
 
 **Device code quick start:** authentication triggers on the first tool call.
 
@@ -68,25 +68,25 @@ For client credentials and managed identity setup, see [Authentication docs](htt
 
 ## Capabilities
 
-| Category | Count | Description |
-| ----------------------- | ----- | -------------------------------------------------------------- |
-| **Metadata** | 9 | Tables, schema, relationships, option sets, entity keys |
-| **Query** | 3 | OData, FetchXML, paginated retrieval |
-| **CRUD** | 6 | Get, create, update, delete, upsert, assign |
-| **Relations** | 4 | Associate, associate bulk, disassociate, query associations |
-| **Actions & Functions** | 6 | Bound/unbound Dataverse actions and functions |
-| **Batch** | 1 | Up to 1000 operations atomically |
-| **Solutions** | 2 | Publish customizations, create sitemap |
-| **Search** | 1 | Full-text Relevance Search |
-| **Users & Teams** | 4 | Users, roles, teams, role assignment |
-| **RBAC** | 7 | Role privileges: list, assign, remove, add, replace, get, team |
-| **Files** | 2 | Upload/download file and image columns |
-| **Audit & Trace** | 3 | Audit log, plugin trace logs, workflow trace logs |
-| **Annotations** | 2 | Notes and file attachments |
-| **Customization** | 4 | Custom actions, plugins, env variables, connection references |
-| **Attributes** | 5 | Create, update, delete columns; lookup and multi-select types |
-| **Assistance** | 2 | Tool router, tool tags |
-| **+ more** | … | Delta sync, impersonation, views, business units, duplicate detection |
+| Category                | Count | Description                                                           |
+| ----------------------- | ----- | --------------------------------------------------------------------- |
+| **Metadata**            | 9     | Tables, schema, relationships, option sets, entity keys               |
+| **Query**               | 3     | OData, FetchXML, paginated retrieval                                  |
+| **CRUD**                | 6     | Get, create, update, delete, upsert, assign                           |
+| **Relations**           | 4     | Associate, associate bulk, disassociate, query associations           |
+| **Actions & Functions** | 6     | Bound/unbound Dataverse actions and functions                         |
+| **Batch**               | 1     | Up to 1000 operations atomically                                      |
+| **Solutions**           | 2     | Publish customizations, create sitemap                                |
+| **Search**              | 1     | Full-text Relevance Search                                            |
+| **Users & Teams**       | 4     | Users, roles, teams, role assignment                                  |
+| **RBAC**                | 7     | Role privileges: list, assign, remove, add, replace, get, team        |
+| **Files**               | 2     | Upload/download file and image columns                                |
+| **Audit & Trace**       | 3     | Audit log, plugin trace logs, workflow trace logs                     |
+| **Annotations**         | 2     | Notes and file attachments                                            |
+| **Customization**       | 4     | Custom actions, plugins, env variables, connection references         |
+| **Attributes**          | 4     | Create, update, delete columns; lookup column type                    |
+| **Assistance**          | 2     | Tool router, tool tags                                                |
+| **+ more**              | …     | Delta sync, impersonation, views, business units, duplicate detection |
 
 [→ Full Capabilities Reference](https://codeurali.github.io/mcp-dataverse/capabilities)
 
@@ -101,6 +101,7 @@ MCP_TRANSPORT=http MCP_HTTP_PORT=3000 MCP_HTTP_SECRET=mysecret node dist/server.
 ```
 
 Connect using VS Code / Copilot with:
+
 ```json
 {
   "servers": {
@@ -137,11 +138,11 @@ MCP Dataverse is designed to be comprehensive, but most AI models work best with
 
 ## Roadmap
 
-| Version | Feature | Status |
-| ------- | ------- | ------ |
-| **v0.4** | HTTP transport + attribute management + schema consistency | ✅ Released |
+| Version  | Feature                                                           | Status      |
+| -------- | ----------------------------------------------------------------- | ----------- |
+| **v0.4** | HTTP transport + attribute management + schema consistency        | ✅ Released |
 | **v0.5** | Enterprise auth (Client Credentials, Managed Identity, Entra JWT) | ✅ Released |
-| **v0.6** | MCP Prompts + ERD generator + API snippet generator | 🔜 Planned |
+| **v0.6** | MCP Prompts + ERD generator + API snippet generator               | 🔜 Planned  |
 
 [→ Full Roadmap](https://codeurali.github.io/mcp-dataverse/roadmap)
 
