@@ -150,3 +150,8 @@ MCP Dataverse is designed to be comprehensive, but most AI models work best with
 ## License
 
 [MIT](LICENSE) © [Ali Taggaz](https://www.linkedin.com/in/alitaggaz/)
+
+## Hosted deployment
+
+A hosted deployment is available on [Fronteir AI](https://fronteir.ai/mcp/codeurali-mcp-dataverse).
+
