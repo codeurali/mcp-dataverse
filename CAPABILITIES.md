@@ -1,8 +1,8 @@
 # MCP Dataverse Server — Complete Capabilities Reference
 
-> **Version**: 0.5.0 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
+> **Version**: 0.7.5 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
 
-73 tools across 25 categories for full Dataverse lifecycle: schema, CRUD, FetchXML, solutions, plugins, audit, files, users, teams, RBAC, attribute management, environment variables, workflows, and more.
+79 tools across 27 categories for full Dataverse lifecycle: schema, CRUD, FetchXML, solutions, plugins, audit, files, users, teams, RBAC, attribute management, environment variables, workflows, schema write, record access, and more.
 
 ---
 
@@ -10,7 +10,7 @@
 
 - [Quick Start](#quick-start)
 - [Architecture Overview](#architecture-overview)
-- [Tool Reference (73 tools)](#tool-reference-73-tools)
+- [Tool Reference (79 tools)](#tool-reference-79-tools)
   - [1. Auth (1)](#1-auth-1-tool)
   - [2. Metadata (9)](#2-metadata-9-tools)
   - [3. Query (3)](#3-query-3-tools)
@@ -36,6 +36,8 @@
   - [23. Workflows (4)](#23-workflows-4-tools)
   - [24. Assistance (2)](#24-assistance-2-tools)
   - [25. Attributes (4)](#25-attributes-4-tools)
+  - [26. Schema (write) (2)](#26-schema-write-2-tools)
+  - [27. Record Access (4)](#27-record-access-4-tools)
 - [Error Handling & Retry Behavior](#error-handling--retry-behavior)
 - [Security](#security)
 - [Limitations & Known Constraints](#limitations--known-constraints)
@@ -95,7 +97,7 @@ Server communicates over **stdio** (MCP SDK `StdioServerTransport`). Connect fro
 
 ```mermaid
 graph LR
-    MCP["MCP Dataverse Server<br/><i>73 tools · 25 categories</i>"]
+    MCP["MCP Dataverse Server<br/><i>79 tools · 27 categories</i>"]
 
     MCP --> AUTH["🔑 Auth (1)"]
     MCP --> META["📋 Metadata (9)"]
@@ -122,13 +124,15 @@ graph LR
     MCP --> WF["⚙️ Workflows (4)"]
     MCP --> ASSIST["🤖 Assistance (2)"]
     MCP --> ATTR["🏗️ Attributes (4)"]
+    MCP --> SCHEMA["📐 Schema write (2)"]
+    MCP --> ACCESS["🔐 Record Access (4)"]
 ```
 
 All tool handlers validate inputs with **Zod** before calling the `DataverseAdvancedClient`. Auth tokens are cached and refreshed proactively; transient errors (429, 503, 504) are retried with exponential backoff.
 
 ---
 
-## Tool Reference (73 tools)
+## Tool Reference (79 tools)
 
 ### 1. Auth (1 tool)
 

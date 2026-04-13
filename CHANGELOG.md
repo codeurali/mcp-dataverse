@@ -5,6 +5,61 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — [Semantic V
 
 ---
 
+## [0.7.5] — 2026-04-14
+
+### Fixed
+
+- **BUG-041 — `dataverse_check_record_access` bound-function regression**: `RetrievePrincipalAccess` is a **bound** OData function on the principal entity (system user or team), not a standalone function. The previous implementation called it as an unbound function, causing runtime failures. Fixed: `executeBoundFunction(principalEntitySet, principalId, "RetrievePrincipalAccess", { Target })`. All 10 access-check tests now pass.
+- **BUG-A — `dataverse_merge_records` missing `@odata.type`**: The `updateContent` payload was missing the mandatory `@odata.type` annotation (`application/json;type=entry`), causing the Merge action to reject non-empty update bodies. `@odata.type` is now injected automatically before the OData POST.
+- **BUG-024 — `dataverse_create_relationship` lookup prefix**: The auto-generated lookup column name (`referencingEntity + "id"`) incorrectly reused the referencing entity schema name without deriving its publisher prefix. The prefix is now extracted directly from `referencingEntity` (first segment before `_`). Example: `account → new_testcr01` now correctly produces `new_accountid`.
+- **BUG-B — `dataverse_merge_records` custom entity error**: Merging custom entities returned an opaque OData stack trace. The tool now catches the unsupported-entity error and returns a clear, actionable message explaining that `Merge` is restricted to OOB entity types (Account, Contact, Lead, Incident).
+
+---
+
+## [0.7.0] — 2026-04-12
+
+### Added
+
+- **`dataverse_create_table`** — Create a new custom entity (table) in Dataverse by POSTing to `/EntityDefinitions`. Accepts schema name, display names, ownership type (`UserOwned` / `OrganizationOwned`), notes, activities, audit flags, and primary name column config. Returns the new `metadataId`.
+- **`dataverse_create_relationship`** — Create a One-to-Many or Many-to-Many relationship via `/RelationshipDefinitions`. Supports cascade delete configuration (1:N) and custom intersect entity names (N:N). Returns the new `metadataId`.
+- **`dataverse_check_record_access`** — Check which access rights a user or team holds on a specific record using the `RetrievePrincipalAccess` OData function. Returns parsed rights list (`ReadAccess`, `WriteAccess`, etc.).
+- **`dataverse_grant_access`** — Grant record-level sharing to a user or team via the `GrantAccess` Dataverse action. Supports all standard AccessMask rights.
+- **`dataverse_revoke_access`** — Revoke all shared access from a user or team via the `RevokeAccess` Dataverse action.
+- **`dataverse_merge_records`** — Merge two records of the same type via the `Merge` Dataverse action. The subordinate is deactivated and its data carried over to the target. Requires `confirm: true` to prevent accidental execution.
+
+### Internal
+
+- **`src/tools/schema.tools.ts`** — New module with `schemaTools` array and `handleSchemaTool` dispatcher.
+- **`src/tools/record-access.tools.ts`** — New module with `recordAccessTools` array and `handleRecordAccessTool` dispatcher.
+- **`src/dataverse/dataverse-client.metadata.ts`** — Added `createEntityDefinition(body)` method (POST `/EntityDefinitions`, extracts GUID from `OData-EntityId` response header).
+- **`src/tools/router.tools.ts`** — Added tags and descriptions for all 6 new tools.
+- **`tests/unit/schema-tools.test.ts`** and **`tests/unit/record-access-tools.test.ts`** — 25 new tests; total test suite: 691.
+
+### Stats
+
+- 79 tools (was 73) · 4 MCP resources · 5 MCP prompts · 27 categories
+
+---
+
+## [0.6.0] — 2026-04-12
+
+### Added
+
+- **MCP Prompts** — 5 pre-built workflow prompts exposed via the MCP `prompts/list` + `prompts/get` protocol endpoints. Clients that support MCP Prompts (Claude, Copilot) can invoke them as slash commands or one-click workflow starters:
+  - `analyze-org-health` — Complete org health check: identity, table inventory, security roles, workflow health, plugin steps, audit logging.
+  - `data-quality-check` — Data quality analysis for a table (required arg: `tableName`, optional: `sampleSize`): null rates, duplicates, stale records, referential integrity.
+  - `schema-review` — Expert schema review for a table (required arg: `tableName`): columns, naming conventions, relationships, alternate keys, views.
+  - `security-audit` — Security model audit: users, roles, over-privileged accounts, teams, business unit hierarchy.
+  - `analyze-workflow` — Workflow/flow analysis (optional args: `workflowName`, `statusFilter`): ownership, execution traces, plugin overlap, modernisation candidates.
+- **`prompts: {}` capability** — `server.ts` now advertises prompt support in the MCP server capabilities block.
+
+### Internal
+
+- **`src/prompts/prompt-provider.ts`** — Prompt catalogue (`PROMPTS` array) + `listPrompts()` / `getPrompt(name, args)` public API. Each builder function renders the step-by-step prompt text with the exact tool names the AI should call.
+- **`tests/unit/prompt-provider.test.ts`** — 28 unit tests covering: prompt count, argument definitions, error handling (unknown name, missing required arg), tool name references per prompt, and argument interpolation.
+
+---
+
 ## [0.5.0] — 2026-03-24
 
 ### Added

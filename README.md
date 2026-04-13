@@ -6,7 +6,7 @@
 
 **The most complete MCP server for Microsoft Dataverse.**
 
-73 tools · 4 resources · 10 guided workflows · Three auth modes
+79 tools · 4 resources · 10 guided workflows · Three auth modes
 
 [![npm](https://img.shields.io/npm/v/mcp-dataverse)](https://www.npmjs.com/package/mcp-dataverse)
 [![npm downloads](https://img.shields.io/npm/dm/mcp-dataverse)](https://www.npmjs.com/package/mcp-dataverse)
@@ -85,6 +85,8 @@ For client credentials and managed identity setup, see [Authentication docs](htt
 | **Annotations**         | 2     | Notes and file attachments                                            |
 | **Customization**       | 4     | Custom actions, plugins, env variables, connection references         |
 | **Attributes**          | 4     | Create, update, delete columns; lookup column type                    |
+| **Schema (write)**      | 2     | Create custom tables and relationships                                |
+| **Record Access**       | 4     | Check, grant, revoke record sharing; merge records                    |
 | **Assistance**          | 2     | Tool router, tool tags                                                |
 | **+ more**              | …     | Delta sync, impersonation, views, business units, duplicate detection |
 
@@ -142,7 +144,8 @@ MCP Dataverse is designed to be comprehensive, but most AI models work best with
 | -------- | ----------------------------------------------------------------- | ----------- |
 | **v0.4** | HTTP transport + attribute management + schema consistency        | ✅ Released |
 | **v0.5** | Enterprise auth (Client Credentials, Managed Identity, Entra JWT) | ✅ Released |
-| **v0.6** | MCP Prompts + ERD generator + API snippet generator               | 🔜 Planned  |
+| **v0.6** | MCP Prompts (5 templates) + MCP Resources (4)                     | ✅ Released |
+| **v0.7** | Schema write (create table/relationship) + Record Access (share, merge) | ✅ Released (v0.7.5) |
 
 [→ Full Roadmap](https://codeurali.github.io/mcp-dataverse/roadmap)
 

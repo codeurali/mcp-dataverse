@@ -7,9 +7,9 @@ permalink: /capabilities
 
 # Full Capabilities Reference
 
-> **Version**: 0.5.0 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
+> **Version**: 0.7.5 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
 
-73 tools across 25 categories for full Dataverse lifecycle management.
+79 tools · 4 resources · 5 prompts across 27 categories for full Dataverse lifecycle management.
 
 For detailed input/output examples, see the [Use Cases]({{ site.baseurl }}/use-cases) section.
 
@@ -44,7 +44,9 @@ For detailed input/output examples, see the [Use Cases]({{ site.baseurl }}/use-c
 | 23  | **Workflows**           | 4      | `list_workflows`, `get_workflow`, `list_guides`, `get_guide`                                                                                                                                |
 | 24  | **Assistance**          | 2      | `suggest_tools`, `list_tool_tags`                                                                                                                                                           |
 | 25  | **Attributes**          | 4      | `create_attribute`, `update_attribute`, `delete_attribute`, `create_lookup_attribute`                                                                                                       |
-|     | **Total**               | **73** |                                                                                                                                                                                             |
+| 26  | **Schema (write)**      | 2      | `create_table`, `create_relationship`                                                                                                                                                       |
+| 27  | **Record Access**       | 4      | `check_record_access`, `grant_access`, `revoke_access`, `merge_records`                                                                                                                     |
+|     | **Total**               | **79** |                                                                                                                                                                                             |
 
 All tool names are prefixed with `dataverse_` (e.g., `dataverse_query`, `dataverse_create`).
 
@@ -53,7 +55,7 @@ All tool names are prefixed with `dataverse_` (e.g., `dataverse_query`, `dataver
 ## Architecture Overview
 
 ```
-MCP Dataverse Server (73 tools · 25 categories)
+MCP Dataverse Server (79 tools · 4 resources · 5 prompts · 27 categories)
 ├── 🔑 Auth (1)
 ├── 📋 Metadata (9)
 ├── 🔍 Query (3)
@@ -78,10 +80,43 @@ MCP Dataverse Server (73 tools · 25 categories)
 ├── 🏢 Org (2)
 ├── ⚙️ Workflows (4)
 ├── 🤖 Assistance (2)
-└── 🏗️ Attributes (4)
+├── 🏗️ Attributes (4)
+├── 📐 Schema (2)
+├── 🔐 Record Access (4)
+├── 📂 Resources (4)   ← MCP Resources (static + templates)
+└── 💬 Prompts (5)    ← MCP Prompts
 ```
 
 All tool handlers validate inputs with **Zod** before calling the Dataverse Web API. Auth tokens are cached and refreshed proactively; transient errors (429, 503, 504) are retried with exponential backoff.
+
+---
+
+## MCP Resources
+
+Four read-only MCP resources provide direct contextual data to AI clients that support the MCP Resources spec (Claude Desktop, Cursor). Each returns JSON or plain text without requiring a tool call.
+
+| URI                                              | Type     | MIME Type          | Description                                                  |
+| :----------------------------------------------- | :------- | :----------------- | :----------------------------------------------------------- |
+| `dataverse://tables`                             | Static   | `application/json` | Lists all tables in the environment (LogicalName, DisplayName, EntitySetName) |
+| `dataverse://server/instructions`                | Static   | `text/plain`       | Agent best practices and tool usage guidelines               |
+| `dataverse://tables/{tableName}/schema`          | Template | `application/json` | All columns, types, requirement levels, and constraints for a table |
+| `dataverse://tables/{tableName}/relationships`   | Template | `application/json` | All 1:N, N:1, and N:N relationships for a table              |
+
+> **Client support:** Resources are fully supported in Claude Desktop and Cursor. GitHub Copilot VS Code and Codex CLI support MCP Tools only; use `dataverse_list_tables` + `dataverse_get_table_metadata` as substitutes.
+
+---
+
+## MCP Prompts
+
+Five built-in prompt templates guide AI agents through complex multi-step Dataverse workflows. Each prompt composes tools in a recommended sequence and returns a structured report.
+
+| Prompt name           | Required args              | Optional args                            | Purpose                                         |
+| :-------------------- | :------------------------- | :--------------------------------------- | :---------------------------------------------- |
+| `analyze-org-health`  | _(none)_                   | _(none)_                                 | Full org health: table count, roles, workflows summary |
+| `data-quality-check`  | `tableName`                | `sampleSize` (default: `50`, max: `500`) | Nullity rates, duplicate detection, completeness score |
+| `schema-review`       | `tableName`                | _(none)_                                 | Schema best practices for naming, types, relations, views |
+| `security-audit`      | _(none)_                   | _(none)_                                 | Over-privileged users, empty teams, orphaned role assignments |
+| `analyze-workflow`    | _(none)_                   | `workflowName` (substring filter), `statusFilter` (`active`/`inactive`/`all`, default: `active`) | Workflow health, error rates, ownership |
 
 ---
 

@@ -94,36 +94,39 @@ Done
 
 ---
 
-## v0.6 — MCP Prompts + Developer Tooling
+## v0.6 — MCP Resources + Prompts
 
 {: .d-inline-block }
 
-Planned
-{: .label .label-yellow }
+Done
+{: .label .label-green }
 
-**Goal:** Pre-built prompt templates for guided multi-step Dataverse workflows, plus developer tooling to generate ERDs and Web API code snippets.
+**Goal:** Full MCP spec coverage — structured resource URIs for contextual data access and pre-built prompt templates for guided multi-step Dataverse workflows. Released 2026-04-12 as v0.6.0.
+
+### MCP Resources
+
+Read-only resources that AI clients (Claude, Cursor) can load directly into context:
+
+| URI                                         | Type     | Description                                         |
+| :------------------------------------------ | :------- | :-------------------------------------------------- |
+| `dataverse://tables`                        | Static   | Full catalog of all tables in the environment       |
+| `dataverse://server/instructions`           | Static   | Agent best practices and usage guidelines           |
+| `dataverse://tables/{tableName}/schema`     | Template | All columns, types, and constraints for a table     |
+| `dataverse://tables/{tableName}/relationships` | Template | All 1:N, N:1, N:N relationships for a table      |
 
 ### MCP Prompts
 
 Structured prompt templates that AI agents can invoke for guided, multi-step tasks:
 
-| Prompt                | Description                                                         |
-| :-------------------- | :------------------------------------------------------------------ |
-| `audit_entity`        | Comprehensive entity audit (schema, records, plugins, dependencies) |
-| `schema_review`       | Review table design for best practices                              |
-| `find_orphan_records` | Detect records with broken lookup references                        |
-| `solution_health`     | Analyze solution composition and dependencies                       |
+| Prompt                  | Arguments                                          | Description                                                          |
+| :---------------------- | :------------------------------------------------- | :------------------------------------------------------------------- |
+| `analyze-org-health`    | _(none)_                                           | Full org health check: table inventory, roles, workflows             |
+| `data-quality-check`    | `tableName` (required), `sampleSize` (opt, def 50) | Nullity rates, duplicate detection, field completeness               |
+| `schema-review`         | `tableName` (required)                             | Schema best practices: naming, types, relations, views               |
+| `security-audit`        | _(none)_                                           | Over-privileged users, empty teams, orphaned role assignments        |
+| `analyze-workflow`      | `workflowName` (opt), `statusFilter` (opt: active/inactive/all) | Workflow health, error rates, ownership gaps |
 
-**Design:** YAML-driven prompts for easy community contributions. Each prompt includes step sequences, variable bindings, and expected output structure.
-
-### Developer Tools
-
-| Item                                                                                                                                        | Status     |
-| :------------------------------------------------------------------------------------------------------------------------------------------ | :--------- |
-| `generate_entity_diagram` — export a Mermaid ERD for a table and its 1:N / N:N / Lookup relationships, ready to paste in docs or wikis      | 🔜 Planned |
-| `generate_api_snippet` — generate ready-to-use Web API call snippets (cURL, JS `fetch`, Python `requests`) for any Dataverse CRUD operation  | 🔜 Planned |
-
-**Why it matters:** Full MCP spec coverage (tools + resources + prompts) — a first for any Dataverse MCP server. The ERD generator makes schema visible at a glance; the snippet generator lets AI agents write integration code, not just query through MCP.
+**Why it matters:** Full MCP spec coverage (tools + resources + prompts) — a first for any Dataverse MCP server. Resources let AI agents load schema into context without extra tool calls. Prompts guide complex multi-step workflows with consistent patterns.
 
 ---
 
@@ -131,18 +134,17 @@ Structured prompt templates that AI agents can invoke for guided, multi-step tas
 
 {: .d-inline-block }
 
-Planned
-{: .label .label-yellow }
+Done
+{: .label .label-green }
 
-**Goal:** Table-level schema management, record-level security, deduplication, and solution lifecycle.
+**Goal:** Table-level schema management (create table, create relationship), record-level security (grant/revoke/check access), and deduplication via Merge. Released 2026-04-12 as v0.7.0; patch v0.7.5 released 2026-04-14 (4 regression fixes on `check_record_access`, `merge_records`, `create_relationship`).
 
 ### Schema Tools
 
 | Item                                                                                          | Status     |
 | :-------------------------------------------------------------------------------------------- | :--------- |
-| `create_table` — create custom entities via `POST /EntityDefinitions`                         | 🔜 Planned |
-| `create_relationship` — create standalone 1:N / N:N relationships                             | 🔜 Planned |
-| `check_record_access` — `RetrievePrincipalAccess` to check who can read/write/delete a record | 🔜 Planned |
+| `dataverse_create_table` — create custom entities via `POST /EntityDefinitions`               | ✅ Done    |
+| `dataverse_create_relationship` — create standalone 1:N / N:N relationships                   | ✅ Done    |
 | Global OptionSet CRUD — create / update / delete shared option sets                           | 🔜 Planned |
 | Alternate Key CRUD — define and manage entity keys for upsert scenarios                       | 🔜 Planned |
 
@@ -150,8 +152,9 @@ Planned
 
 | Item                                                                                               | Status     |
 | :------------------------------------------------------------------------------------------------- | :--------- |
-| `grant_access` / `revoke_access` — `GrantAccess` / `RevokeAccess` for record-level sharing         | 🔜 Planned |
-| `merge_records` — `Merge` action for deduplication workflows                                       | 🔜 Planned |
+| `dataverse_check_record_access` — `RetrievePrincipalAccess` to check who can read/write/delete a record | ✅ Done |
+| `dataverse_grant_access` / `dataverse_revoke_access` — record-level sharing via `GrantAccess` / `RevokeAccess` | ✅ Done |
+| `dataverse_merge_records` — `Merge` action for deduplication workflows                        | ✅ Done    |
 | Solution import / export — `ExportSolution` / `ImportSolution` actions                             | 🔜 Planned |
 | FetchXML auto-pagination — transparent cookie-based paging for large result sets                   | 🔜 Planned |
 
