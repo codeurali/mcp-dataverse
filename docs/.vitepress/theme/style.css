@@ -101,6 +101,15 @@ body {
   display: none !important;
 }
 
+/* Keep search bar at a consistent horizontal position on sidebar pages.
+   VitePress natively adds padding-left:sidebar-width to shift the content
+   right — we neutralise it since our curtain is already transparent. */
+@media (min-width: 960px) {
+  .VPNavBar.has-sidebar .content {
+    padding-left: 0 !important;
+  }
+}
+
 /* ---------- Hero (default theme — only used as fallback) ---------- */
 .VPHero .name {
   background: var(--brand-gradient);
@@ -878,32 +887,10 @@ div[class*='language-'] {
    LOGO COMPONENT
    ==================================================================== */
 
-.brand-logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.brand-logo svg {
-  width: 100%;
-  height: 100%;
-}
-
-/* Replace default VitePress nav logo image with our SVG */
+/* Nav logo — show logo.webp at 26px height, vertically centred */
 .VPNavBarTitle .title img {
-  display: none !important;
-}
-
-.VPNavBarTitle .title::before {
-  content: '';
-  display: inline-block;
-  width: 26px;
   height: 26px;
-  margin-right: 8px;
-  vertical-align: -6px;
-  background: var(--brand-gradient);
-  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2 4 6v6c0 4.2 3.4 8.4 8 10 4.6-1.6 8-5.8 8-10V6l-8-4Z M8 10l4 2 4-2 M12 12v6' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat center / contain;
-          mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2 4 6v6c0 4.2 3.4 8.4 8 10 4.6-1.6 8-5.8 8-10V6l-8-4Z M8 10l4 2 4-2 M12 12v6' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat center / contain;
+  width: auto;
 }
 
 /* ====================================================================
