@@ -71,3 +71,6 @@ ROADMAP-PERSONAL.md
 .mcpregistry_github_token
 .mcpregistry_registry_token
 mcp-publisher.exe
+
+docs/.vitepress/cache/
+docs/.vitepress/dist/
