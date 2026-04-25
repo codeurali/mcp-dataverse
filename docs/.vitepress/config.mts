@@ -31,6 +31,7 @@ export default defineConfig({
 
   themeConfig: {
     siteTitle: "MCP Dataverse",
+    logo: "/logo.webp",
 
     nav: [
       { text: "Home", link: "/" },

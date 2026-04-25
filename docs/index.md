@@ -24,7 +24,7 @@ description: The most complete MCP server for Microsoft Dataverse — 79 tools, 
     <a href="https://github.com/codeurali/mcp-dataverse" class="hp-btn-ghost" target="_blank" rel="noopener">GitHub ↗</a>
   </div>
 
-  <div class="hp-install"><span class="prompt">$</span> npx mcp-dataverse install</div>
+  <CopyCommand command="npx mcp-dataverse install" />
 
   <div class="hp-stat-strip">
     <div class="item"><div class="num">79</div><div class="lbl">Tools</div></div>

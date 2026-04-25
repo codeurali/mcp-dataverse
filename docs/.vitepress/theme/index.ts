@@ -6,6 +6,7 @@ import CompatibilityLogos from './components/CompatibilityLogos.vue'
 import ToolsShowcase from './components/ToolsShowcase.vue'
 import CapabilityScenarios from './components/CapabilityScenarios.vue'
 import LlmToggle from './components/LlmToggle.vue'
+import CopyCommand from './components/CopyCommand.vue'
 import './style.css'
 
 export default {
@@ -18,5 +19,6 @@ export default {
     app.component('ToolsShowcase', ToolsShowcase)
     app.component('CapabilityScenarios', CapabilityScenarios)
     app.component('LlmToggle', LlmToggle)
+    app.component('CopyCommand', CopyCommand)
   },
 }
