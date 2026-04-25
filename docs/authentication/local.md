@@ -1,9 +1,6 @@
 ---
-layout: default
-title: Device Code
-parent: Authentication
-nav_order: 1
-permalink: /authentication/local
+title: Device Code (Interactive)
+description: Authenticate as yourself using your Microsoft work account. No App Registration, no secrets required.
 ---
 
 # Device Code

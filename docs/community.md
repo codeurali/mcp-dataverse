@@ -1,8 +1,6 @@
 ---
-layout: default
 title: Community
-nav_order: 9
-permalink: /community
+description: Contribute to MCP Dataverse — bug reports, feature requests, discussions, and sponsorship.
 ---
 
 # Community
@@ -12,11 +10,7 @@ MCP Dataverse is open-source (MIT) and actively maintained. We're building the m
 ---
 
 ## Call for Testers
-{: .d-inline-block }
-
 We need you!
-{: .label .label-green }
-
 We're looking for developers and Power Platform professionals to test MCP Dataverse in their own environments. Different Dataverse configurations, org sizes, and use cases help us find edge cases we can't reproduce on our test environment.
 
 ### How to Participate
@@ -45,7 +39,7 @@ We're looking for developers and Power Platform professionals to test MCP Datave
 
 ### Tester Recognition
 
-Active testers who report bugs or contribute fixes will be credited in the [Changelog]({{ site.baseurl }}/changelog) and project README.
+Active testers who report bugs or contribute fixes will be credited in the [Changelog](/changelog) and project README.
 
 ---
 

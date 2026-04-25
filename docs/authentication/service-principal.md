@@ -1,9 +1,6 @@
 ---
-layout: default
-title: Client Credentials
-parent: Authentication
-nav_order: 2
-permalink: /authentication/service-principal
+title: Client Credentials (Service Principal)
+description: Authenticate with an App Registration for unattended servers, CI/CD, and Docker deployments.
 ---
 
 # Client Credentials

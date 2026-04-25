@@ -1,0 +1,590 @@
+# MCP Dataverse
+
+> The most complete Model Context Protocol (MCP) server for Microsoft Dataverse. 79 production-grade tools to query, mutate and inspect Microsoft Dataverse from any MCP-compliant AI agent (GitHub Copilot, Claude Desktop, Cursor, Windsurf, Codex CLI, Gemini CLI, Copilot Studio).
+
+---
+
+## Quick install
+
+Run the interactive installer -- it configures auth and writes the server entry to your chosen MCP client:
+
+```
+npx mcp-dataverse install
+```
+
+Requires Node.js 20+. The wizard prompts for your Dataverse environment URL, auth mode, and target client. On completion it writes `~/.mcp-dataverse/config.json` and registers the server.
+
+### Manual install (no wizard)
+
+1. Create config file at `~/.mcp-dataverse/config.json`:
+
+```json
+{
+  "environmentUrl": "https://yourorg.crm.dynamics.com",
+  "requestTimeoutMs": 30000,
+  "maxRetries": 3
+}
+```
+
+2. Add the server to your MCP client config (see Client Setup section below).
+
+---
+
+## Project facts
+
+- Version: 0.7.5
+- License: MIT
+- Repository: https://github.com/codeurali/mcp-dataverse
+- npm package: https://www.npmjs.com/package/mcp-dataverse
+- Node: >=20
+- Tools: 79 across 27 categories
+- Resources: 4
+- Prompts: 5
+- Authentication modes: 3 (interactive device code, service principal, managed identity)
+- Dataverse API: Web API v9.2
+
+---
+
+## Configuration
+
+### Config file options
+
+| Field              | Type     | Required | Default | Description                          |
+|--------------------|----------|----------|---------|--------------------------------------|
+| `environmentUrl`   | string   | yes      | --       | Dataverse org URL (must be HTTPS)    |
+| `requestTimeoutMs` | number   | no       | 30000   | HTTP timeout in milliseconds         |
+| `maxRetries`       | number   | no       | 3       | Retry count on transient errors (0-10) |
+
+### Environment variables (override config file)
+
+| Variable             | Default                        | Description                                  |
+|----------------------|--------------------------------|----------------------------------------------|
+| `DATAVERSE_ENV_URL`  | --                              | Dataverse org URL (required if no config file) |
+| `MCP_CONFIG_PATH`    | `~/.mcp-dataverse/config.json` | Path to config file                          |
+| `REQUEST_TIMEOUT_MS` | `30000`                        | HTTP timeout in ms                           |
+| `MAX_RETRIES`        | `3`                            | Retry count on transient errors              |
+| `MCP_TRANSPORT`      | `stdio`                        | Set to `http` for HTTP/SSE mode              |
+| `MCP_HTTP_PORT`      | `3000`                         | Port when `MCP_TRANSPORT=http`               |
+
+---
+
+## Authentication modes
+
+### Mode 1 -- Device code (interactive, local use)
+
+Best for: running MCP on your laptop as a personal developer tool.
+
+How it works: on first tool call, a sign-in code is printed to the MCP server output. Go to `https://microsoft.com/devicelogin`, enter the code, and sign in with your Power Platform work account. Tokens are cached in `~/.mcp-dataverse/` (AES-256-GCM encrypted) and refreshed automatically.
+
+Setup: run `npx mcp-dataverse install` and choose "Device code" when prompted. No Azure app registration needed.
+
+### Mode 2 -- Client credentials / service principal (unattended)
+
+Best for: CI/CD pipelines, Docker containers, unattended server processes.
+
+Setup steps:
+1. Register an app in Microsoft Entra ID (Azure AD).
+2. Create a client secret for the app registration.
+3. In Power Platform Admin Center, add the app as an Application User in your environment and assign a security role.
+4. Run `npx mcp-dataverse install`, choose "Service principal", and provide: Tenant ID, Client ID, Client Secret.
+5. The wizard saves credentials encrypted in `~/.mcp-dataverse/config.json`.
+
+### Mode 3 -- Managed identity (hosted on Azure)
+
+Best for: MCP server hosted on Azure App Service or Container Apps for team use.
+
+Setup steps:
+1. Enable system-assigned managed identity on your Azure App Service or Container Apps resource.
+2. In Power Platform Admin Center, add the managed identity as an Application User and assign a security role.
+3. The server automatically uses the managed identity -- no secrets to manage.
+4. For inbound auth (clients authenticating to the MCP server), configure Entra ID JWT validation in the HTTP transport.
+
+---
+
+## MCP client setup
+
+All clients need your Dataverse environment URL. Provide it via environment variable `DATAVERSE_ENV_URL` or via `MCP_CONFIG_PATH` pointing to your config file.
+
+### VS Code (GitHub Copilot)
+
+Requires VS Code 1.99+ with GitHub Copilot extension (Agent mode).
+
+**Recommended**: run `npx mcp-dataverse install` -- the wizard calls `code --add-mcp` automatically.
+
+**Manual workspace config** -- create `.vscode/mcp.json` in your project:
+
+```json
+{
+  "servers": {
+    "mcp-dataverse": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "mcp-dataverse"],
+      "env": {
+        "DATAVERSE_ENV_URL": "https://yourorg.crm.dynamics.com"
+      }
+    }
+  }
+}
+```
+
+**Manual user config** -- Ctrl+Shift+P -> "MCP: Open User Configuration", add the same entry.
+
+On first tool call: check View -> Output -> MCP for the device code sign-in URL.
+
+### Claude Desktop
+
+Config file location:
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "mcp-dataverse": {
+      "command": "npx",
+      "args": ["-y", "mcp-dataverse"],
+      "env": {
+        "DATAVERSE_ENV_URL": "https://yourorg.crm.dynamics.com"
+      }
+    }
+  }
+}
+```
+
+Fully quit and relaunch Claude Desktop after editing. Auth prompt appears in Claude Desktop MCP server logs.
+
+### Claude Code (CLI)
+
+macOS / Linux / WSL:
+```bash
+claude mcp add --transport stdio --scope user \
+  mcp-dataverse \
+  -e DATAVERSE_ENV_URL=https://yourorg.crm.dynamics.com \
+  -- npx -y mcp-dataverse
+```
+
+Windows (PowerShell):
+```powershell
+claude mcp add --transport stdio --scope user `
+  mcp-dataverse `
+  -e DATAVERSE_ENV_URL=https://yourorg.crm.dynamics.com `
+  -- cmd /c npx -y mcp-dataverse
+```
+
+Note: on Windows the `cmd /c` wrapper is required. The server name must appear before the `-e` flag.
+
+### Cursor
+
+Create `.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "mcp-dataverse": {
+      "command": "npx",
+      "args": ["-y", "mcp-dataverse"],
+      "env": {
+        "DATAVERSE_ENV_URL": "https://yourorg.crm.dynamics.com"
+      }
+    }
+  }
+}
+```
+
+### Windsurf
+
+Edit `~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "mcp-dataverse": {
+      "command": "npx",
+      "args": ["-y", "mcp-dataverse"],
+      "env": {
+        "DATAVERSE_ENV_URL": "https://yourorg.crm.dynamics.com"
+      }
+    }
+  }
+}
+```
+
+### Codex CLI (OpenAI)
+
+Edit `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.mcp-dataverse]
+command = "npx"
+args = ["-y", "mcp-dataverse"]
+
+[mcp_servers.mcp-dataverse.env]
+DATAVERSE_ENV_URL = "https://yourorg.crm.dynamics.com"
+```
+
+### Gemini CLI (Google)
+
+Edit `~/.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "mcp-dataverse": {
+      "command": "npx",
+      "args": ["-y", "mcp-dataverse"],
+      "env": {
+        "DATAVERSE_ENV_URL": "https://yourorg.crm.dynamics.com"
+      }
+    }
+  }
+}
+```
+
+### HTTP transport (multi-client / hosted)
+
+Start the server in HTTP mode:
+
+```bash
+MCP_TRANSPORT=http MCP_HTTP_PORT=3000 npx mcp-dataverse
+```
+
+Then connect any MCP client that supports Streamable HTTP to `http://localhost:3000`.
+
+---
+
+## All 79 tools
+
+All tool names are prefixed with `dataverse_` (e.g. `dataverse_query`, `dataverse_create`).
+
+### Auth (1)
+
+**dataverse_whoami** -- Returns the current authenticated user context: userId, businessUnitId, organizationId, organizationName, environmentUrl. No parameters required. Use to verify connectivity.
+
+### Metadata (9)
+
+**dataverse_list_tables** -- Lists all Dataverse tables. Defaults to custom tables only; set `includeSystemTables=true` for all ~1700+ system tables.
+
+**dataverse_get_table_metadata** -- Returns full schema for a table: column logical names, display names, data types, required levels, lookup targets. Parameters: `logicalName` (required), `includeAttributes` (default true).
+
+**dataverse_get_relationships** -- Returns 1:N, N:1, and N:N relationships for a table. Parameters: `logicalName` (required), `relationshipType` (OneToMany|ManyToOne|ManyToMany|All, default All).
+
+**dataverse_list_global_option_sets** -- Lists all global (shared) option sets in the environment. No parameters required.
+
+**dataverse_get_option_set** -- Returns all labels and integer values for a named global option set. Parameter: `name` (required).
+
+**dataverse_get_entity_key** -- Returns alternate key definitions for a table: key attributes, index status (Active/InProgress/Failed), and customizability. Parameter: `tableName` (required).
+
+**dataverse_get_attribute_option_set** -- Returns labels and integer values for a table-specific Picklist, Status, or State column. Parameters: `entityLogicalName` (required), `attributeLogicalName` (required).
+
+**dataverse_update_entity** -- Updates configuration flags on an existing entity: enables/disables Notes (`hasNotes`), change tracking, and auditing. Parameters: `entityLogicalName` (required), `confirm: true` (required), plus optional `hasNotes`, `changeTrackingEnabled`, `isAuditEnabled`, `autoPublish`.
+
+**dataverse_resolve_entity_name** -- Resolves entity names bidirectionally between `logicalName` (e.g. `account`) and `entitySetName` (e.g. `accounts`). Essential for avoiding 0x80060888 OData URL errors. Parameter: `name` (required).
+
+### Query (3)
+
+**dataverse_query** -- OData query with `$filter`, `$select`, `$orderby`, `$top`, `$expand`, `$count`, and `$apply` (aggregations). Parameters: `entitySetName` (required), `select`, `filter`, `orderby`, `top` (default 50, max 5000), `expand`, `count`.
+
+**dataverse_execute_fetchxml** -- Executes a FetchXML query. Use for aggregations, complex joins, many-to-many traversal, and filters not expressible in OData. Parameters: `fetchXml` (required), `entitySetName` (auto-extracted from XML if omitted).
+
+**dataverse_retrieve_multiple_with_paging** -- Retrieves ALL matching records by auto-following `@odata.nextLink` pages. Use when more than 5000 records are needed. Parameters: `entitySetName` (required), `select`, `filter`, `orderby`, `expand`, `maxTotal` (default 5000, max 50000).
+
+### CRUD (6)
+
+**dataverse_get** -- Retrieves a single record by GUID. Returns the record plus `@odata.etag`. Parameters: `entitySetName` (required), `id` (UUID, required), `select`.
+
+**dataverse_create** -- Creates a new record and returns its GUID. Use `@odata.bind` syntax for lookup fields (e.g. `"parentaccountid@odata.bind": "/accounts(guid)"`). Parameters: `entitySetName` (required), `data` (object, required).
+
+**dataverse_update** -- PATCH-updates an existing record; only supplied fields change. Sends `If-Match: *`. Accepts optional `etag` for optimistic concurrency. Parameters: `entitySetName` (required), `id` (UUID, required), `data` (object, required), `etag` (optional).
+
+**dataverse_delete** -- Permanently deletes a record. Irreversible. `confirm` must be `true`. Parameters: `entitySetName` (required), `id` (UUID, required), `confirm: true` (required).
+
+**dataverse_upsert** -- Create-or-update via an alternate key (no GUID needed). Returns `"created"` or `"updated"`. Parameters: `entitySetName` (required), `alternateKey` (required), `alternateKeyValue` (required), `data` (required), `mode` (upsert|createOnly|updateOnly, default upsert).
+
+**dataverse_assign** -- Assigns a record to a different user or team owner. Parameters: `entitySetName` (required), `id` (UUID, required), `ownerType` (systemuser|team, required), `ownerId` (UUID, required).
+
+### Relations (4)
+
+**dataverse_associate** -- Creates an N:N or 1:N association between two records via a named relationship. Parameters: `entitySetName`, `id`, `relationshipName`, `relatedEntitySetName`, `relatedId` (all required).
+
+**dataverse_associate_bulk** -- Associates one source record with multiple related records in parallel (Promise.allSettled -- individual failures reported without aborting others). Parameters: `entitySetName`, `id`, `relationshipName`, `relatedEntitySetName` (all required), `relatedIds` (string array, 1-200, required).
+
+**dataverse_disassociate** -- Removes an existing association. `relatedId` and `relatedEntitySetName` required for N:N. Parameters: `entitySetName` (required), `id` (required), `relationshipName` (required), `relatedId`, `relatedEntitySetName`.
+
+**dataverse_query_associations** -- Reads existing associations for a record by querying through a navigation property. Use to verify what is already linked before associate/disassociate. Parameters: `entitySetName` (required), `id` (required), `navigationProperty` (required), `select`, `top` (max 1000), `filter`.
+
+### Actions & Functions (6)
+
+**dataverse_execute_action** -- Executes a global (unbound) Dataverse action -- state-changing, not tied to a specific record. Parameters: `actionName` (required), `parameters` (object, default {}).
+
+**dataverse_execute_function** -- Executes a global (unbound) OData function -- read-only, no side effects. Parameters: `functionName` (required), `parameters` (object).
+
+**dataverse_execute_bound_action** -- Executes an action bound to a specific record. Parameters: `entitySetName` (required), `id` (UUID, required), `actionName` (required), `parameters` (object).
+
+**dataverse_execute_bound_function** -- Executes a function bound to a specific record. Parameters: `entitySetName` (required), `id` (UUID, required), `functionName` (required), `parameters` (object).
+
+**dataverse_list_dependencies** -- Lists all dependencies of a component (e.g. a solution component). Parameters: `componentType` (number, required), `componentId` (UUID, required).
+
+**dataverse_retrieve_dependencies_for_delete** -- Returns blocking dependencies that would prevent deletion of a component. Parameters: `componentType` (number, required), `componentId` (UUID, required).
+
+### Batch (1)
+
+**dataverse_batch_execute** -- Executes up to 1000 operations in a single OData `$batch` request. Supports changesets for atomic groups. Returns per-operation status. Parameters: `operations` (array, required), `continueOnError` (boolean).
+
+### Change Tracking (1)
+
+**dataverse_change_detection** -- Retrieves changed records since a delta token (incremental sync). Returns new/updated records plus a new token for the next call. Parameters: `entitySetName` (required), `deltaToken` (string -- omit for initial sync), `select`, `filter`.
+
+### Solutions (2)
+
+**dataverse_publish_customizations** -- Publishes all pending customizations in the environment. No parameters required.
+
+**dataverse_create_sitemap** -- Creates or updates an app sitemap XML. Parameters: `siteMapXml` (string, required), `siteMapName` (string, required).
+
+### Impersonation (1)
+
+**dataverse_impersonate** -- Executes any tool on behalf of another user via the `MSCRMCallerId` header. Requires `prvActOnBehalfOfAnotherUser` privilege. Parameters: `userId` (UUID, required), `toolName` (string, required), `toolParameters` (object).
+
+### Customization (4)
+
+**dataverse_list_custom_actions** -- Lists all custom (unmanaged) actions defined in the environment. No parameters required.
+
+**dataverse_list_plugin_steps** -- Lists registered plugin step registrations. Parameters: `pluginTypeName` (string, optional filter).
+
+**dataverse_set_workflow_state** -- Activates or deactivates a workflow or process. Parameters: `workflowId` (UUID, required), `state` (activate|deactivate, required).
+
+**dataverse_list_connection_references** -- Lists all connection references in the environment (used by Power Automate flows). No parameters required.
+
+### Environment (4)
+
+**dataverse_get_environment_variable** -- Retrieves the current value of an environment variable by schema name. Parameter: `schemaName` (required).
+
+**dataverse_set_environment_variable** -- Updates the value of an existing environment variable. Parameters: `schemaName` (required), `value` (string, required).
+
+**dataverse_create_environment_variable** -- Creates a new environment variable definition and optionally sets its default value. Parameters: `schemaName` (required), `displayName` (required), `type` (string|number|boolean|json, required), `defaultValue` (optional).
+
+**dataverse_environment_capabilities** -- Returns feature flags and capabilities for the current environment (e.g. whether AI Builder, search, or audit is enabled). No parameters required.
+
+### Trace (2)
+
+**dataverse_get_plugin_trace_logs** -- Retrieves plugin execution trace logs. Parameters: `pluginTypeName` (string, optional), `top` (number, default 50), `filter` (OData filter).
+
+**dataverse_get_workflow_trace_logs** -- Retrieves workflow execution trace logs. Parameters: `workflowName` (string, optional), `top` (number, default 50), `filter` (OData filter).
+
+### Search (1)
+
+**dataverse_search** -- Full-text relevance search across all searchable Dataverse tables using the Dataverse Search API. Parameters: `query` (string, required), `entities` (string array, optional table filter), `top` (default 10, max 100), `skip` (pagination offset), `filter` (OData filter applied post-search).
+
+### Audit (1)
+
+**dataverse_get_audit_log** -- Retrieves audit log entries for a record or the entire org. Parameters: `objectId` (UUID, optional), `objectTypeCode` (number, optional), `top` (default 50), `filter` (OData filter).
+
+### Quality (1)
+
+**dataverse_detect_duplicates** -- Runs the Dataverse duplicate detection engine against a candidate record payload without saving. Parameters: `entityLogicalName` (required), `record` (object, required).
+
+### Annotations (2)
+
+**dataverse_get_annotations** -- Retrieves notes (annotations) attached to a record. Parameters: `objectId` (UUID, required), `objectTypeCode` (string, required), `top` (default 50).
+
+**dataverse_create_annotation** -- Creates a new note (annotation) attached to a record. Supports plain text and base64-encoded file attachments. Parameters: `objectId` (UUID, required), `objectTypeCode` (string, required), `noteText` (string, required), `fileName` (optional), `mimeType` (optional), `documentBody` (base64, optional).
+
+### Users (2)
+
+**dataverse_list_users** -- Lists system users in the environment. Parameters: `select` (columns, default: fullname, domainname, businessunitid), `filter` (OData filter), `top` (default 50).
+
+**dataverse_get_user_roles** -- Returns the security roles assigned to a specific user. Parameter: `userId` (UUID, required).
+
+### RBAC (7)
+
+**dataverse_list_roles** -- Lists all security roles in the environment. Parameters: `filter` (OData filter), `top` (default 100).
+
+**dataverse_assign_role_to_user** -- Assigns a security role to a user (idempotent -- returns "already_assigned" if already done). Parameters: `userId` (UUID, required), `roleId` (UUID, required).
+
+**dataverse_remove_role_from_user** -- Removes a security role from a user. Parameters: `userId` (UUID, required), `roleId` (UUID, required).
+
+**dataverse_assign_role_to_team** -- Assigns a security role to a team (idempotent). Parameters: `teamId` (UUID, required), `roleId` (UUID, required).
+
+**dataverse_get_role_privileges** -- Returns all privileges included in a security role. Parameter: `roleId` (UUID, required).
+
+**dataverse_add_role_privileges** -- Adds specific privileges to an existing security role (non-destructive -- existing privileges are preserved). Parameters: `roleId` (UUID, required), `privileges` (array of {privilegeId, depth}, required).
+
+**dataverse_replace_role_privileges** -- Replaces ALL privileges on a security role with a new set. Destructive -- all existing privileges are removed. Parameters: `roleId` (UUID, required), `privileges` (array of {privilegeId, depth}, required).
+
+### Views (1)
+
+**dataverse_list_views** -- Lists saved views (savedqueries) for a table. Parameters: `entityLogicalName` (required), `top` (default 50).
+
+### Files (2)
+
+**dataverse_upload_file_column** -- Uploads binary content to a file or image column. `columnName` is validated against `/^[a-zA-Z0-9_]+$/`. Parameters: `entitySetName` (required), `id` (UUID, required), `columnName` (required), `fileName` (required), `mimeType` (required), `content` (base64, required).
+
+**dataverse_download_file_column** -- Downloads binary content from a file or image column. Returns base64-encoded content and MIME type. Parameters: `entitySetName` (required), `id` (UUID, required), `columnName` (required).
+
+### Org (2)
+
+**dataverse_list_business_units** -- Lists all business units in the org hierarchy. Parameters: `select` (columns), `filter` (OData filter), `top` (default 100).
+
+**dataverse_list_teams** -- Lists all teams in the environment. Parameters: `select` (columns), `filter` (OData filter), `top` (default 100).
+
+### Workflows (4)
+
+**dataverse_list_workflows** -- Lists workflows and processes. Parameters: `filter` (OData filter), `top` (default 50), `select` (columns).
+
+**dataverse_get_workflow** -- Returns the full definition of a specific workflow/process. Parameter: `workflowId` (UUID, required).
+
+**dataverse_list_guides** -- Lists all Power Apps Guided Experiences (Guides) in the environment. Parameters: `filter`, `top` (default 50).
+
+**dataverse_get_guide** -- Returns the full definition of a specific Guide. Parameter: `guideId` (UUID, required).
+
+### Assistance (2)
+
+**dataverse_suggest_tools** -- Returns a ranked list of tools relevant to a natural-language task description. Call this first if you are unsure which tool to use. Parameter: `task` (string, required).
+
+**dataverse_list_tool_tags** -- Returns all available tag categories used to classify tools. No parameters required.
+
+### Attributes (4)
+
+**dataverse_create_attribute** -- Adds a new column to an existing table. Parameters: `entityLogicalName` (required), `attribute` (object with `schemaName`, `attributeType`, `displayName`, and type-specific options, required), `solutionUniqueName` (optional).
+
+**dataverse_update_attribute** -- Updates metadata of an existing column (display name, description, required level, etc.). Parameters: `entityLogicalName` (required), `attributeLogicalName` (required), `updates` (object, required).
+
+**dataverse_delete_attribute** -- Permanently removes a column from a table. `confirm: true` required. Parameters: `entityLogicalName` (required), `attributeLogicalName` (required), `confirm: true` (required).
+
+**dataverse_create_lookup_attribute** -- Creates a new Lookup column that establishes a many-to-one relationship from one table to another. Parameters: `entityLogicalName` (required), `attribute` (object with `schemaName`, `displayName`, required), `lookupTarget` (target table logicalName, required), `relationshipSchemaName` (optional).
+
+### Schema / write (2)
+
+**dataverse_create_table** -- Creates a new custom Dataverse table (entity) with primary column and metadata. Parameters: `schemaName` (required), `displayName` (required), `displayCollectionName` (required), `primaryAttributeSchemaName` (required), `primaryAttributeDisplayName` (required), plus optional `description`, `hasNotes`, `hasActivities`, `isAuditEnabled`, `solutionUniqueName`.
+
+**dataverse_create_relationship** -- Creates a 1:N relationship between two existing tables. Parameters: `referencingEntityLogicalName` (required), `referencedEntityLogicalName` (required), `schemaName` (required), `referencingAttributeSchemaName` (required), `referencingAttributeDisplayName` (required).
+
+### Record Access (4)
+
+**dataverse_check_record_access** -- Returns the access rights the current user (or a specified user) has on a specific record. Parameters: `entitySetName` (required), `id` (UUID, required), `userId` (UUID, optional -- defaults to current user).
+
+**dataverse_grant_access** -- Grants sharing access to a record for a user or team. Parameters: `entitySetName` (required), `id` (UUID, required), `principalType` (systemuser|team, required), `principalId` (UUID, required), `accessMask` (array of access rights: ReadAccess|WriteAccess|DeleteAccess|AppendAccess|AppendToAccess|AssignAccess|ShareAccess, required).
+
+**dataverse_revoke_access** -- Revokes previously granted sharing access to a record. Parameters: `entitySetName` (required), `id` (UUID, required), `principalType` (systemuser|team, required), `principalId` (UUID, required).
+
+**dataverse_merge_records** -- Merges two records of the same type. The target record survives; the source is deactivated. Parameters: `entitySetName` (required), `targetId` (UUID, required), `sourceId` (UUID, required), `updateContent` (object -- fields to set on the merged target, optional).
+
+---
+
+## MCP Resources (4)
+
+Four read-only resources provide direct contextual data to AI clients that support the MCP Resources spec (Claude Desktop, Cursor). Each returns JSON or plain text without requiring a tool call.
+
+| URI | Type | MIME | Description |
+|-----|------|------|-------------|
+| `dataverse://tables` | Static | application/json | Lists all tables (LogicalName, DisplayName, EntitySetName) |
+| `dataverse://server/instructions` | Static | text/plain | Agent best practices and tool usage guidelines |
+| `dataverse://tables/{tableName}/schema` | Template | application/json | All columns, types, requirement levels, constraints for a table |
+| `dataverse://tables/{tableName}/relationships` | Template | application/json | All 1:N, N:1, and N:N relationships for a table |
+
+Note: GitHub Copilot VS Code and Codex CLI support Tools only. Use `dataverse_list_tables` + `dataverse_get_table_metadata` as substitutes.
+
+---
+
+## MCP Prompts (5)
+
+Five built-in prompt templates guide AI agents through complex multi-step Dataverse workflows.
+
+| Prompt | Required args | Optional args | Purpose |
+|--------|---------------|---------------|---------|
+| `analyze-org-health` | none | none | Full org health: table count, roles, workflows summary |
+| `data-quality-check` | `tableName` | `sampleSize` (default 50, max 500) | Nullity rates, duplicate detection, completeness score |
+| `schema-review` | `tableName` | none | Schema best practices: naming, types, relations, views |
+| `security-audit` | none | none | Over-privileged users, empty teams, orphaned role assignments |
+| `analyze-workflow` | none | `workflowName` (substring filter), `statusFilter` (active/inactive/all, default active) | Workflow health, error rates, ownership |
+
+---
+
+## Key features
+
+### Structured outputs
+
+Every tool returns a consistent structure:
+
+```json
+{
+  "summary": "Human-readable summary of the result",
+  "data": {},
+  "suggestions": ["Next steps the AI agent can take"]
+}
+```
+
+Error responses include an `errorCategory` field for programmatic handling:
+
+| Value | Meaning |
+|-------|---------|
+| `ENV_LIMITATION` | Feature not enabled or unavailable in this environment |
+| `PERMISSIONS` | Insufficient privileges for the operation |
+| `SCHEMA_MISMATCH` | Input conflicts with the table's metadata schema |
+
+### Guardrails
+
+- Destructive operations (`dataverse_delete`, `dataverse_update_entity`, `dataverse_delete_attribute`) require `confirm: true` -- prevents accidental data loss.
+- Query guardrails warn about missing `$select`, missing `$filter`, and large result sets.
+- RBAC operations are idempotent -- assigning an already-assigned role returns `"already_assigned"` instead of an error.
+
+### ETag / optimistic concurrency
+
+`dataverse_update` accepts an optional `etag` parameter. When provided, the update only succeeds if the record has not been modified since the ETag was obtained (from `dataverse_get`).
+
+### Error handling and retry
+
+| Status | Behavior | Attempts |
+|--------|----------|----------|
+| 401 | Invalidate token, retry with fresh token | 1 |
+| 429 / 503 / 504 | Exponential backoff (2^attempt x 1000 ms) | maxRetries (default 3) |
+| Other | Throw immediately with actionable message | 0 |
+
+### Security
+
+- Credentials cached with AES-256-GCM at `~/.mcp-dataverse/`.
+- OData injection prevented via `esc()` single-quote escaping utility.
+- File column names validated against `/^[a-zA-Z0-9_]+$/`.
+- `MSCRMCallerId` cleaned in `finally` block after impersonation.
+- Tokens, secrets, and headers never appear in tool responses.
+
+---
+
+## Limitations
+
+| Area | Limitation |
+|------|-----------|
+| Transport | stdio (default) and HTTP/SSE. Server must be spawned or run as HTTP service. |
+| Single environment | One Dataverse environment per server instance |
+| No streaming | Responses are complete JSON |
+| `$top` max | `dataverse_query` caps at 5000 per call; use `dataverse_retrieve_multiple_with_paging` for more |
+| Paging max | `dataverse_retrieve_multiple_with_paging` caps at 50000 records |
+| Batch max | 1000 operations per `$batch` request |
+| Token expiry | Refresh tokens expire after ~90 days of inactivity |
+
+---
+
+## Documentation
+
+- [Getting Started](https://codeurali.github.io/mcp-dataverse/getting-started): Install, configure, run.
+- [Capabilities](https://codeurali.github.io/mcp-dataverse/capabilities): Full reference of all 79 tools.
+- [Authentication overview](https://codeurali.github.io/mcp-dataverse/authentication/)
+- [Authentication -- Local (device code)](https://codeurali.github.io/mcp-dataverse/authentication/local)
+- [Authentication -- Service principal](https://codeurali.github.io/mcp-dataverse/authentication/service-principal)
+- [Authentication -- Hosted / Managed identity](https://codeurali.github.io/mcp-dataverse/authentication/hosted)
+- [Multi-client setup](https://codeurali.github.io/mcp-dataverse/multi-client-setup): VS Code, Claude, Cursor, Windsurf, Codex.
+- [Use cases -- Querying data](https://codeurali.github.io/mcp-dataverse/use-cases/querying-data)
+- [Use cases -- Managing records](https://codeurali.github.io/mcp-dataverse/use-cases/managing-records)
+- [Use cases -- Inspecting schema](https://codeurali.github.io/mcp-dataverse/use-cases/inspecting-schema)
+- [Use cases -- Delta sync](https://codeurali.github.io/mcp-dataverse/use-cases/delta-sync)
+- [Use cases -- Solutions and customizations](https://codeurali.github.io/mcp-dataverse/use-cases/solutions-and-customizations)
+- [Roadmap](https://codeurali.github.io/mcp-dataverse/roadmap)
+- [Issues & support](https://codeurali.github.io/mcp-dataverse/issues)
+- [Community](https://codeurali.github.io/mcp-dataverse/community)
+
+## Raw markdown for LLMs
+
+Every documentation page exposes its raw markdown source at:
+`https://raw.githubusercontent.com/codeurali/mcp-dataverse/master/docs/<page>.md`
+
+Examples: `getting-started.md`, `capabilities.md`, `authentication/index.md`

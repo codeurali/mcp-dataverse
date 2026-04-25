@@ -1,9 +1,6 @@
 ---
-layout: default
 title: Inspecting Schema
-parent: Use Cases
-nav_order: 2
-permalink: /use-cases/inspecting-schema
+description: Explore Dataverse table definitions, columns, relationships, option sets, and alternate keys.
 ---
 
 # Inspecting Schema

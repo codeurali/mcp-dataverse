@@ -1,8 +1,6 @@
 ---
-layout: default
 title: Roadmap
-nav_order: 8
-permalink: /roadmap
+description: Upcoming features, milestones, and long-term vision for MCP Dataverse.
 ---
 
 # Roadmap
@@ -12,12 +10,7 @@ The MCP Dataverse project follows semantic versioning and ships incremental impr
 ---
 
 ## v0.4 — Streamable HTTP + Schema Consistency
-
-{: .d-inline-block }
-
 Released
-{: .label .label-purple }
-
 **Goal:** First-class HTTP/SSE support for multi-client and remote deployment scenarios, attribute-level schema management (create/update/delete columns + lookup), and fixes surfaced by the Web API audit. Released 2026-03-05 as v0.4.0, updated through v0.4.6 (73 tools across 25 categories).
 
 The foundation already exists — `StreamableHTTPServerTransport` is implemented and functional (`npx mcp-dataverse --transport http`). This milestone polishes it for production and resolves the schema inconsistencies identified during 8 live testing sessions.
@@ -66,12 +59,7 @@ The foundation already exists — `StreamableHTTPServerTransport` is implemented
 ---
 
 ## v0.5 — Auth Methods & Completeness
-
-{: .d-inline-block }
-
 Done
-{: .label .label-green }
-
 **Goal:** Enterprise-grade authentication options so teams can deploy MCP Dataverse without PAC CLI, plus the remaining consistency fixes from v0.4.
 
 ### Authentication Methods
@@ -95,12 +83,7 @@ Done
 ---
 
 ## v0.6 — MCP Resources + Prompts
-
-{: .d-inline-block }
-
 Done
-{: .label .label-green }
-
 **Goal:** Full MCP spec coverage — structured resource URIs for contextual data access and pre-built prompt templates for guided multi-step Dataverse workflows. Released 2026-04-12 as v0.6.0.
 
 ### MCP Resources
@@ -131,12 +114,7 @@ Structured prompt templates that AI agents can invoke for guided, multi-step tas
 ---
 
 ## v0.7 — Schema & Record Management
-
-{: .d-inline-block }
-
 Done
-{: .label .label-green }
-
 **Goal:** Table-level schema management (create table, create relationship), record-level security (grant/revoke/check access), and deduplication via Merge. Released 2026-04-12 as v0.7.0; patch v0.7.5 released 2026-04-14 (4 regression fixes on `check_record_access`, `merge_records`, `create_relationship`).
 
 ### Schema Tools

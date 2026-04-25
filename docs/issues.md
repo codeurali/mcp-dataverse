@@ -1,24 +1,14 @@
 ---
-layout: default
 title: Known Issues
-nav_order: 7
-permalink: /issues
+description: Known limitations and workarounds for MCP Dataverse.
 ---
 
 # Known Issues
-{: .no_toc }
-
 Issues identified during the Web API compliance audit. Each issue references the affected tool and planned fix.
-{: .fs-5 .fw-300 }
-
 Last updated: March 2026
-{: .text-grey-dk-000 }
-
 <details open markdown="block">
   <summary>Table of contents</summary>
-  {: .text-delta }
 - TOC
-{:toc}
 </details>
 
 ---
@@ -26,8 +16,6 @@ Last updated: March 2026
 ## Active Issues
 
 ### ISSUE-01 — Missing `MSCRM.MergeLabels` header on metadata writes
-{: .text-grey-dk-000 }
-
 | | |
 |:--|:--|
 | **Priority** | 🔴 High |
@@ -43,8 +31,6 @@ Last updated: March 2026
 ---
 
 ### ISSUE-02 — `@odata.type` included in `update_entity` PATCH body
-{: .text-yellow-300 }
-
 | | |
 |:--|:--|
 | **Priority** | 🟡 Medium |
@@ -60,8 +46,6 @@ Last updated: March 2026
 ---
 
 ### ISSUE-03 — `update_entity` flag updates return `0x80060888`
-{: .text-grey-dk-000 }
-
 | | |
 |:--|:--|
 | **Priority** | ⚪ Low |
@@ -75,8 +59,6 @@ Last updated: March 2026
 ---
 
 ### ISSUE-04 — Batch requests use `\n` instead of `\r\n`
-{: .text-grey-dk-000 }
-
 | | |
 |:--|:--|
 | **Priority** | 🟡 Medium-Low |
@@ -92,8 +74,6 @@ Last updated: March 2026
 ---
 
 ### ISSUE-05 — `detect_duplicates` description is misleading
-{: .text-grey-dk-000 }
-
 | | |
 |:--|:--|
 | **Priority** | 🟡 Medium |
@@ -111,8 +91,6 @@ Last updated: March 2026
 ---
 
 ### ISSUE-06 — `search` URL uses relative path hack
-{: .text-grey-dk-000 }
-
 | | |
 |:--|:--|
 | **Priority** | ⚪ Low |
@@ -128,8 +106,6 @@ Last updated: March 2026
 ---
 
 ### ISSUE-07 — `executeFunction` only supports string parameters
-{: .text-grey-dk-000 }
-
 | | |
 |:--|:--|
 | **Priority** | ⚪ Low |
@@ -147,8 +123,6 @@ Last updated: March 2026
 ---
 
 ### ISSUE-08 — `create_attribute` missing common column types
-{: .text-yellow-300 }
-
 | | |
 |:--|:--|
 | **Priority** | 🟡 Medium |

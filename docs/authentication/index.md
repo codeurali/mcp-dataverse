@@ -1,9 +1,6 @@
 ---
-layout: default
 title: Authentication
-nav_order: 4
-has_children: true
-permalink: /authentication
+description: Choose between device code, service principal, or managed identity to connect MCP Dataverse to your environment.
 ---
 
 # Authentication
@@ -12,15 +9,15 @@ Three methods for authenticating MCP Dataverse to Dataverse. Choose based on whe
 
 | Method | Where the server runs | Identity calling Dataverse | Secrets to manage |
 |:-------|:---------------------|:--------------------------|:------------------|
-| [Device Code]({{ site.baseurl }}/authentication/local) | Your laptop | Your user account | None |
-| [Client Credentials]({{ site.baseurl }}/authentication/service-principal) | Any server or CI/CD | App Registration (service principal) | One client secret |
-| [Managed Identity]({{ site.baseurl }}/authentication/hosted) | Azure (App Service, Container Apps) | Azure-managed server identity | None |
+| [Device Code](/authentication/local) | Your laptop | Your user account | None |
+| [Client Credentials](/authentication/service-principal) | Any server or CI/CD | App Registration (service principal) | One client secret |
+| [Managed Identity](/authentication/hosted) | Azure (App Service, Container Apps) | Azure-managed server identity | None |
 
 **Decision guide:**
 
-- Running MCP locally for personal use → **[Device Code]({{ site.baseurl }}/authentication/local)**
-- Running MCP unattended (server, Docker, pipeline) → **[Client Credentials]({{ site.baseurl }}/authentication/service-principal)**
-- Hosting MCP on Azure for team use → **[Managed Identity]({{ site.baseurl }}/authentication/hosted)**
+- Running MCP locally for personal use → **[Device Code](/authentication/local)**
+- Running MCP unattended (server, Docker, pipeline) → **[Client Credentials](/authentication/service-principal)**
+- Hosting MCP on Azure for team use → **[Managed Identity](/authentication/hosted)**
 
 ---
 
@@ -30,4 +27,4 @@ Three methods for authenticating MCP Dataverse to Dataverse. Choose based on whe
 > - **Inbound** — how MCP clients authenticate *to the MCP server* (Entra ID JWT)
 > - **Outbound** — how the MCP server authenticates *to Dataverse* (Managed Identity)
 >
-> The [Managed Identity]({{ site.baseurl }}/authentication/hosted) page covers both layers.
+> The [Managed Identity](/authentication/hosted) page covers both layers.

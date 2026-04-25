@@ -1,8 +1,6 @@
 ---
-layout: default
 title: Getting Started
-nav_order: 2
-permalink: /getting-started
+description: Quick start guide for MCP Dataverse — install, configure, and connect in under 2 minutes.
 ---
 
 # Getting Started
@@ -69,7 +67,7 @@ All config values can be set via environment variables (useful for MCP client `e
 
 Three methods are supported — choose based on where the server runs:
 
-→ [Authentication overview & setup guide]({{ site.baseurl }}/authentication)
+→ [Authentication overview & setup guide](/authentication)
 
 **Quick start (device code, local use):** authentication triggers on the first tool call.
 

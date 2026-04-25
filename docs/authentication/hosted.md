@@ -1,9 +1,6 @@
 ---
-layout: default
 title: Managed Identity (Hosted)
-parent: Authentication
-nav_order: 3
-permalink: /authentication/hosted
+description: Deploy MCP Dataverse on Azure with Managed Identity for secure, secretless team access.
 ---
 
 # Managed Identity — Hosted MCP Server
@@ -166,7 +163,7 @@ Add to `.vscode/mcp.json` in your project:
 VS Code automatically discovers the Entra login server via `/.well-known/oauth-protected-resource`,
 performs a silent SSO login, and attaches the Bearer token on each request.
 
-For other MCP clients, see [Multi-Client Setup — Hosted Server]({{ site.baseurl }}/multi-client-setup#hosted-server).
+For other MCP clients, see [Multi-Client Setup — Hosted Server](/multi-client-setup#hosted-server).
 
 ---
 

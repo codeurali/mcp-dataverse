@@ -1,9 +1,6 @@
 ---
-layout: default
 title: Managing Records
-parent: Use Cases
-nav_order: 3
-permalink: /use-cases/managing-records
+description: Create, update, delete, upsert, and link Dataverse records with MCP tools.
 ---
 
 # Managing Records

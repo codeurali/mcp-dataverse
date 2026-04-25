@@ -1,8 +1,6 @@
 ---
-layout: default
 title: Capabilities
-nav_order: 6
-permalink: /capabilities
+description: Full reference of all 79 MCP Dataverse tools, 4 resource types, and guided workflow templates.
 ---
 
 # Full Capabilities Reference
@@ -11,7 +9,7 @@ permalink: /capabilities
 
 79 tools · 4 resources · 5 prompts across 27 categories for full Dataverse lifecycle management.
 
-For detailed input/output examples, see the [Use Cases]({{ site.baseurl }}/use-cases) section.
+For detailed input/output examples, see the [Use Cases](/use-cases) section.
 
 ---
 

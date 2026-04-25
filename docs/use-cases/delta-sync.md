@@ -1,9 +1,6 @@
 ---
-layout: default
 title: Delta Sync
-parent: Use Cases
-nav_order: 4
-permalink: /use-cases/delta-sync
+description: Incremental Dataverse synchronization using change tracking and delta queries.
 ---
 
 # Delta Sync

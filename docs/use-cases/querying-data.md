@@ -1,9 +1,6 @@
 ---
-layout: default
 title: Querying Data
-parent: Use Cases
-nav_order: 1
-permalink: /use-cases/querying-data
+description: OData queries, FetchXML, paginated retrieval, and full-text search with MCP Dataverse.
 ---
 
 # Querying Data

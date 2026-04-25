@@ -1,78 +1,99 @@
 ---
-layout: default
-title: Home
-nav_order: 1
-permalink: /
+layout: page
+sidebar: false
+title: MCP Dataverse — 79-tool MCP server for Microsoft Dataverse
+description: The most complete MCP server for Microsoft Dataverse — 79 tools, 3 auth modes, works with VS Code Copilot, Claude, Cursor, Windsurf and more.
 ---
 
-# MCP Dataverse
+<div class="hp-root">
 
-{: .fs-9 }
+<header class="hp-hero">
+  <span class="hp-hero-eyebrow"><span class="dot"></span>79 tools · Production ready</span>
 
-The most complete MCP server for Microsoft Dataverse.
-{: .fs-6 .fw-300 }
+  <h1 class="hp-hero-title">
+    The complete MCP server for<br /><span class="accent">Microsoft Dataverse</span>
+  </h1>
 
-79 tools · 4 resources · 10 guided workflows · Three auth modes
-{: .fs-5 .fw-300 }
+  <p class="hp-hero-sub">
+    Connect any AI client to Dataverse in minutes — query data, manage records, inspect schema, automate workflows. Three auth modes, zero lock-in.
+  </p>
 
-[Get Started]({{ site.baseurl }}/getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
-[View on npm](https://www.npmjs.com/package/mcp-dataverse){: .btn .fs-5 .mb-4 .mb-md-0 }
+  <div class="hp-hero-actions">
+    <a href="/mcp-dataverse/getting-started" class="hp-btn-primary">Get started →</a>
+    <a href="/mcp-dataverse/capabilities" class="hp-btn-ghost">All 79 tools</a>
+    <a href="https://github.com/codeurali/mcp-dataverse" class="hp-btn-ghost" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
 
----
+  <div class="hp-install"><span class="prompt">$</span> npx mcp-dataverse install</div>
 
-## Why MCP Dataverse?
+  <div class="hp-stat-strip">
+    <div class="item"><div class="num">79</div><div class="lbl">Tools</div></div>
+    <div class="item"><div class="num">4</div><div class="lbl">Resources</div></div>
+    <div class="item"><div class="num">5</div><div class="lbl">Prompts</div></div>
+    <div class="item"><div class="num">3</div><div class="lbl">Auth modes</div></div>
+  </div>
+</header>
 
-AI agents hallucinate schema, guess column names, and build broken OData queries. This server gives them **real-time access** to your Dataverse environment — schema, records, metadata, solutions — through the [Model Context Protocol](https://modelcontextprotocol.io).
+<InteractiveDemo />
 
-| Feature | Details |
-|:--------|:--------|
-| **Multiple auth modes** | Device code, client credentials, or managed identity |
-| **Works with any MCP client** | VS Code, Claude, Cursor, Windsurf, Gemini, Codex CLI |
-| **Atomic tools** | Each tool does one thing well; the AI picks the right one |
-| **Structured outputs** | Every response returns `{summary, data, suggestions}` |
-| **Guardrails** | Destructive operations require explicit confirmation |
-| **Encrypted tokens** | AES-256-GCM cached credentials, never logged |
+<section class="hp-section">
+  <div class="hp-section-head">
+    <span class="hp-section-eyebrow">Capabilities</span>
+    <h2 class="hp-section-title">What your AI can do now</h2>
+    <p class="hp-section-sub">Six developer workflows, zero portal tabs. From schema exploration to bulk migrations — fully conversational.</p>
+  </div>
+  <CapabilityScenarios />
+</section>
 
----
+<CompatibilityLogos />
 
-## Quick Install
+<section class="hp-section">
+  <div class="hp-section-head">
+    <span class="hp-section-eyebrow">Why MCP Dataverse</span>
+    <h2 class="hp-section-title">Built for production agents</h2>
+    <p class="hp-section-sub">Schema-aware, batch-capable, and battle-tested with the major MCP clients.</p>
+  </div>
+  <div class="hp-features">
+    <div class="hp-feat">
+      <div class="hp-feat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+      <h3>79 production-ready tools</h3>
+      <p>Complete coverage — CRUD, metadata, FetchXML, batch, solutions, audit, RBAC. One server, every operation your AI needs.</p>
+    </div>
+    <div class="hp-feat">
+      <div class="hp-feat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 4.2 3.4 8.4 8 10 4.6-1.6 8-5.8 8-10V6z"/></svg></div>
+      <h3>Three auth modes</h3>
+      <p>Interactive device code for local dev, service principal for CI/CD, managed identity for Azure-hosted deployments.</p>
+    </div>
+    <div class="hp-feat">
+      <div class="hp-feat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+      <h3>Zero-config quick start</h3>
+      <p>One command runs an interactive wizard — fully configured in under 2 minutes. Just needs Node.js 20+.</p>
+    </div>
+    <div class="hp-feat">
+      <div class="hp-feat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></div>
+      <h3>Schema intelligence</h3>
+      <p>AI agents see real schema — entity definitions, relationships, option sets. No hallucinated columns, no broken OData.</p>
+    </div>
+    <div class="hp-feat">
+      <div class="hp-feat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg></div>
+      <h3>Batch &amp; bulk operations</h3>
+      <p>Up to 1 000 operations in a single atomic request. Built for migrations and bulk updates with full error reporting.</p>
+    </div>
+    <div class="hp-feat">
+      <div class="hp-feat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+      <h3>Works everywhere</h3>
+      <p>VS Code Copilot, Claude Desktop, Cursor, Windsurf, Gemini CLI, Copilot Studio, Codex CLI — any MCP-compliant client.</p>
+    </div>
+  </div>
+</section>
 
-```bash
-npx mcp-dataverse install
-```
+<div class="hp-cta">
+  <h2>Ready to connect your AI to Dataverse?</h2>
+  <p>Install in under two minutes. Works with any MCP-compatible client.</p>
+  <div class="hp-cta-actions">
+    <a href="/mcp-dataverse/getting-started" class="hp-btn-primary">Get started →</a>
+    <a href="/mcp-dataverse/capabilities" class="hp-btn-ghost">Browse all capabilities</a>
+  </div>
+</div>
 
-The interactive wizard configures your environment, registers the server in VS Code, and authenticates your Microsoft account in under 2 minutes.
-
-Requires Node.js 20+. See [Multi-Client Setup]({{ site.baseurl }}/multi-client-setup) for Claude, Cursor, Windsurf, and more.
-
----
-
-## Capabilities at a Glance
-
-| Category | Count | Description |
-|:---------|:------|:------------|
-| **Metadata** | 9 | Tables, schema, relationships, option sets, entity keys, resolve entity name |
-| **Query** | 3 | OData, FetchXML, paginated retrieval |
-| **CRUD** | 6 | Get, create, update, delete, upsert, assign |
-| **Relations** | 4 | Associate, associate bulk, disassociate, query associations |
-| **Actions & Functions** | 6 | Bound/unbound Dataverse actions and functions |
-| **Batch** | 1 | Up to 1 000 operations atomically |
-| **Solutions** | 2 | Publish customizations, create sitemap |
-| **Search** | 1 | Full-text Relevance Search |
-| **Users & Teams** | 4 | Users, roles, teams, role assignment |
-| **RBAC** | 7 | Role privileges: list, assign, remove, add, replace, get, team assignment |
-| **Files** | 2 | Upload/download file and image columns |
-| **Audit & Trace** | 3 | Audit log, plugin trace logs, workflow trace logs |
-| **Annotations** | 2 | Notes and file attachments |
-| **Customization** | 4 | Custom actions, plugins, env variables, connection references |
-| **Workflows** | 4 | List/get workflows and guided workflow templates |
-| **Assistance** | 2 | Tool router, tool tags |
-| **+ more** | … | Delta tracking, impersonation, views, business units, duplicate detection, attributes |
-
-[→ Full Capabilities Reference]({{ site.baseurl }}/capabilities)
-
----
-
-## License
-
-[MIT](https://github.com/codeurali/mcp-dataverse/blob/master/LICENSE) © [Ali Taggaz](https://www.linkedin.com/in/alitaggaz/)
+</div>

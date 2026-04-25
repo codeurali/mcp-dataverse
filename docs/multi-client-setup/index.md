@@ -1,8 +1,6 @@
 ---
-layout: default
 title: Multi-Client Setup
-nav_order: 3
-permalink: /multi-client-setup
+description: Configure MCP Dataverse with VS Code Copilot, Claude Desktop, Cursor, Windsurf, Gemini CLI, and more.
 ---
 
 # Multi-Client Setup
@@ -10,7 +8,7 @@ permalink: /multi-client-setup
 How to configure **mcp-dataverse** with every major MCP client. Paste the relevant snippet into your client's config file and you're ready in under 5 minutes.
 
 > **Prerequisites**: Node.js 20+, a Dataverse environment URL (`https://yourorg.crm.dynamics.com`).
-> For authentication setup, see [Authentication]({{ site.baseurl }}/authentication).
+> For authentication setup, see [Authentication](/authentication).
 
 ---
 
@@ -488,13 +486,10 @@ claude mcp add --transport http mcp-dataverse http://localhost:3001/mcp
 ---
 
 ## Hosted Server
-
-{: #hosted-server }
-
 When MCP Dataverse runs on Azure (App Service or Container Apps), connect clients to its public
 HTTPS URL. Inbound requests are validated using Entra ID JWT — VS Code handles the sign-in automatically.
 
-For server deployment steps, see [Authentication — Managed Identity]({{ site.baseurl }}/authentication/hosted).
+For server deployment steps, see [Authentication — Managed Identity](/authentication/hosted).
 
 **VS Code** (`.vscode/mcp.json`)
 
