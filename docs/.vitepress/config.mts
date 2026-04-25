@@ -116,10 +116,6 @@ export default defineConfig({
       text: "Edit this page on GitHub",
     },
 
-    search: {
-      provider: "local",
-    },
-
     footer: {
       copyright:
         'Copyright © 2026 <a href="https://www.linkedin.com/in/alitaggaz/">Ali Taggaz</a>',
