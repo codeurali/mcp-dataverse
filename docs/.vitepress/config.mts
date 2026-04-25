@@ -7,6 +7,7 @@ export default defineConfig({
   base: "/mcp-dataverse/",
 
   appearance: true,
+  ignoreDeadLinks: true,
 
   head: [
     ["link", { rel: "icon", href: "/mcp-dataverse/logo.webp" }],
