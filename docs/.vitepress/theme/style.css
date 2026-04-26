@@ -31,9 +31,24 @@
   --vp-c-text-2: #5a6273;
   --vp-c-text-3: #8a93a6;
 
-  /* Code surfaces */
-  --vp-code-bg: #f4f5f9;
-  --vp-code-block-bg: #0e1117;
+  /* Code surfaces — light bg so syntax colours stay readable */
+  --vp-code-bg: #eceef5;
+  --vp-code-block-bg: #f6f8fa;
+  --vp-code-color: #24292e;
+  --vp-code-block-divider-color: #d0d7de;
+
+  /* Interactive demo — light mode */
+  --demo-panel-bg: #f6f8fa;
+  --demo-panel-border: #d0d7de;
+  --demo-panel-header-bg: rgba(0, 0, 0, 0.03);
+  --demo-panel-header-border: rgba(0, 0, 0, 0.06);
+  --demo-panel-header-color: #5a6273;
+  --demo-code-color: #24292e;
+  --demo-token-key: #0550ae;
+  --demo-token-string: #0a3069;
+  --demo-token-number: #953800;
+  --demo-token-bool: #cf222e;
+  --demo-token-comment: #6e7781;
 }
 
 /* ---------- Dark mode — deep cool slate, NOT warm brown ---------- */
@@ -57,7 +72,22 @@
   --brand-glow: 0 0 40px rgba(123, 143, 255, 0.18);
 
   --vp-code-bg: #11141d;
-  --vp-code-block-bg: #0a0c12;
+  --vp-code-block-bg: #0d1117;
+  --vp-code-color: #e6edf3;
+  --vp-code-block-divider-color: #30363d;
+
+  /* Interactive demo — dark mode */
+  --demo-panel-bg: #0a0c12;
+  --demo-panel-border: #1a1f2e;
+  --demo-panel-header-bg: rgba(255, 255, 255, 0.03);
+  --demo-panel-header-border: rgba(255, 255, 255, 0.06);
+  --demo-panel-header-color: #9aa3b5;
+  --demo-code-color: #d1d5e0;
+  --demo-token-key: #79c0ff;
+  --demo-token-string: #a5d6ff;
+  --demo-token-number: #f2cc60;
+  --demo-token-bool: #ff7b72;
+  --demo-token-comment: #6e7681;
 }
 
 /* ---------- Base typography refinements ---------- */
@@ -71,16 +101,33 @@ body {
 
 /* ---------- Navbar — single uniform pane, no sidebar/content seam ---------- */
 .VPNav {
-  backdrop-filter: saturate(180%) blur(14px);
   -webkit-backdrop-filter: saturate(180%) blur(14px);
+  backdrop-filter: saturate(180%) blur(14px);
   background: rgba(255, 255, 255, 0.78) !important;
   border-bottom: 1px solid var(--vp-c-divider);
-  /* Avoid the double-shadow / curtain artefact in default theme */
   box-shadow: none !important;
+  transition: background 0.25s ease, border-color 0.25s ease,
+              backdrop-filter 0.25s ease, -webkit-backdrop-filter 0.25s ease;
 }
 
 .dark .VPNav {
   background: rgba(10, 12, 18, 0.78) !important;
+}
+
+/* Fully transparent when the page hasn't been scrolled yet */
+.VPNav:has(.VPNavBar.top) {
+  background: transparent !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  border-bottom-color: transparent !important;
+}
+
+/* Kill the VitePress divider/divider-line element that draws a 1px bottom line
+   on non-home doc pages (.VPNavBar:not(.home) .divider-line { background: var(--vp-c-gutter) })
+   — must be transparent when the header is in its at-top transparent state */
+.VPNav:has(.VPNavBar.top) .divider,
+.VPNav:has(.VPNavBar.top) .divider-line {
+  background-color: transparent !important;
 }
 
 /* Kill the split between sidebar-aligned curtain and content area */
@@ -150,11 +197,11 @@ div[class*='language-'] {
   border: 1px solid var(--vp-c-divider);
 }
 
-/* ---------- Doc pages — subtle brand cohesion (BELOW the navbar, never crosses it) ---------- */
+/* ---------- Doc pages — subtle brand cohesion (bleeds behind the transparent navbar) ---------- */
 .VPContent:not(.is-home)::before {
   content: '';
   position: fixed;
-  top: var(--vp-nav-height);
+  top: 0;
   left: 0;
   right: 0;
   height: 280px;
@@ -194,11 +241,11 @@ div[class*='language-'] {
   position: relative;
 }
 
-/* Decorative background gradient (homepage only — starts below navbar) */
+/* Decorative background gradient (homepage only — bleeds behind the transparent navbar) */
 .hp-root::before {
   content: '';
   position: fixed;
-  top: var(--vp-nav-height);
+  top: 0;
   left: 0;
   right: 0;
   width: 100%;
@@ -488,8 +535,8 @@ div[class*='language-'] {
 
 .demo-panel {
   border-radius: 12px;
-  border: 1px solid #1a1f2e;
-  background: #0a0c12;
+  border: 1px solid var(--demo-panel-border);
+  background: var(--demo-panel-bg);
   overflow: hidden;
   min-height: 320px;
   display: flex;
@@ -501,11 +548,11 @@ div[class*='language-'] {
   align-items: center;
   justify-content: space-between;
   padding: 0.55rem 1rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--demo-panel-header-bg);
+  border-bottom: 1px solid var(--demo-panel-header-border);
   font-size: 0.78rem;
   font-weight: 600;
-  color: #9aa3b5;
+  color: var(--demo-panel-header-color);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -549,19 +596,19 @@ div[class*='language-'] {
   font-size: 0.8rem;
   line-height: 1.65;
   font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
-  color: #d1d5e0;
+  color: var(--demo-code-color);
   overflow-y: auto;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
-.demo-code .key       { color: #79c0ff; }
-.demo-code .string    { color: #a5d6ff; }
-.demo-code .number    { color: #f2cc60; }
-.demo-code .bool      { color: #ff7b72; }
-.demo-code .tool-name { color: #a5b3ff; font-weight: 600; }
-.demo-code .comment   { color: #6e7681; font-style: italic; }
-.demo-code .label     { color: #8b949e; }
+.demo-code .key       { color: var(--demo-token-key); }
+.demo-code .string    { color: var(--demo-token-string); }
+.demo-code .number    { color: var(--demo-token-number); }
+.demo-code .bool      { color: var(--demo-token-bool); }
+.demo-code .tool-name { color: var(--vp-c-brand-1); font-weight: 600; }
+.demo-code .comment   { color: var(--demo-token-comment); font-style: italic; }
+.demo-code .label     { color: var(--vp-c-text-3); }
 
 .demo-fade-in { animation: fadeInUp 0.35s ease forwards; }
 
