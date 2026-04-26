@@ -104,10 +104,10 @@ body {
   -webkit-backdrop-filter: saturate(180%) blur(14px);
   backdrop-filter: saturate(180%) blur(14px);
   background: rgba(255, 255, 255, 0.78) !important;
-  border-bottom: 1px solid var(--vp-c-divider);
+  border-bottom: 0 !important;
   box-shadow: none !important;
-  transition: background 0.25s ease, border-color 0.25s ease,
-              backdrop-filter 0.25s ease, -webkit-backdrop-filter 0.25s ease;
+  transition: background 0.25s ease, backdrop-filter 0.25s ease,
+              -webkit-backdrop-filter 0.25s ease;
 }
 
 .dark .VPNav {
@@ -123,10 +123,9 @@ body {
 }
 
 /* Kill the VitePress divider/divider-line element that draws a 1px bottom line
-   on non-home doc pages (.VPNavBar:not(.home) .divider-line { background: var(--vp-c-gutter) })
-   — must be transparent when the header is in its at-top transparent state */
-.VPNav:has(.VPNavBar.top) .divider,
-.VPNav:has(.VPNavBar.top) .divider-line {
+   on non-home doc pages — hidden permanently, at any scroll position */
+.VPNav .divider,
+.VPNav .divider-line {
   background-color: transparent !important;
 }
 
