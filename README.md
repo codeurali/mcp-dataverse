@@ -21,6 +21,14 @@
 
 ---
 
+<div align="center">
+<video src="assets/demo.mp4" controls poster="assets/demo-thumbnail.jpg" width="800">
+  <a href="assets/demo.mp4"><img src="assets/demo-thumbnail.jpg" alt="▶ Watch MCP Dataverse in action — 60s demo" width="800" /></a>
+</video>
+</div>
+
+---
+
 ## Why MCP Dataverse?
 
 AI agents hallucinate schema, guess column names, and build broken OData queries. This server gives them **real-time access** to your Dataverse environment — schema, records, metadata, solutions — through the [Model Context Protocol](https://modelcontextprotocol.io).
