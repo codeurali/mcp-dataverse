@@ -51,6 +51,9 @@ debug/
 workdoc/
 _bmad/
 _bmad-output/
+
+# Hyperframes video demo (HTML→MP4 marketing assets, not part of npm package)
+demo-video/
 .codex/
 project.md
 refine.md
