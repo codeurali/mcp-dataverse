@@ -43,9 +43,11 @@ scripts/*
 !scripts/build.mjs
 mcp-template/
 autoparc/
-assets/
+assets/*
 debug/
 !assets/logo.webp
+!assets/demo.mp4
+!assets/demo-thumbnail.jpg
 
 # Private planning & internal artifacts (security/privacy)
 workdoc/
