@@ -1,6 +1,6 @@
 # MCP Dataverse Server — Complete Capabilities Reference
 
-> **Version**: 0.7.6 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
+> **Version**: 0.7.7 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
 
 81 tools across 28 categories for full Dataverse lifecycle: schema, CRUD, FetchXML, solutions, plugins, audit, files, users, teams, RBAC, attribute management, environment variables, workflows, schema write, record access, web resources, and more.
 

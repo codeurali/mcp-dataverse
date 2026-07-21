@@ -5,6 +5,20 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — [Semantic V
 
 ---
 
+## [0.7.7] — 2026-07-21
+
+### Added
+
+- **`npx mcp-dataverse update`** — Non-interactive update checker. Confirms existing configuration, shows current version, and displays what changed in the latest release. No re-config required; `npx` auto-fetches the latest version on each run.
+
+### Internal
+
+- **`src/update.ts`** — New module with `runUpdate()` entry point.
+- **`src/server.ts`** — Registered `update` CLI argument in `entry()`.
+- **`README.md`** — Added Update section with usage instructions.
+
+---
+
 ## [0.7.6] — 2026-07-21
 
 ### Added

@@ -210,5 +210,5 @@ ${a.map(r=>{let o=r.id??`Area_${++i}`,s=r.groups.map(c=>{let l=c.id??`Group_${++
 `)}),await t(()=>Ja(n),e.port,Za,Qa.length)}else{let t=Ja(n),r=new $i;await t.connect(r),process.stderr.write(`MCP Dataverse server started
 `),i.getToken().then(()=>{process.stderr.write(`[mcp-dataverse] Authenticated \u2713
 `)}).catch(o=>{let s=o instanceof Error?o.message:String(o);process.stderr.write(`[mcp-dataverse] Authentication failed: ${s}
-`)})}}async function co(){if(process.argv.includes("install")){let{runInstall:a}=await import("./install.js");await a(),process.exit(0)}if(process.argv.includes("doctor")){let{runDoctor:a}=await import("./doctor.js");await a()}await lo()}co().catch(a=>{process.stderr.write(`Fatal error: ${a instanceof Error?a.message:String(a)}
+`)})}}async function co(){if(process.argv.includes("install")){let{runInstall:a}=await import("./install.js");await a(),process.exit(0)}if(process.argv.includes("update")){let{runUpdate:a}=await import("./update-B3OXP6BV.js");await a(),process.exit(0)}if(process.argv.includes("doctor")){let{runDoctor:a}=await import("./doctor.js");await a()}await lo()}co().catch(a=>{process.stderr.write(`Fatal error: ${a instanceof Error?a.message:String(a)}
 `),process.exit(1)});

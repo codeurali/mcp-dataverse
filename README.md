@@ -52,6 +52,14 @@ The interactive wizard configures your environment, registers the server in VS C
 
 > Requires Node.js 20+. For other clients (Claude, Cursor, Windsurf…) see [Multi-Client Setup](https://codeurali.github.io/mcp-dataverse/multi-client-setup).
 
+## Update
+
+```bash
+npx mcp-dataverse update
+```
+
+No re-config required — just checks your existing setup and shows what changed. `npx` auto-fetches the latest version on each run, so simply restarting your MCP client is enough to get the new tools.
+
 ---
 
 ## Authentication
