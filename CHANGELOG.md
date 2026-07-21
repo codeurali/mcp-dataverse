@@ -5,6 +5,34 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — [Semantic V
 
 ---
 
+## [0.7.6] — 2026-07-21
+
+### Added
+
+- **`dataverse_create_web_resource`** — Creates a web resource (SVG, PNG, JPG, GIF, ICO) in Dataverse via `POST webresourceset`. Required prerequisite for assigning custom icons to model-driven app tables. Accepts base64-encoded content and returns the name to be used as `iconVectorName`.
+- **`dataverse_set_table_icon`** — Sets, changes, or removes the icon on a model-driven app table via `PUT EntityDefinitions`. Supports `IconVectorName` (SVG, preferred), `IconLargeName`, and `IconMediumName` (legacy PNG). Uses GET→PUT pattern to comply with Dataverse's requirement for full entity definition replacement on metadata updates.
+- **`dataverse_create_table`** — New optional parameter `iconVectorName` allows assigning an SVG icon at table creation time.
+
+### Fixed
+
+- **Dataverse EntityDefinitions PATCH limitation**: The `IconVectorName` property cannot be set via PATCH — Dataverse requires PUT with the full entity definition. Added `replaceEntityDefinition()` method using HTTP PUT, fetching the complete metadata, mutating icon fields, and replacing the entire definition.
+
+### Internal
+
+- **`src/tools/webresource.tools.ts`** — New module with `webresourceTools` array and `handleWebresourceTool` dispatcher.
+- **`src/dataverse/dataverse-client.ts`** — Added `createWebResource(body)` method (POST `webresourceset`) and `IconVectorName` to `listTables()` `$select`.
+- **`src/dataverse/dataverse-client.metadata.ts`** — Added `replaceEntityDefinition()` method (PUT `EntityDefinitions` with `MSCRM.MergeLabels`).
+- **`src/dataverse/types.ts`** — Added `IconVectorName`, `IconLargeName`, `IconMediumName` to `EntityMetadata` interface.
+- **`src/tools/metadata-write.tools.ts`** — Added `SetTableIconInput` Zod schema and `dataverse_set_table_icon` handler.
+- **`src/tools/schema.tools.ts`** / **`src/tools/schema.tools.defs.ts`** — Added `iconVectorName` parameter to `CreateTableInput` and body builder.
+- **`src/server.ts`** — Registered `webresourceTools` in tool registry.
+
+### Stats
+
+- 81 tools (was 79) · 4 MCP resources · 5 MCP prompts · 28 categories
+
+---
+
 ## [0.7.5] — 2026-04-14
 
 ### Fixed

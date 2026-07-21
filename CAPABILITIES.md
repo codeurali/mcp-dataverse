@@ -1,8 +1,8 @@
 # MCP Dataverse Server — Complete Capabilities Reference
 
-> **Version**: 0.7.5 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
+> **Version**: 0.7.6 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
 
-79 tools across 27 categories for full Dataverse lifecycle: schema, CRUD, FetchXML, solutions, plugins, audit, files, users, teams, RBAC, attribute management, environment variables, workflows, schema write, record access, and more.
+81 tools across 28 categories for full Dataverse lifecycle: schema, CRUD, FetchXML, solutions, plugins, audit, files, users, teams, RBAC, attribute management, environment variables, workflows, schema write, record access, web resources, and more.
 
 ---
 
@@ -10,7 +10,7 @@
 
 - [Quick Start](#quick-start)
 - [Architecture Overview](#architecture-overview)
-- [Tool Reference (79 tools)](#tool-reference-79-tools)
+- [Tool Reference (81 tools)](#tool-reference-81-tools)
   - [1. Auth (1)](#1-auth-1-tool)
   - [2. Metadata (9)](#2-metadata-9-tools)
   - [3. Query (3)](#3-query-3-tools)
@@ -38,6 +38,7 @@
   - [25. Attributes (4)](#25-attributes-4-tools)
   - [26. Schema (write) (2)](#26-schema-write-2-tools)
   - [27. Record Access (4)](#27-record-access-4-tools)
+  - [28. Web Resources & Table Icons (2)](#28-web-resources--table-icons-2-tools)
 - [Error Handling & Retry Behavior](#error-handling--retry-behavior)
 - [Security](#security)
 - [Limitations & Known Constraints](#limitations--known-constraints)
@@ -1365,6 +1366,61 @@ Creates a lookup (N:1) column on a table, simultaneously defining a 1:N relation
   "referencedEntity": "account",
   "referencingEntity": "contact",
   "published": true
+}
+```
+
+---
+
+### 28. Web Resources & Table Icons (2 tools)
+
+Web resource tools manage custom files (SVG, PNG, JPG, GIF, ICO) in Dataverse, which are prerequisite for setting table (entity) icons in model-driven apps.
+
+> **Workflow**: `dataverse_create_web_resource` → `dataverse_set_table_icon` → `dataverse_publish_customizations`
+
+---
+
+#### `dataverse_create_web_resource`
+
+Creates a web resource file in Dataverse — required before assigning icons to tables. Supports SVG (type 11, preferred for `IconVectorName`), PNG, JPG, GIF, and ICO formats. Provide the base64-encoded file content.
+
+| Parameter         | Type                                      | Req | Notes                                                                              |
+| ----------------- | ----------------------------------------- | --- | ---------------------------------------------------------------------------------- |
+| `name`            | `string`                                  | ✓   | Unique name with publisher prefix (e.g. `"plng_stage_icon.svg"`)                  |
+| `displayName`     | `string`                                  | ✓   | Human-friendly label                                                               |
+| `webResourceType` | `"SVG"\|"PNG"\|"JPG"\|"GIF"\|"ICO"`     | ✓   | Use `"SVG"` for `IconVectorName` table icons                                      |
+| `contentBase64`   | `string`                                  | ✓   | Base64-encoded file content                                                        |
+| `description`     | `string`                                  | —   | Optional description                                                               |
+
+```json
+{
+  "webResourceId": "00000000-0000-0000-0000-000000000000",
+  "name": "plng_stage_icon.svg",
+  "displayName": "Stage Icon",
+  "webResourceType": "SVG",
+  "typeCode": 11
+}
+```
+
+---
+
+#### `dataverse_set_table_icon`
+
+Sets, changes, or removes the icon for a model-driven app table. Supports modern SVG vector icons (`iconVectorName`, preferred) and legacy PNG icons (`iconLargeName`, `iconMediumName`). The web resource must exist in Dataverse before calling this tool. Pass an empty string `""` to remove an icon.
+
+| Parameter            | Type      | Req | Notes                                                                         |
+| -------------------- | --------- | --- | ----------------------------------------------------------------------------- |
+| `entityLogicalName`  | `string`  | ✓   | Table logical name (e.g. `"plng_stage"`)                                     |
+| `iconVectorName`     | `string`  | —   | SVG web resource name (e.g. `"plng_stage_icon.svg"`). `""` to remove.       |
+| `iconLargeName`      | `string`  | —   | Legacy 32x32 image web resource. `""` to remove.                             |
+| `iconMediumName`     | `string`  | —   | Legacy 16x16 image web resource. `""` to remove.                             |
+| `autoPublish`        | `boolean` | —   | Publish after update (default `false`)                                        |
+| `confirm`            | `true`    | ✓   | Must be `true`                                                                |
+
+```json
+{
+  "entityLogicalName": "plng_stage",
+  "changes": { "IconVectorName": "plng_stage_icon.svg" },
+  "published": false
 }
 ```
 
