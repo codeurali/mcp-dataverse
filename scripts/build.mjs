@@ -34,7 +34,7 @@ await esbuild.build({
   outdir: "dist",
   bundle: true,       // inline all static imports from our own code
   minify: true,       // strip whitespace, mangle identifiers
-  splitting: true,    // code-split dynamic import() correctly (ESM only)
+  splitting: false,   // no code-split chunks — keeps dist/ stable for git/publish
   platform: "node",
   target: "node20",
   format: "esm",

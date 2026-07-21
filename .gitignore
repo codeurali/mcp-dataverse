@@ -49,7 +49,6 @@ debug/
 !assets/demo.mp4
 !assets/demo-thumbnail.jpg
 
-# Private planning & internal artifacts (security/privacy)
 workdoc/
 _bmad/
 _bmad-output/
