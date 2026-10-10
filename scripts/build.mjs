@@ -6,7 +6,8 @@
  * No source maps, no .d.ts declarations — internal structure not exposed.
  */
 import * as esbuild from "esbuild";
-import { rmSync } from "node:fs";
+import { rmSync, readFileSync, readdirSync } from "node:fs";
+import { builtinModules } from "node:module";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -41,5 +42,32 @@ await esbuild.build({
   packages: "external", // leave node_modules as peer imports (not inlined)
   absWorkingDir: ROOT,
 });
+
+// Guard (issue #5): every bare package imported by dist/ must be a declared
+// runtime dependency, otherwise `npx mcp-dataverse` crashes with
+// ERR_MODULE_NOT_FOUND on a clean install.
+const pkg = JSON.parse(readFileSync(resolve(ROOT, "package.json"), "utf8"));
+const declared = new Set(Object.keys(pkg.dependencies ?? {}));
+const missing = new Set();
+const walk = (dir) => {
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    const full = resolve(dir, e.name);
+    if (e.isDirectory()) walk(full);
+    else if (e.name.endsWith(".js")) {
+      const code = readFileSync(full, "utf8");
+      for (const m of code.matchAll(/(?:\bfrom|\bimport\()\s*["']((?:@[a-z0-9._-]+\/)?[a-z0-9][a-z0-9._-]*(?:\/[^"']*)?)["']/g)) {
+        const spec = m[1];
+        if (spec.startsWith("node:")) continue;
+        const name = spec.startsWith("@") ? spec.split("/").slice(0, 2).join("/") : spec.split("/")[0];
+        if (!builtinModules.includes(name) && !declared.has(name)) missing.add(name);
+      }
+    }
+  }
+};
+walk(resolve(ROOT, "dist"));
+if (missing.size) {
+  console.error(`❌ dist/ imports undeclared dependencies: ${[...missing].join(", ")}`);
+  process.exit(1);
+}
 
 console.log("✅ Build complete — dist/ ready");
