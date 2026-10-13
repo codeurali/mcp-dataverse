@@ -18,13 +18,13 @@
     "source": "github",
     "id": "1163599879"
   },
-  "version": "0.7.9",
+  "version": "0.7.10",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "mcp-dataverse",
-      "version": "0.7.9",
+      "version": "0.7.10",
       "transport": {
         "type": "stdio"
       },

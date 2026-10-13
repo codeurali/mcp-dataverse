@@ -5,6 +5,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — [Semantic V
 
 ---
 
+## [0.7.10] — 2026-10-13
+
+### Fixed
+
+- `server.json` description shortened to meet the MCP Registry 100-character limit, so the release is registered in the MCP Registry again (v0.7.7 to v0.7.9 failed that step with a 422).
+- Publish workflow no longer fails when the `server.json` sync cannot be pushed to `master`.
+
+---
+
 ## [0.7.9] — 2026-10-10
 
 ### Fixed
