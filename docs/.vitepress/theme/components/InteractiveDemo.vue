@@ -3,7 +3,6 @@ import { ref, computed } from 'vue'
 
 interface Scenario {
   id: string
-  icon: string
   label: string
   toolName: string
   input: string
@@ -13,7 +12,6 @@ interface Scenario {
 const scenarios: Scenario[] = [
   {
     id: 'query',
-    icon: '🔍',
     label: 'Query Data',
     toolName: 'dataverse_query',
     input: `{
@@ -53,7 +51,6 @@ const scenarios: Scenario[] = [
   },
   {
     id: 'schema',
-    icon: '📐',
     label: 'Inspect Schema',
     toolName: 'dataverse_get_table_metadata',
     input: `{
@@ -84,7 +81,6 @@ const scenarios: Scenario[] = [
   },
   {
     id: 'create',
-    icon: '✏️',
     label: 'Create Record',
     toolName: 'dataverse_create',
     input: `{
@@ -117,7 +113,6 @@ const scenarios: Scenario[] = [
   },
   {
     id: 'search',
-    icon: '🔎',
     label: 'Full-text Search',
     toolName: 'dataverse_search',
     input: `{
@@ -155,7 +150,6 @@ const scenarios: Scenario[] = [
   },
   {
     id: 'batch',
-    icon: '⚡',
     label: 'Batch Execute',
     toolName: 'dataverse_batch_execute',
     input: `{
@@ -215,11 +209,6 @@ function selectScenario(s: Scenario) {
 
 <template>
   <section class="demo-section">
-    <div class="demo-header">
-      <h2>See it in action</h2>
-      <p>Pick a scenario — your AI agent calls the right tool and gets a structured response.</p>
-    </div>
-
     <div class="scenario-tabs">
       <button
         v-for="s in scenarios"
@@ -227,7 +216,6 @@ function selectScenario(s: Scenario) {
         :class="['scenario-btn', { active: selectedId === s.id }]"
         @click="selectScenario(s)"
       >
-        <span>{{ s.icon }}</span>
         <span>{{ s.label }}</span>
       </button>
     </div>
@@ -257,7 +245,7 @@ function selectScenario(s: Scenario) {
           </div>
           <span>Response</span>
           <span v-if="isLoading" class="badge-loading">running…</span>
-          <span v-else class="badge-ok">✓ 200 OK</span>
+          <span v-else class="badge-ok">200 OK</span>
         </div>
         <pre
           v-if="!isLoading && showResponse"
@@ -280,9 +268,9 @@ function selectScenario(s: Scenario) {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   padding: 0.15rem 0.5rem;
   border-radius: 6px;
-  background: rgba(139, 92, 246, 0.15);
-  color: #a78bfa;
-  border: 1px solid rgba(139, 92, 246, 0.25);
+  background: transparent;
+  color: var(--vp-c-brand-1);
+  border: 1px solid var(--vp-c-divider);
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -300,8 +288,8 @@ function selectScenario(s: Scenario) {
 
 .loading-bar {
   height: 12px;
-  border-radius: 6px;
-  background: linear-gradient(90deg, var(--vp-c-bg-mute) 25%, rgba(139,92,246,0.15) 50%, var(--vp-c-bg-mute) 75%);
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--vp-c-bg-mute) 25%, var(--vp-c-bg-soft) 50%, var(--vp-c-bg-mute) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.2s infinite linear;
   width: 100%;

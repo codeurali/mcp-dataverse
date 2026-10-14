@@ -26,29 +26,7 @@ using its Azure Managed Identity. Users connect to the server with their own Ent
 
 ### Request flow
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant VSC as MCP Client<br/>(VS Code / Claude)
-    participant AppSvc as App Service<br/>(MCP Server)
-    participant Entra as Entra ID
-    participant Dataverse as Dataverse
-
-    VSC->>AppSvc: GET /mcp (no token)
-    AppSvc-->>VSC: 401 + resource metadata URL
-    VSC->>AppSvc: GET /.well-known/oauth-protected-resource
-    AppSvc-->>VSC: Authorization server, scopes supported
-    Note over VSC,Entra: Silent SSO or interactive browser login
-    VSC->>Entra: Auth request (PKCE, scope = DataverseAccess)
-    Entra-->>VSC: Access token (aud = clientId GUID)
-    VSC->>AppSvc: POST /mcp — Authorization: Bearer {token}
-    Note over AppSvc: Verify JWT: signature, aud, scp, exp
-    AppSvc->>Entra: Token request via Managed Identity IMDS
-    Entra-->>AppSvc: Dataverse access token
-    AppSvc->>Dataverse: API call
-    Dataverse-->>AppSvc: Data
-    AppSvc-->>VSC: MCP tool result
-```
+<SequenceDiagram name="hosted-auth" />
 
 ---
 

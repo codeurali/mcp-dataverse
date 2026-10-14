@@ -399,29 +399,11 @@ The server exposes:
 
 - `POST /mcp` — Send JSON-RPC messages (Streamable HTTP MCP endpoint)
 - `GET /mcp` — Open an SSE stream of server notifications
-- `GET /health` — Health check (`{"status":"ok","version":"...","tools":73}`)
+- `GET /health` — Health check (`{"status":"ok","version":"...","tools":100}`)
 
 ### Architecture
 
-```
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│  VS Code     │     │  Claude      │     │  Custom App  │
-│  (Copilot)   │     │  Desktop     │     │  (Web UI)    │
-└──────┬───────┘     └──────┬───────┘     └──────┬───────┘
-       │                    │                    │
-       └────────────────────┼────────────────────┘
-                            │  HTTP POST /mcp
-                   ┌────────▼────────┐
-                   │  mcp-dataverse  │
-                   │  HTTP server    │
-                   │  :3001          │
-                   └────────┬────────┘
-                            │  HTTPS (Bearer token)
-                   ┌────────▼────────┐
-                   │   Dataverse     │
-                   │   Web API       │
-                   └─────────────────┘
-```
+<HttpArchitecture />
 
 ### Connecting clients to the HTTP server
 

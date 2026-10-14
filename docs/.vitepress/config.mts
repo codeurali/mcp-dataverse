@@ -3,40 +3,78 @@ import { defineConfig } from "vitepress";
 export default defineConfig({
   title: "MCP Dataverse",
   description:
-    "The most complete MCP server for Microsoft Dataverse — 79 tools, multi-mode auth, works with VS Code, Claude, Cursor & more.",
+    "An MCP server that gives AI agents the real Dataverse schema and 100 tools to act on it. Works with VS Code, Claude, Cursor and more.",
   base: "/mcp-dataverse/",
 
-  appearance: true,
+  appearance: 'dark',
   ignoreDeadLinks: true,
+  cleanUrls: true,
+  lastUpdated: true,
+  srcExclude: ["webmcp/**", "webmcp.backup-premerge/**", "_drafts/**", "node_modules/**"],
+  sitemap: { hostname: "https://codeurali.github.io/mcp-dataverse/" },
+
+  transformHead({ pageData }) {
+    const site = "https://codeurali.github.io/mcp-dataverse/";
+    const path = pageData.relativePath.replace(/(^|\/)index\.md$/, "$1").replace(/\.md$/, "");
+    const url = site + path;
+    const title = pageData.frontmatter.title ?? pageData.title ?? "MCP Dataverse";
+    const description =
+      pageData.frontmatter.description ?? pageData.description ?? "";
+    const head: [string, Record<string, string>][] = [
+      ["link", { rel: "canonical", href: url }],
+      ["meta", { property: "og:type", content: "website" }],
+      ["meta", { property: "og:site_name", content: "MCP Dataverse" }],
+      ["meta", { property: "og:url", content: url }],
+      ["meta", { property: "og:title", content: title }],
+      ["meta", { property: "og:description", content: description }],
+      ["meta", { property: "og:image", content: site + "og.png" }],
+      ["meta", { name: "twitter:title", content: title }],
+      ["meta", { name: "twitter:description", content: description }],
+      ["meta", { name: "twitter:image", content: site + "og.png" }],
+    ];
+    return head;
+  },
 
   head: [
-    ["link", { rel: "icon", href: "/mcp-dataverse/logo.webp" }],
-    ["meta", { name: "og:title", content: "MCP Dataverse" }],
+    ["link", { rel: "preconnect", href: "https://fonts.googleapis.com" }],
+    ["link", { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" }],
     [
-      "meta",
+      "link",
       {
-        name: "og:description",
-        content: "The most complete MCP server for Microsoft Dataverse",
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap",
       },
     ],
-    [
-      "meta",
-      {
-        name: "og:image",
-        content: "https://codeurali.github.io/mcp-dataverse/logo.webp",
-      },
-    ],
+    ["link", { rel: "icon", href: "/mcp-dataverse/favicon.svg", type: "image/svg+xml" }],
     ["meta", { name: "twitter:card", content: "summary_large_image" }],
+    [
+      "script",
+      { type: "application/ld+json" },
+      JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: "MCP Dataverse",
+        applicationCategory: "DeveloperApplication",
+        operatingSystem: "Windows, macOS, Linux (Node.js 20+)",
+        description:
+          "An MCP server that gives AI agents the real Microsoft Dataverse schema and 100 tools to act on it.",
+        url: "https://codeurali.github.io/mcp-dataverse/",
+        codeRepository: "https://github.com/codeurali/mcp-dataverse",
+        license: "https://opensource.org/licenses/MIT",
+        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        author: { "@type": "Person", name: "Ali Taggaz" },
+      }),
+    ],
   ],
 
   themeConfig: {
     siteTitle: "MCP Dataverse",
-    logo: "/logo.webp",
 
     nav: [
-      { text: "Home", link: "/" },
       { text: "Getting Started", link: "/getting-started" },
       { text: "Capabilities", link: "/capabilities" },
+      { text: "Security", link: "/security" },
+      { text: "About", link: "/about" },
       {
         text: "Docs",
         items: [
@@ -78,10 +116,15 @@ export default defineConfig({
           { text: "Inspecting Schema", link: "/use-cases/inspecting-schema" },
           { text: "Delta Sync", link: "/use-cases/delta-sync" },
           {
-            text: "Solutions & Customizations",
+            text: "Customizations",
             link: "/use-cases/solutions-and-customizations",
           },
         ],
+      },
+      {
+        text: "Security",
+        collapsed: false,
+        items: [{ text: "Security and guardrails", link: "/security" }],
       },
       {
         text: "Multi-Client Setup",
@@ -93,6 +136,7 @@ export default defineConfig({
         collapsed: true,
         items: [
           { text: "All Capabilities", link: "/capabilities" },
+          { text: "About and architecture", link: "/about" },
           { text: "Roadmap", link: "/roadmap" },
           { text: "Issues & Support", link: "/issues" },
           { text: "Community", link: "/community" },

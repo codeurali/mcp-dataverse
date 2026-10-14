@@ -19,7 +19,7 @@
     </div>
 
     <div class="cap-footer">
-      <span>27 categories · 79 tools ·</span>
+      <span>100 tools across 28 categories.</span>
       <a href="/mcp-dataverse/capabilities">Browse the full reference →</a>
     </div>
   </div>
@@ -119,15 +119,11 @@ const capabilities: Capability[] = [
 
 .cap-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem 3rem;
 }
 
-@media (max-width: 960px) {
-  .cap-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 640px) {
+@media (max-width: 720px) {
   .cap-grid { grid-template-columns: 1fr; }
 }
 
@@ -135,17 +131,9 @@ const capabilities: Capability[] = [
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
-  padding: 1.5rem 1.4rem;
-  border-radius: 14px;
-  border: 1px solid var(--vp-c-divider);
-  background: var(--vp-c-bg-soft);
-  transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
-}
-
-.cap-card:hover {
-  border-color: var(--vp-c-brand-1);
-  transform: translateY(-2px);
-  box-shadow: var(--brand-glow);
+  padding: 1.4rem 0 0;
+  border-top: 1px solid var(--rule);
+  padding-bottom: 1rem;
 }
 
 .cap-header {
@@ -158,29 +146,24 @@ const capabilities: Capability[] = [
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: var(--vp-c-brand-soft);
+  width: 28px;
+  height: 28px;
   color: var(--vp-c-brand-1);
   flex-shrink: 0;
 }
 
 .cap-badge {
+  font-family: var(--font-mono);
   font-size: 0.68rem;
-  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--vp-c-brand-1);
-  padding: 0.2rem 0.55rem;
-  border-radius: 999px;
-  border: 1px solid var(--vp-c-brand-soft);
-  background: var(--vp-c-brand-soft);
+  letter-spacing: 0.14em;
+  color: var(--vp-c-text-3);
 }
 
 .cap-title {
-  font-size: 1.02rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 500;
   color: var(--vp-c-text-1);
   letter-spacing: -0.01em;
   margin: 0;
@@ -200,8 +183,8 @@ const capabilities: Capability[] = [
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.7rem 0.85rem;
-  border-radius: 8px;
-  background: var(--vp-c-bg-mute);
+  border-radius: 0;
+  background: var(--vp-c-bg-soft);
   border-left: 2px solid var(--vp-c-brand-1);
 }
 
@@ -231,7 +214,7 @@ const capabilities: Capability[] = [
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 0.68rem;
   padding: 0.2rem 0.5rem;
-  border-radius: 5px;
+  border-radius: 2px;
   background: var(--vp-c-bg-mute);
   color: var(--vp-c-text-3);
   border: 1px solid var(--vp-c-divider);
