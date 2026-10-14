@@ -1,145 +1,62 @@
 ---
 title: Roadmap
-description: Upcoming features, milestones, and long-term vision for MCP Dataverse.
+description: What MCP Dataverse has shipped, what is implemented but not yet released, and what is planned next.
 ---
 
 # Roadmap
 
-The MCP Dataverse project follows semantic versioning and ships incremental improvements between milestones. Here's what's coming.
+MCP Dataverse follows semantic versioning. This page tracks what has shipped, what is merged but unreleased, and what is planned. Every item marked as released is in the [CHANGELOG](https://github.com/codeurali/mcp-dataverse/blob/master/CHANGELOG.md).
 
 ---
 
-## v0.4 — Streamable HTTP + Schema Consistency
-Released
-**Goal:** First-class HTTP/SSE support for multi-client and remote deployment scenarios, attribute-level schema management (create/update/delete columns + lookup), and fixes surfaced by the Web API audit. Released 2026-03-05 as v0.4.0, updated through v0.4.6 (73 tools across 25 categories).
+## Released
 
-The foundation already exists — `StreamableHTTPServerTransport` is implemented and functional (`npx mcp-dataverse --transport http`). This milestone polishes it for production and resolves the schema inconsistencies identified during 8 live testing sessions.
+| Version | Date | Highlights | Status |
+| :------ | :--- | :--------- | :----- |
+| 0.7.10 | 2026-10-13 | MCP Registry publication fix | <Status kind="done">Released</Status> |
+| 0.7.9 | 2026-10-10 | Startup crash fix on clean `npx` installs ([#5](https://github.com/codeurali/mcp-dataverse/issues/5)) | <Status kind="done">Released</Status> |
+| 0.7.7 | 2026-07-21 | `npx mcp-dataverse update` command | <Status kind="done">Released</Status> |
+| 0.7.6 | 2026-07-21 | `dataverse_create_web_resource`, `dataverse_set_table_icon`, `iconVectorName` on `create_table`; five MCP Apps (table browser, FetchXML workbench, plugin trace viewer, schema explorer, RBAC inspector) | <Status kind="done">Released</Status> |
+| 0.7.5 | 2026-04-14 | Four regression fixes on `check_record_access`, `merge_records`, `create_relationship` | <Status kind="done">Released</Status> |
+| 0.7.0 | 2026-04-12 | `create_table`, `create_relationship`, record-level access (`check_record_access`, `grant_access`, `revoke_access`), `merge_records` | <Status kind="done">Released</Status> |
+| 0.6.0 | 2026-04-12 | Four MCP resources and five MCP prompts | <Status kind="done">Released</Status> |
+| 0.5.0 | 2026-03-24 | Client credentials, managed identity, Entra JWT validation for inbound HTTP | <Status kind="done">Released</Status> |
+| 0.4.x | 2026-03-05 to 2026-03-08 | Streamable HTTP transport, attribute CRUD (`create_attribute`, `update_attribute`, `delete_attribute`, lookup columns), consistent parameter naming, `errorCategory` in error responses, Web API audit fixes | <Status kind="done">Released</Status> |
 
-### HTTP Transport
-
-| Item                                                  | Status     |
-| :---------------------------------------------------- | :--------- |
-| `StreamableHTTPServerTransport` integration           | ✅ Done    |
-| `enableJsonResponse` toggle for non-streaming clients | ✅ Done    |
-| Authentication over HTTP (session tokens)             | ✅ Done    |
-| Documentation & multi-client HTTP examples            | ✅ Done    |
-
-### Attribute Management
-
-| Item                                                                                                                       | Status     |
-| :------------------------------------------------------------------------------------------------------------------------- | :--------- |
-| `dataverse_create_attribute` — create columns (String, Integer, Decimal, Boolean, DateTime, Money, Memo, Picklist, BigInt) | ✅ Done    |
-| `dataverse_update_attribute` — update column properties (display name, description, requirement level)                     | ✅ Done    |
-| `dataverse_delete_attribute` — remove custom columns with confirmation guardrail                                           | ✅ Done    |
-| Lookup, MultiSelectPicklist, Image, AutoNumber attribute types                                                             | ✅ Done    |
-
-### Schema Consistency
-
-| Item                                                                                            | Status     |
-| :---------------------------------------------------------------------------------------------- | :--------- |
-| Uniform parameter naming across all tools (camelCase convention)                                | ✅ Done    |
-| `confirm` parameter documented consistently on all destructive tools                            | ✅ Done    |
-| `suggest_tools` no longer exposes non-callable tools                                            | ✅ Done    |
-| `errorCategory` field in error responses (`ENV_LIMITATION` / `PERMISSIONS` / `SCHEMA_MISMATCH`) | ✅ Done    |
-| Preflight checks for environment prerequisites (HasNotes, Change Tracking, Alternate Keys)      | ✅ Done    |
-| `dataverse_search` — actionable error when Relevance Search is disabled                         | ✅ Done    |
-
-### Audit Fixes
-
-| Item                                                                                         | Status     |
-| :------------------------------------------------------------------------------------------- | :--------- |
-| Add `MSCRM.MergeLabels: true` header on metadata PUT/PATCH to preserve multi-language labels | ✅ Done    |
-| Fix batch request body to use CRLF (`\r\n`) per RFC 2046                                     | ✅ Done    |
-| `detect_duplicates` — align description with actual implementation (FetchXML field-OR match) | ✅ Done    |
-| `search` — construct URL from `environmentUrl` instead of relative `../../` hack             | ✅ Done    |
-| `executeFunction` — support aliased typed parameters (not just string)                       | ✅ Done    |
-
-**Why it matters:** HTTP transport unlocks remote servers, shared team instances, and integration with orchestrators that can't spawn stdio processes. Schema consistency reduces AI agent confusion and improves first-call success rates. Attribute management brings column-level CRUD natively. Audit fixes harden Web API compliance.
+Also available today: FetchXML auto-pagination (`fetchAll=true` on `dataverse_execute_fetchxml`, cookie paging up to 100 pages or 50,000 records).
 
 ---
 
-## v0.5 — Auth Methods & Completeness
-Done
-**Goal:** Enterprise-grade authentication options so teams can deploy MCP Dataverse without PAC CLI, plus the remaining consistency fixes from v0.4.
+## Implemented, not yet released
 
-### Authentication Methods
+These changes are merged on `master` and listed under *Unreleased* in the CHANGELOG.
 
-| Item                                                                                                    | Status     |
-| :------------------------------------------------------------------------------------------------------ | :--------- |
-| **Azure AD app registration** (Client Credentials) — service-to-service, CI/CD, unattended scenarios   | ✅ Done    |
-| **Managed Identity** — zero-secret auth for Azure-hosted deployments (App Service, Container Apps, VM) | ✅ Done    |
-| `authMethod` config option (`"pac"` / `"client-credentials"` / `"managed-identity"`)                   | ✅ Done    |
-
-### Schema & Error Consistency
-
-| Item                                                                                             | Status     |
-| :----------------------------------------------------------------------------------------------- | :--------- |
-| `errorCategory` field in error responses (`ENV_LIMITATION` / `PERMISSIONS` / `SCHEMA_MISMATCH`) | ✅ Done    |
-| `dataverse_search` — actionable error when Relevance Search is disabled                          | ✅ Done    |
-| Uniform camelCase parameter naming across all tools                                              | ✅ Done    |
-
-**Why it matters:** Client Credentials and Managed Identity unlock server-side deployments and CI/CD pipelines without any interactive login. Structured error categories let AI agents self-correct without human intervention.
+| Item | Status |
+| :--- | :----- |
+| **Read-only mode** (`MCP_READ_ONLY=true`): expose only the 64 read-only tools and refuse every other call | <Status kind="progress">Unreleased</Status> |
+| Annotations on the six tools that had none, so clients and read-only mode classify every tool | <Status kind="progress">Unreleased</Status> |
+| MCP `structuredContent` and `outputSchema` on all 81 core tools, so clients receive typed results instead of parsing text | <Status kind="progress">Unreleased</Status> |
+| Idle HTTP session eviction (`MCP_HTTP_SESSION_TTL_MS`, default 30 minutes) | <Status kind="progress">Unreleased</Status> |
+| `MCP_HTTP_REQUIRE_AUTH=true` strict mode: the HTTP server refuses to start without inbound authentication | <Status kind="progress">Unreleased</Status> |
+| Salted key derivation for at-rest encryption of cached credentials | <Status kind="progress">Unreleased</Status> |
+| `MCP_TRANSPORT` and `MCP_HTTP_PORT` environment variables honoured at startup | <Status kind="progress">Unreleased</Status> |
 
 ---
 
-## v0.6 — MCP Resources + Prompts
-Done
-**Goal:** Full MCP spec coverage — structured resource URIs for contextual data access and pre-built prompt templates for guided multi-step Dataverse workflows. Released 2026-04-12 as v0.6.0.
+## Planned
 
-### MCP Resources
+| Item | Status |
+| :--- | :----- |
+| Global option set CRUD: create, update and delete shared option sets (read tools already exist) | <Status kind="planned">Planned</Status> |
+| Alternate key CRUD: define and manage entity keys for upsert scenarios (read tool already exists) | <Status kind="planned">Planned</Status> |
+| Native credential storage (Windows DPAPI, macOS Keychain) | <Status kind="planned">Planned</Status> |
 
-Read-only resources that AI clients (Claude, Cursor) can load directly into context:
+## Under consideration
 
-| URI                                         | Type     | Description                                         |
-| :------------------------------------------ | :------- | :-------------------------------------------------- |
-| `dataverse://tables`                        | Static   | Full catalog of all tables in the environment       |
-| `dataverse://server/instructions`           | Static   | Agent best practices and usage guidelines           |
-| `dataverse://tables/{tableName}/schema`     | Template | All columns, types, and constraints for a table     |
-| `dataverse://tables/{tableName}/relationships` | Template | All 1:N, N:1, N:N relationships for a table      |
-
-### MCP Prompts
-
-Structured prompt templates that AI agents can invoke for guided, multi-step tasks:
-
-| Prompt                  | Arguments                                          | Description                                                          |
-| :---------------------- | :------------------------------------------------- | :------------------------------------------------------------------- |
-| `analyze-org-health`    | _(none)_                                           | Full org health check: table inventory, roles, workflows             |
-| `data-quality-check`    | `tableName` (required), `sampleSize` (opt, def 50) | Nullity rates, duplicate detection, field completeness               |
-| `schema-review`         | `tableName` (required)                             | Schema best practices: naming, types, relations, views               |
-| `security-audit`        | _(none)_                                           | Over-privileged users, empty teams, orphaned role assignments        |
-| `analyze-workflow`      | `workflowName` (opt), `statusFilter` (opt: active/inactive/all) | Workflow health, error rates, ownership gaps |
-
-**Why it matters:** Full MCP spec coverage (tools + resources + prompts) — a first for any Dataverse MCP server. Resources let AI agents load schema into context without extra tool calls. Prompts guide complex multi-step workflows with consistent patterns.
+Solution import and export (`ExportSolution`, `ImportSolution`) is not scheduled. The solution list and component tools were removed in 0.4.6 to keep application lifecycle management out of scope, and this item would reverse that decision.
 
 ---
 
-## v0.7 — Schema & Record Management
-Done
-**Goal:** Table-level schema management (create table, create relationship), record-level security (grant/revoke/check access), and deduplication via Merge. Released 2026-04-12 as v0.7.0; patch v0.7.5 released 2026-04-14 (4 regression fixes on `check_record_access`, `merge_records`, `create_relationship`).
-
-### Schema Tools
-
-| Item                                                                                          | Status     |
-| :-------------------------------------------------------------------------------------------- | :--------- |
-| `dataverse_create_table` — create custom entities via `POST /EntityDefinitions`               | ✅ Done    |
-| `dataverse_create_relationship` — create standalone 1:N / N:N relationships                   | ✅ Done    |
-| Global OptionSet CRUD — create / update / delete shared option sets                           | 🔜 Planned |
-| Alternate Key CRUD — define and manage entity keys for upsert scenarios                       | 🔜 Planned |
-
-### Record Operations
-
-| Item                                                                                               | Status     |
-| :------------------------------------------------------------------------------------------------- | :--------- |
-| `dataverse_check_record_access` — `RetrievePrincipalAccess` to check who can read/write/delete a record | ✅ Done |
-| `dataverse_grant_access` / `dataverse_revoke_access` — record-level sharing via `GrantAccess` / `RevokeAccess` | ✅ Done |
-| `dataverse_merge_records` — `Merge` action for deduplication workflows                        | ✅ Done    |
-| Solution import / export — `ExportSolution` / `ImportSolution` actions                             | 🔜 Planned |
-| FetchXML auto-pagination — transparent cookie-based paging for large result sets                   | 🔜 Planned |
-
-**Why it matters:** Completes the entity lifecycle (create table → add columns → define relationships). Access control tools let AI agents manage sharing without dropping to raw API calls. Solution lifecycle tools support ALM workflows.
-
----
-
-## Feature Requests
+## Feature requests
 
 Have an idea? [Open an issue](https://github.com/codeurali/mcp-dataverse/issues) with the `enhancement` label.

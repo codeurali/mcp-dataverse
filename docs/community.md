@@ -5,7 +5,7 @@ description: Contribute to MCP Dataverse — bug reports, feature requests, disc
 
 # Community
 
-MCP Dataverse is open-source (MIT) and actively maintained. We're building the most complete MCP server for Microsoft Dataverse — and we need your help to make it better.
+MCP Dataverse is MIT-licensed, published on npm, and actively maintained. The project is built in the open, and bug reports, test results and pull requests are what shape it.
 
 ---
 
@@ -39,14 +39,14 @@ We're looking for developers and Power Platform professionals to test MCP Datave
 
 ### Tester Recognition
 
-Active testers who report bugs or contribute fixes will be credited in the [Changelog](/changelog) and project README.
+Active testers who report bugs or contribute fixes will be credited in the [Changelog](https://github.com/codeurali/mcp-dataverse/blob/master/CHANGELOG.md) and project README.
 
 ---
 
 ## Found a Bug?
 
 [Open an issue](https://github.com/codeurali/mcp-dataverse/issues) with:
-- Tool name and version (`mcp-dataverse --version`)
+- Tool name and version (from `npm ls mcp-dataverse`, or the `/health` response in HTTP mode)
 - Input JSON you sent
 - Expected vs. actual output
 - Dataverse environment region

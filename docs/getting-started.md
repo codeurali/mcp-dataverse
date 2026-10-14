@@ -5,7 +5,7 @@ description: Quick start guide for MCP Dataverse — install, configure, and con
 
 # Getting Started
 
-Quick start guide for MCP Dataverse — an MCP server exposing 79 AI-callable tools for Microsoft Dataverse.
+Quick start guide for MCP Dataverse — an MCP server exposing 100 AI-callable tools for Microsoft Dataverse.
 
 ## Prerequisites
 
@@ -23,10 +23,12 @@ npx mcp-dataverse install
 
 The wizard will:
 
-1. Ask for your Dataverse environment URL
-2. Save configuration to `~/.mcp-dataverse/config.json`
-3. Register the server in VS Code via `code --add-mcp`
-4. Authenticate with your Microsoft account (device code flow)
+1. Ask whether to run locally (stdio) or as a hosted HTTP server
+2. Ask for your Dataverse environment URL and save it to `~/.mcp-dataverse/config.json`
+3. Ask for the authentication mode: device code (interactive) or client credentials. Managed identity is available through the hosted option
+4. Register the server in VS Code via `code --add-mcp`
+
+Other clients are configured by hand; see the [multi-client setup](/multi-client-setup/).
 
 ### Manual Configuration
 
@@ -40,7 +42,7 @@ Create `~/.mcp-dataverse/config.json`:
 }
 ```
 
-See [multi-client-setup.md](multi-client-setup.md) for client-specific configuration.
+See the [multi-client setup](/multi-client-setup/) for client-specific configuration.
 
 ## Configuration Options
 
@@ -49,6 +51,7 @@ See [multi-client-setup.md](multi-client-setup.md) for client-specific configura
 | `environmentUrl`   | string | —       | Your Dataverse org URL (must be `https://*.dynamics.com`) |
 | `requestTimeoutMs` | number | `30000` | HTTP request timeout in milliseconds                      |
 | `maxRetries`       | number | `3`     | Retry count on transient errors (0–10)                    |
+| `readOnly`         | boolean | `false` | Expose only read-only tools and refuse every write (next release) |
 
 ## Environment Variables
 
@@ -59,6 +62,7 @@ All config values can be set via environment variables (useful for MCP client `e
 | `DATAVERSE_ENV_URL`  | `environmentUrl`                    |
 | `REQUEST_TIMEOUT_MS` | `requestTimeoutMs`                  |
 | `MAX_RETRIES`        | `maxRetries`                        |
+| `MCP_READ_ONLY`      | `readOnly` (`true` to enable)       |
 | `MCP_CONFIG_PATH`    | Path to a custom `config.json` file |
 
 **Priority**: environment variables > `MCP_CONFIG_PATH` > `~/.mcp-dataverse/config.json` > `./config.json`.
@@ -105,16 +109,10 @@ The server can run in HTTP mode instead of stdio, which enables multi-client con
 Set the `MCP_TRANSPORT` environment variable to `http`:
 
 ```bash
-MCP_TRANSPORT=http MCP_HTTP_PORT=3000 node dist/server.js
+MCP_TRANSPORT=http MCP_HTTP_PORT=3000 npx mcp-dataverse
 ```
 
-Or in `config.json`:
-```json
-{
-  "transport": "http",
-  "httpPort": 3000
-}
-```
+Or pass the equivalent flags: `npx mcp-dataverse --transport http --port 3000`. Transport and port are not `config.json` keys.
 
 ### Environment variables
 
@@ -161,7 +159,7 @@ This checks:
 
 ## Performance Tip
 
-MCP Dataverse ships **60+ tools** to cover the full Dataverse API surface. Most AI models perform best with fewer tools loaded in context.
+MCP Dataverse ships **100 tools** to cover the full Dataverse API surface. Most AI models perform best with fewer tools loaded in context.
 
 > **Recommendation:** In VS Code, open the Chat panel and deselect the tools you don't need for your current task. This reduces noise and helps the agent pick the right tool faster.
 >
@@ -169,9 +167,9 @@ MCP Dataverse ships **60+ tools** to cover the full Dataverse API surface. Most 
 
 ## Next Steps
 
-- [Multi-client setup](multi-client-setup.md) — configure VS Code, Claude Desktop, Cursor, and more
-- [Querying data](use-cases/querying-data.md) — OData, FetchXML, search
-- [Inspecting schema](use-cases/inspecting-schema.md) — tables, columns, relationships
-- [Managing records](use-cases/managing-records.md) — CRUD, batch, associations
-- [Solutions & customizations](use-cases/solutions-and-customizations.md)
-- [Delta sync](use-cases/delta-sync.md) — change tracking for incremental sync
+- [Multi-client setup](/multi-client-setup/) — configure VS Code, Claude Desktop, Cursor, and more
+- [Querying data](/use-cases/querying-data) — OData, FetchXML, search
+- [Inspecting schema](/use-cases/inspecting-schema) — tables, columns, relationships
+- [Managing records](/use-cases/managing-records) — CRUD, batch, associations
+- [Customizations](/use-cases/solutions-and-customizations)
+- [Delta sync](/use-cases/delta-sync) — change tracking for incremental sync

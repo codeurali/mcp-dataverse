@@ -4,12 +4,7 @@ description: Known limitations and workarounds for MCP Dataverse.
 ---
 
 # Known Issues
-Issues identified during the Web API compliance audit. Each issue references the affected tool and planned fix.
-Last updated: March 2026
-<details open markdown="block">
-  <summary>Table of contents</summary>
-- TOC
-</details>
+Issues identified during the Web API compliance audit, with the affected tool and the resolution for each. Most are fixed; the constraints at the end describe current limits.
 
 ---
 
@@ -18,9 +13,9 @@ Last updated: March 2026
 ### ISSUE-01 — Missing `MSCRM.MergeLabels` header on metadata writes
 | | |
 |:--|:--|
-| **Priority** | 🔴 High |
+| **Priority** | High |
 | **Affected tools** | `dataverse_update_entity`, `dataverse_update_attribute` |
-| **Status** | ✅ Fixed in v0.4.0 |
+| **Status** | <Status kind="done">Fixed in v0.4.0</Status> |
 
 **Problem:** `PATCH /EntityDefinitions` and `PUT /EntityDefinitions(.../Attributes(...)` calls do not include the `MSCRM.MergeLabels: true` header. In multi-language environments, this causes non-primary-language labels (DisplayName, Description) to be erased on every update.
 
@@ -33,24 +28,24 @@ Last updated: March 2026
 ### ISSUE-02 — `@odata.type` included in `update_entity` PATCH body
 | | |
 |:--|:--|
-| **Priority** | 🟡 Medium |
+| **Priority** | Medium |
 | **Affected tools** | `dataverse_update_entity` |
-| **Status** | 🔜 Fix planned (v0.4) |
+| **Status** | <Status kind="warn">Open, retained deliberately</Status> |
 
 **Problem:** The `update_entity` tool includes `@odata.type` in the PATCH request body. For partial updates (PATCH), OData best practice is to omit `@odata.type` entirely — the server infers the type from the URL. Some environments accept it, others may reject it or behave unexpectedly.
 
 **Workaround:** None needed in most environments — the current behavior generally works. If you encounter errors, use the Web API directly without the type annotation.
 
-**Planned fix:** Strip `@odata.type` from PATCH payloads; only include it in POST (create) operations where it is required.
+**Current behaviour:** The annotation was added deliberately to the metadata PATCH body (see the 0.3.x changelog) and has not been removed. No change is scheduled.
 
 ---
 
 ### ISSUE-03 — `update_entity` flag updates return `0x80060888`
 | | |
 |:--|:--|
-| **Priority** | ⚪ Low |
+| **Priority** | Low |
 | **Affected tools** | `dataverse_update_entity` |
-| **Status** | ℹ️ Environment limitation — no fix needed |
+| **Status** | <Status kind="warn">Environment limitation, no fix needed</Status> |
 
 **Problem:** Updating boolean flags like `IsAuditEnabled`, `IsValidForQueue`, `IsConnectionsEnabled` via `PATCH /EntityDefinitions` returns error `0x80060888` on certain Dataverse environments (typically sandboxes or environments with restricted managed solutions).
 
@@ -61,9 +56,9 @@ Last updated: March 2026
 ### ISSUE-04 — Batch requests use `\n` instead of `\r\n`
 | | |
 |:--|:--|
-| **Priority** | 🟡 Medium-Low |
+| **Priority** | Medium-low |
 | **Affected tools** | `dataverse_batch_execute` |
-| **Status** | ✅ Fixed in v0.4.0 |
+| **Status** | <Status kind="done">Fixed in v0.4.0</Status> |
 
 **Problem:** The batch request body uses Unix-style line endings (`\n`) instead of CRLF (`\r\n`) as required by RFC 2046 for MIME multipart messages. The Dataverse Web API currently accepts `\n`, but this violates the spec and may break with future API versions or stricter proxies.
 
@@ -76,9 +71,9 @@ Last updated: March 2026
 ### ISSUE-05 — `detect_duplicates` description is misleading
 | | |
 |:--|:--|
-| **Priority** | 🟡 Medium |
+| **Priority** | Medium |
 | **Affected tools** | `dataverse_detect_duplicates` |
-| **Status** | ✅ Fixed in v0.4.0 |
+| **Status** | <Status kind="done">Fixed in v0.4.0</Status> |
 
 **Problem:** The tool description says "Uses Dataverse built-in duplicate detection rules", but the actual implementation uses FetchXML with field-level OR matching. This is a functional approximation — it does not invoke the real `RetrieveDuplicates` function or respect published duplicate detection rules in the environment.
 
@@ -93,9 +88,9 @@ Last updated: March 2026
 ### ISSUE-06 — `search` URL uses relative path hack
 | | |
 |:--|:--|
-| **Priority** | ⚪ Low |
+| **Priority** | Low |
 | **Affected tools** | `dataverse_search` |
-| **Status** | ✅ Fixed in v0.4.0 |
+| **Status** | <Status kind="done">Fixed in v0.4.0</Status> |
 
 **Problem:** The search tool constructs the Relevance Search URL using a relative path (`../../search/v1.0/query`) instead of building the absolute URL from `environmentUrl`. This works because the OData base URL includes `/api/data/v9.2/`, but it's fragile and relies on path traversal assumptions.
 
@@ -108,9 +103,9 @@ Last updated: March 2026
 ### ISSUE-07 — `executeFunction` only supports string parameters
 | | |
 |:--|:--|
-| **Priority** | ⚪ Low |
+| **Priority** | Low |
 | **Affected tools** | `dataverse_execute_function`, `dataverse_execute_bound_function` |
-| **Status** | ✅ Fixed in v0.4.0 |
+| **Status** | <Status kind="done">Fixed in v0.4.0</Status> |
 
 **Problem:** All function parameters are wrapped in single quotes (string literals) in the URL. Functions that expect integers, GUIDs, or booleans as aliased parameters receive them as strings, which may cause type errors on some functions.
 
@@ -125,9 +120,9 @@ Last updated: March 2026
 ### ISSUE-08 — `create_attribute` missing common column types
 | | |
 |:--|:--|
-| **Priority** | 🟡 Medium |
+| **Priority** | Medium |
 | **Affected tools** | `dataverse_create_attribute` |
-| **Status** | ✅ Fixed in v0.4.0 |
+| **Status** | <Status kind="done">Fixed in v0.4.0</Status> |
 
 **Problem:** The `create_attribute` tool currently supports: String, Integer, Decimal, Boolean, DateTime, Money, Memo, Picklist, BigInt. The following important column types are not yet supported:
 
@@ -153,6 +148,6 @@ These are not bugs — they are inherent limitations of the current implementati
 | `dataverse_update_entity` | Boolean flag updates may fail with `0x80060888` | Environment-level restriction on managed metadata |
 | `dataverse_search` | Returns a structured error with `errorCategory: "ENV_LIMITATION"` if Relevance Search is disabled or no entities are configured for search | Enable via **Power Platform Admin Center → Environments → [env] → Settings → Product → Features → Dataverse Search = On** (requires System Administrator). Once enabled, allow 15–30 min for initial indexing. |
 | `dataverse_batch_execute` | No `$<Content-ID>` cross-referencing | Would require changeset dependency parser — out of scope for now |
-| `dataverse_execute_fetchxml` | No automatic pagination | FetchXML paging cookies must be handled manually |
+| `dataverse_execute_fetchxml` | Auto-pagination is opt-in: set `fetchAll=true` (up to 100 pages or 50,000 records) | Without it, a single page is returned and the paging cookie is left to the caller |
 | `dataverse_retrieve_multiple_with_paging` | Max 50,000 records | Safety cap to prevent runaway queries |
 | `dataverse_query` | Max 5,000 per call | Use `retrieve_multiple_with_paging` for larger datasets |

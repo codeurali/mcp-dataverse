@@ -1,86 +1,11 @@
 ---
-title: Solutions & Customizations
-description: Inspect solutions, publish customizations, manage plugins and environment variables in Dataverse.
+title: Customizations
+description: Publish customizations, inspect plugins and custom actions, and manage environment variables and workflow state in Dataverse.
 ---
 
-# Solutions & Customizations
+# Customizations
 
-Tools for inspecting Dataverse solutions, publishing customizations, managing plugins, workflows, and environment variables.
-
-## Listing Solutions — `dataverse_list_solutions`
-
-Lists solutions in the environment. By default, only unmanaged solutions are returned.
-
-### Example: List unmanaged solutions
-
-```json
-{}
-```
-
-### Example: Include managed solutions, filtered by name
-
-```json
-{
-  "includeManaged": true,
-  "nameFilter": "contoso",
-  "top": 20
-}
-```
-
-**Response:**
-
-```json
-{
-  "summary": "5 solutions found",
-  "data": [
-    {
-      "uniquename": "ContosoCore",
-      "friendlyname": "Contoso Core",
-      "version": "1.2.0.3",
-      "ismanaged": false
-    }
-  ],
-  "suggestions": []
-}
-```
-
-Annotations: `readOnlyHint: true`.
-
----
-
-## Solution Components — `dataverse_solution_components`
-
-Lists all components within a named solution (entities, workflows, web resources, plugins, etc.).
-
-### Example: All components in a solution
-
-```json
-{
-  "solutionName": "ContosoCore"
-}
-```
-
-### Example: Only workflows (component type 29)
-
-```json
-{
-  "solutionName": "ContosoCore",
-  "componentType": 29,
-  "top": 500
-}
-```
-
-**Common component type codes:**
-
-| Code | Type            |
-| ---- | --------------- |
-| 1    | Entity (Table)  |
-| 29   | Workflow        |
-| 90   | Plugin Assembly |
-| 91   | Plugin Step     |
-| 97   | Web Resource    |
-
----
+Tools for publishing customizations, inspecting plugin steps and custom actions, and managing workflows and environment variables.
 
 ## Publishing Customizations — `dataverse_publish_customizations`
 
@@ -220,16 +145,14 @@ Activate or deactivate a classic workflow, real-time workflow, or action.
 
 ## Typical Workflow
 
-1. **`dataverse_list_solutions`** — find your solution
-2. **`dataverse_solution_components`** — list what's in it
-3. **`dataverse_list_plugin_steps`** — check registered plugins
-4. **`dataverse_list_custom_actions`** — discover available actions
-5. Make changes to schema or records
-6. **`dataverse_publish_customizations`** — publish your changes
+1. **`dataverse_list_plugin_steps`**: check registered plugins
+2. **`dataverse_list_custom_actions`**: discover available actions
+3. Make changes to schema or records
+4. **`dataverse_publish_customizations`**: publish your changes
 
 ---
 
 ## Related
 
 - [Inspecting schema](inspecting-schema.md) — explore table metadata
-- [Managing records](managing-records.md) — CRUD operations after inspecting solutions
+- [Managing records](managing-records.md) — CRUD operations after inspecting customizations

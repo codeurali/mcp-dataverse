@@ -15,4 +15,4 @@ Each guide shows real tool calls with input/output examples you can adapt to you
 | [Inspecting Schema](/use-cases/inspecting-schema) | Tables, columns, relationships, option sets, alternate keys |
 | [Managing Records](/use-cases/managing-records) | Create, update, delete, upsert, batch, associations |
 | [Delta Sync](/use-cases/delta-sync) | Incremental sync with change tracking tokens |
-| [Solutions & Customizations](/use-cases/solutions-and-customizations) | Solutions, plugins, environment variables, workflows |
+| [Customizations](/use-cases/solutions-and-customizations) | Publishing, plugins, custom actions, environment variables, workflows |

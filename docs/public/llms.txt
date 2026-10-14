@@ -1,18 +1,18 @@
 # MCP Dataverse
 
-> The most complete Model Context Protocol (MCP) server for Microsoft Dataverse. 79 production-grade tools to query, mutate and inspect Microsoft Dataverse from any MCP-compliant AI agent (GitHub Copilot, Claude Desktop, Cursor, Windsurf, Codex CLI, Gemini CLI, Copilot Studio).
+> A Model Context Protocol (MCP) server for Microsoft Dataverse. 100 tools (81 core and 19 MCP App bridge tools) to query, mutate and inspect Microsoft Dataverse from any MCP-compliant AI agent (GitHub Copilot, Claude Desktop, Cursor, Windsurf, Codex CLI, Gemini CLI, Copilot Studio).
 
 ---
 
 ## Quick install
 
-Run the interactive installer -- it configures auth and writes the server entry to your chosen MCP client:
+Run the interactive installer -- it asks for local (stdio) or hosted (HTTP) mode, your environment URL and the authentication mode, then registers the server in VS Code:
 
 ```
 npx mcp-dataverse install
 ```
 
-Requires Node.js 20+. The wizard prompts for your Dataverse environment URL, auth mode, and target client. On completion it writes `~/.mcp-dataverse/config.json` and registers the server.
+Requires Node.js 20+. The wizard prompts for run mode, your Dataverse environment URL and auth mode (device code or client credentials; managed identity through the hosted option). On completion it writes `~/.mcp-dataverse/config.json` and registers the server in VS Code. Other clients are configured manually.
 
 ### Manual install (no wizard)
 
@@ -32,12 +32,12 @@ Requires Node.js 20+. The wizard prompts for your Dataverse environment URL, aut
 
 ## Project facts
 
-- Version: 0.7.5
+- Version: 0.7.10
 - License: MIT
 - Repository: https://github.com/codeurali/mcp-dataverse
 - npm package: https://www.npmjs.com/package/mcp-dataverse
 - Node: >=20
-- Tools: 79 across 27 categories
+- Tools: 100 (81 core across 28 categories, plus 19 MCP App bridge tools)
 - Resources: 4
 - Prompts: 5
 - Authentication modes: 3 (interactive device code, service principal, managed identity)
@@ -63,6 +63,7 @@ Requires Node.js 20+. The wizard prompts for your Dataverse environment URL, aut
 | `MCP_CONFIG_PATH`    | `~/.mcp-dataverse/config.json` | Path to config file                          |
 | `REQUEST_TIMEOUT_MS` | `30000`                        | HTTP timeout in ms                           |
 | `MAX_RETRIES`        | `3`                            | Retry count on transient errors              |
+| `MCP_READ_ONLY`      | `false`                        | `true` exposes only read-only tools and refuses every write (next release) |
 | `MCP_TRANSPORT`      | `stdio`                        | Set to `http` for HTTP/SSE mode              |
 | `MCP_HTTP_PORT`      | `3000`                         | Port when `MCP_TRANSPORT=http`               |
 
@@ -253,7 +254,7 @@ Then connect any MCP client that supports Streamable HTTP to `http://localhost:3
 
 ---
 
-## All 79 tools
+## All tools
 
 All tool names are prefixed with `dataverse_` (e.g. `dataverse_query`, `dataverse_create`).
 
@@ -329,7 +330,7 @@ All tool names are prefixed with `dataverse_` (e.g. `dataverse_query`, `datavers
 
 ### Batch (1)
 
-**dataverse_batch_execute** -- Executes up to 1000 operations in a single OData `$batch` request. Supports changesets for atomic groups. Returns per-operation status. Parameters: `operations` (array, required), `continueOnError` (boolean).
+**dataverse_batch_execute** -- Executes up to 1000 operations in a single OData `$batch` request. Supports changesets for atomic groups. Returns per-operation status. Parameters: `requests` (array of 1 to 1000 operations, required), `useChangeset` (boolean).
 
 ### Change Tracking (1)
 
@@ -471,6 +472,17 @@ All tool names are prefixed with `dataverse_` (e.g. `dataverse_query`, `datavers
 
 ---
 
+
+### Web Resources (2)
+
+**dataverse_create_web_resource** -- Creates a web resource (SVG, PNG, JPG, GIF, ICO). Required first step for table icons. Parameters: `name` (with publisher prefix, e.g. `new_icon.svg`, required), `displayName` (required), `webResourceType` (SVG | PNG | JPG | GIF | ICO, required), `contentBase64` (required), `description`.
+
+**dataverse_set_table_icon** -- Sets, changes or removes a table icon by assigning a web resource. Parameters: `entityLogicalName` (required), `confirm` (must be true, required), `iconVectorName`, `iconLargeName`, `iconMediumName`, `autoPublish`. Call `dataverse_publish_customizations` afterwards.
+
+### MCP App bridge tools (19)
+
+Five interactive MCP Apps (table browser, FetchXML workbench, plugin trace viewer, schema explorer, RBAC inspector) are opened with `dataverse_open_table_browser`, `dataverse_open_fetchxml_workbench`, `dataverse_open_plugin_trace_viewer`, `dataverse_open_schema_explorer` and `dataverse_open_rbac_inspector`. The remaining 14 tools (`dataverse_table_browser_*`, `dataverse_fetchxml_workbench_*`, `dataverse_plugin_trace_viewer_get_logs`, `dataverse_schema_explorer_*`, `dataverse_rbac_inspector_*`) are called by the app interfaces and return machine-facing JSON.
+
 ## MCP Resources (4)
 
 Four read-only resources provide direct contextual data to AI clients that support the MCP Resources spec (Claude Desktop, Cursor). Each returns JSON or plain text without requiring a tool call.
@@ -546,7 +558,7 @@ Error responses include an `errorCategory` field for programmatic handling:
 - OData injection prevented via `esc()` single-quote escaping utility.
 - File column names validated against `/^[a-zA-Z0-9_]+$/`.
 - `MSCRMCallerId` cleaned in `finally` block after impersonation.
-- Tokens, secrets, and headers never appear in tool responses.
+- Tokens, secrets and headers are excluded from tool responses by design.
 
 ---
 
@@ -567,7 +579,7 @@ Error responses include an `errorCategory` field for programmatic handling:
 ## Documentation
 
 - [Getting Started](https://codeurali.github.io/mcp-dataverse/getting-started): Install, configure, run.
-- [Capabilities](https://codeurali.github.io/mcp-dataverse/capabilities): Full reference of all 79 tools.
+- [Capabilities](https://codeurali.github.io/mcp-dataverse/capabilities): Full reference of all 100 tools.
 - [Authentication overview](https://codeurali.github.io/mcp-dataverse/authentication/)
 - [Authentication -- Local (device code)](https://codeurali.github.io/mcp-dataverse/authentication/local)
 - [Authentication -- Service principal](https://codeurali.github.io/mcp-dataverse/authentication/service-principal)
@@ -577,7 +589,7 @@ Error responses include an `errorCategory` field for programmatic handling:
 - [Use cases -- Managing records](https://codeurali.github.io/mcp-dataverse/use-cases/managing-records)
 - [Use cases -- Inspecting schema](https://codeurali.github.io/mcp-dataverse/use-cases/inspecting-schema)
 - [Use cases -- Delta sync](https://codeurali.github.io/mcp-dataverse/use-cases/delta-sync)
-- [Use cases -- Solutions and customizations](https://codeurali.github.io/mcp-dataverse/use-cases/solutions-and-customizations)
+- [Use cases -- Customizations](https://codeurali.github.io/mcp-dataverse/use-cases/solutions-and-customizations)
 - [Roadmap](https://codeurali.github.io/mcp-dataverse/roadmap)
 - [Issues & support](https://codeurali.github.io/mcp-dataverse/issues)
 - [Community](https://codeurali.github.io/mcp-dataverse/community)

@@ -1,13 +1,13 @@
 ---
 title: Capabilities
-description: Full reference of all 79 MCP Dataverse tools, 4 resource types, and guided workflow templates.
+description: Full reference of all 100 MCP Dataverse tools, 4 resource types, and guided workflow templates.
 ---
 
 # Full Capabilities Reference
 
-> **Version**: 0.7.5 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
+> **Version**: 0.7.10 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
 
-79 tools · 4 resources · 5 prompts across 27 categories for full Dataverse lifecycle management.
+100 tools (81 core and 19 MCP App bridge tools) · 4 resources · 5 prompts across 28 categories.
 
 For detailed input/output examples, see the [Use Cases](/use-cases) section.
 
@@ -44,46 +44,18 @@ For detailed input/output examples, see the [Use Cases](/use-cases) section.
 | 25  | **Attributes**          | 4      | `create_attribute`, `update_attribute`, `delete_attribute`, `create_lookup_attribute`                                                                                                       |
 | 26  | **Schema (write)**      | 2      | `create_table`, `create_relationship`                                                                                                                                                       |
 | 27  | **Record Access**       | 4      | `check_record_access`, `grant_access`, `revoke_access`, `merge_records`                                                                                                                     |
-|     | **Total**               | **79** |                                                                                                                                                                                             |
+| 28  | **Web Resources**       | 2      | `create_web_resource`, `set_table_icon`
+|     | **Total (core)**        | **81** |
 
 All tool names are prefixed with `dataverse_` (e.g., `dataverse_query`, `dataverse_create`).
+
+On top of the 81 core tools, 19 bridge tools serve five interactive MCP Apps: table browser, FetchXML workbench, plugin trace viewer, schema explorer and RBAC inspector. They are called by the app interfaces rather than by the agent directly, and they return machine-facing JSON.
 
 ---
 
 ## Architecture Overview
 
-```
-MCP Dataverse Server (79 tools · 4 resources · 5 prompts · 27 categories)
-├── 🔑 Auth (1)
-├── 📋 Metadata (9)
-├── 🔍 Query (3)
-├── ✏️ CRUD (6)
-├── 🔗 Relations (4)
-├── ⚡ Actions & Functions (6)
-├── 📦 Batch (1)
-├── 🔄 Change Tracking (1)
-├── 🧩 Solutions (2)
-├── 👤 Impersonation (1)
-├── 🔧 Customization (4)
-├── ⚙️ Environment (4)
-├── 🔎 Trace (2)
-├── 🔍 Search (1)
-├── 📜 Audit (1)
-├── ✅ Quality (1)
-├── 📝 Annotations (2)
-├── 👥 Users (2)
-├── 🛡️ RBAC (7)
-├── 👁️ Views (1)
-├── 📁 Files (2)
-├── 🏢 Org (2)
-├── ⚙️ Workflows (4)
-├── 🤖 Assistance (2)
-├── 🏗️ Attributes (4)
-├── 📐 Schema (2)
-├── 🔐 Record Access (4)
-├── 📂 Resources (4)   ← MCP Resources (static + templates)
-└── 💬 Prompts (5)    ← MCP Prompts
-```
+<ArchitectureTree />
 
 All tool handlers validate inputs with **Zod** before calling the Dataverse Web API. Auth tokens are cached and refreshed proactively; transient errors (429, 503, 504) are retried with exponential backoff.
 
@@ -100,7 +72,7 @@ Four read-only MCP resources provide direct contextual data to AI clients that s
 | `dataverse://tables/{tableName}/schema`          | Template | `application/json` | All columns, types, requirement levels, and constraints for a table |
 | `dataverse://tables/{tableName}/relationships`   | Template | `application/json` | All 1:N, N:1, and N:N relationships for a table              |
 
-> **Client support:** Resources are fully supported in Claude Desktop and Cursor. GitHub Copilot VS Code and Codex CLI support MCP Tools only; use `dataverse_list_tables` + `dataverse_get_table_metadata` as substitutes.
+> **Client support:** Resource support varies by client. Claude Desktop and Cursor load them directly. If your client does not, use `dataverse_list_tables` + `dataverse_get_table_metadata` as substitutes.
 
 ---
 
@@ -174,7 +146,7 @@ Any tool can be executed on behalf of another user via `dataverse_impersonate`, 
 | OData injection       | `esc()` utility for single-quote escaping               |
 | File column safety    | `columnName` validated against `/^[a-zA-Z0-9_]+$/`      |
 | Impersonation cleanup | `MSCRMCallerId` cleaned in `finally` block              |
-| No secrets in logs    | PAT, tokens, and headers never appear in tool responses |
+| No secrets in logs    | PATs, tokens and headers are excluded from tool responses by design |
 
 ---
 
