@@ -4,7 +4,7 @@
 
 <img src="assets/logo.webp" alt="MCP Dataverse" width="180" />
 
-**The most complete MCP server for Microsoft Dataverse.**
+**An MCP server for Microsoft Dataverse.**
 
 100 tools · 4 resources · 5 guided workflows · Three auth modes
 
@@ -37,8 +37,8 @@ AI agents hallucinate schema, guess column names, and build broken OData queries
 - **Works with any MCP client** — VS Code, Claude, Cursor, Windsurf, Gemini, Codex CLI
 - **Atomic tools** — each tool does one thing well; the AI picks the right one
 - **Structured outputs** — every response returns `{summary, data, suggestions}` as both text and MCP `structuredContent` (with a declared `outputSchema` on all core tools)
-- **Guardrails** — destructive operations require explicit confirmation
-- **Encrypted tokens** — AES-256-GCM cached credentials, never logged
+- **Guardrails** — every tool declares read-only or destructive hints, and the riskiest operations require an explicit `confirm: true`
+- **Encrypted token cache** — AES-256-GCM cached credentials, kept out of tool output
 
 ---
 
