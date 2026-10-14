@@ -5,6 +5,41 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — [Semantic V
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- **Read-only mode** — Set `MCP_READ_ONLY=true` (or `"readOnly": true` in `config.json`) to expose only tools that declare `readOnlyHint: true` (64 of 100) and refuse every other call with a `PERMISSIONS` error. Tools without annotations are treated as writes. The server logs how many tools are exposed at startup.
+- **MCP `structuredContent` + `outputSchema` on all 81 core tools** — Every tool result now carries machine-readable `structuredContent` (the `{summary, data, suggestions, warnings?, prerequisite?, errorCategory?}` envelope) alongside the text payload, and every core tool declares the shared envelope `outputSchema`. MCP clients can consume typed results instead of parsing `content[0].text`. The 19 MCP App bridge tools intentionally opt out (machine-facing JSON, not the agent envelope).
+- **Idle session eviction for HTTP transport** — Sessions are now tracked with last-activity timestamps and evicted after `MCP_HTTP_SESSION_TTL_MS` (default 30 min, `0` disables). Prevents unbounded growth of the per-session Server+transport map when clients vanish without closing.
+- **`MCP_HTTP_REQUIRE_AUTH=true` strict mode** — The HTTP server refuses to start with no inbound auth configured (no static secret, no Entra JWT). Opt-in guardrail for hosted deployments.
+- **Startup hardening warnings** — Loud stderr warnings when running unauthenticated, and when CORS is `*` while auth is enabled.
+- **`npm run docs:sync` / `npm run docs:check`** — Capability counts in README.md, package.json, server.json and CAPABILITIES.md are generated from the real tool registry (`src/tools/tool-modules.ts`, the single source of truth). `--check` mode fails when docs drift.
+
+### Fixed
+
+- **Six tools had no MCP annotations** — `dataverse_check_record_access` (read-only), `dataverse_grant_access`, `dataverse_revoke_access`, `dataverse_merge_records`, `dataverse_create_table` and `dataverse_create_relationship` now declare read-only/destructive/idempotent hints, so clients can ask for approval correctly and read-only mode can classify them. `dataverse_revoke_access` and `dataverse_merge_records` are marked destructive.
+- **Stale guardrail entry** — Removed the non-existent `dataverse_delete_file` from the destructive-tool list in `guardrails.ts`.
+- **`MCP_TRANSPORT` / `MCP_HTTP_PORT` env vars were silently ignored** — `parseTransportArgs()` only read CLI flags, so the documented README-style invocation (`MCP_TRANSPORT=http node dist/server.js`) started in stdio mode. Env vars now work; CLI flags still take precedence.
+- **Pre-existing `tsc --noEmit` error in `src/update.ts`** (`match[2]` possibly undefined).
+
+### Security
+
+- **Salted key derivation for at-rest encryption (v2 blob format)** — The AES-256-GCM key now mixes a per-install 256-bit random salt (mode-0600 `~/.mcp-dataverse/.salt`) into derivation, replacing the purely deterministic machine+user seed that anyone with host knowledge could reproduce. v1 blobs still decrypt (transparent backward compatibility; MSAL cache auto-migrates on next write). Degrades gracefully to v1 when the salt file cannot be persisted.
+
+### Internal
+
+- **`src/tools/tool-registry.ts`** — `ToolDefinition.outputSchema`, `ToolResult.structuredContent`, `ToolModule.skipOutputSchema`, shared `STRUCTURED_OUTPUT_SCHEMA` auto-attached at registration.
+- **`src/tools/tool-modules.ts`** — New module: the tool-module catalogue + `buildFullRegistry()`, single source of truth consumed by `server.ts` and `scripts/docs-sync.ts`.
+- **`src/apps/app-registry.ts`** — New module: data-driven MCP App registry replacing ~200 lines of per-app boilerplate in `server.ts` (5× resource consts + 5× path resolvers + 5× read branches → one table + one loop). Adding app #6 is now one registry entry.
+- **Impersonation dispatch normalized** — `handleImpersonateTool` is registered through the standard `ToolHandler` signature (dispatch bound via closure); the `IMPERSONATE_NAMES` special case in the CallTool handler is gone.
+- **`src/server.ts`** — 574 → 255 lines.
+- **`src/http-server.ts`** — Session tracking (`lastSeen`), sweeper with `unref()`, strict-auth check, hygiene warnings; exported `resolveSessionTtlMs` / `isAuthRequired` for tests.
+- **`src/auth/crypto-utils.ts`** — Reworked as `createDiskCrypto(saltFile)` factory (unit-testable) with module-level convenience API preserved.
+- **Tests** — +34 unit tests (tool-registry, app-registry, transport, crypto-utils, structuredContent, http-server config): 741 → 775.
+
+---
+
 ## [0.7.10] — 2026-10-13
 
 ### Fixed

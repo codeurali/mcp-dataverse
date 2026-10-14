@@ -34,6 +34,7 @@ exclude:
   - debug/
   - tests/
   - _bmad/
+  - webmcp/
   - _bmad-output/
   - mcp-template/
   - autoparc/

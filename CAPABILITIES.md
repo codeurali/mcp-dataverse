@@ -2,7 +2,7 @@
 
 > **Version**: 0.7.7 | **API Version**: Dataverse Web API v9.2 | **Transport**: stdio · HTTP/SSE
 
-81 tools across 28 categories for full Dataverse lifecycle: schema, CRUD, FetchXML, solutions, plugins, audit, files, users, teams, RBAC, attribute management, environment variables, workflows, schema write, record access, web resources, and more.
+100 tools across 28 categories (81 core + 19 MCP App bridge) for full Dataverse lifecycle: schema, CRUD, FetchXML, solutions, plugins, audit, files, users, teams, RBAC, attribute management, environment variables, workflows, schema write, record access, web resources, and more.
 
 ---
 
@@ -1459,7 +1459,7 @@ Certain tools include an `errorCategory` field in the error text when the failur
 | **Device Code** | MSAL Public Client → device code + silent refresh | Local dev, interactive |
 
 - `clientSecret` is never logged or returned in tool responses.
-- Token cache is encrypted (AES-256-GCM) at `~/.mcp-dataverse/` and should not be shared.
+- Token cache is encrypted (AES-256-GCM, per-install salted key) at `~/.mcp-dataverse/` and should not be shared.
 - OData path segments use `esc()` (single-quote doubling) to prevent OData injection.
 - `columnName` in file tools is validated against `/^[a-zA-Z0-9_]+$/` to prevent path traversal.
 - `MSCRMCallerId` for impersonation is set per-call and cleaned up in a `finally` block regardless of outcome.

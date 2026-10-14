@@ -6,7 +6,7 @@
 
 **The most complete MCP server for Microsoft Dataverse.**
 
-79 tools · 4 resources · 10 guided workflows · Three auth modes
+100 tools · 4 resources · 5 guided workflows · Three auth modes
 
 [![npm](https://img.shields.io/npm/v/mcp-dataverse)](https://www.npmjs.com/package/mcp-dataverse)
 [![npm downloads](https://img.shields.io/npm/dm/mcp-dataverse)](https://www.npmjs.com/package/mcp-dataverse)
@@ -36,7 +36,7 @@ AI agents hallucinate schema, guess column names, and build broken OData queries
 - **Three auth modes** — device code (local), client credentials (CI/CD), managed identity (Azure-hosted)
 - **Works with any MCP client** — VS Code, Claude, Cursor, Windsurf, Gemini, Codex CLI
 - **Atomic tools** — each tool does one thing well; the AI picks the right one
-- **Structured outputs** — every response returns `{summary, data, suggestions}`
+- **Structured outputs** — every response returns `{summary, data, suggestions}` as both text and MCP `structuredContent` (with a declared `outputSchema` on all core tools)
 - **Guardrails** — destructive operations require explicit confirmation
 - **Encrypted tokens** — AES-256-GCM cached credentials, never logged
 
@@ -117,6 +117,17 @@ Run as an HTTP server for multi-client use:
 ```bash
 MCP_TRANSPORT=http MCP_HTTP_PORT=3000 MCP_HTTP_SECRET=mysecret node dist/server.js
 ```
+
+| Env var                            | Default  | Description                                                                    |
+| ---------------------------------- | -------- | ------------------------------------------------------------------------------ |
+| `MCP_TRANSPORT`                    | `stdio`  | `http` enables the HTTP transport                                              |
+| `MCP_HTTP_PORT`                    | `3000`   | Listen port (`/mcp` endpoint, `/health` probe)                                 |
+| `MCP_HTTP_SECRET` / `BEARER_TOKEN` | —        | Static bearer token for inbound auth                                           |
+| `ENTRA_TENANT_ID` + `ENTRA_CLIENT_ID` | —     | Validate inbound tokens as Entra v2.0 JWTs (RFC 9728 discovery auto-enabled)   |
+| `MCP_HTTP_SESSION_TTL_MS`          | `1800000`| Idle session eviction timeout (30 min; `0` disables)                           |
+| `MCP_HTTP_REQUIRE_AUTH`            | —        | `true` = refuse to start with no inbound auth configured                       |
+| `MCP_HTTP_CORS_ORIGIN`             | `*`      | Allowed CORS origin — lock this down for hosted deployments                    |
+| `MCP_HTTP_JSON_RESPONSE`           | `true`   | JSON responses (`false` = SSE streaming)                                       |
 
 Connect using VS Code / Copilot with:
 
