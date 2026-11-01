@@ -40,6 +40,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) — [Semantic V
 
 ---
 
+## [0.7.11] — 2026-11-01
+
+### Fixed
+
+- `server.json` now marks `DATAVERSE_ENV_URL` as required. Clients that install from the MCP Registry (such as the VS Code MCP gallery) did not ask for it, and the server then exited on startup with `environmentUrl: Required`. No runtime code changes; `dist/` is identical to 0.7.10.
+
+---
+
 ## [0.7.10] — 2026-10-13
 
 ### Fixed
